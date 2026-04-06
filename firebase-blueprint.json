@@ -1,0 +1,879 @@
+{
+  "entities": {
+    "GuestProfile": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "GuestProfile",
+      "type": "object",
+      "description": "Represents a guest's profile, including personal information, preferences, and linked health data.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the GuestProfile entity."
+        },
+        "firstName": {
+          "type": "string",
+          "description": "The first name of the guest."
+        },
+        "lastName": {
+          "type": "string",
+          "description": "The last name of the guest."
+        },
+        "email": {
+          "type": "string",
+          "description": "The email address of the guest.",
+          "format": "email"
+        },
+        "phoneNumber": {
+          "type": "string",
+          "description": "The phone number of the guest.",
+          "format": "tel"
+        },
+        "dietaryRestrictionIds": {
+          "type": "array",
+          "description": "References to DietaryRestriction entities that the guest adheres to. (Relationship: GuestProfile N:N DietaryRestriction)",
+          "items": {
+            "type": "string"
+          }
+        },
+        "allergyIds": {
+          "type": "array",
+          "description": "References to Allergy entities that the guest has. (Relationship: GuestProfile N:N Allergy)",
+          "items": {
+            "type": "string"
+          }
+        },
+        "healthDataId": {
+          "type": "string",
+          "description": "Reference to the associated HealthData entity, summarizing the guest's health profile. (Relationship: GuestProfile 1:1 HealthData)"
+        },
+        "preferredCuisine": {
+          "type": "string",
+          "description": "The guest's preferred type of cuisine."
+        },
+        "notes": {
+          "type": "string",
+          "description": "Internal notes from staff about the guest's preferences or behavior."
+        },
+        "isVIP": {
+          "type": "boolean",
+          "description": "Indicates if the guest is considered a Very Important Person (VIP)."
+        },
+        "loyaltyPoints": {
+          "type": "number",
+          "description": "The current loyalty points accumulated by the guest."
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "The date and time when the guest profile was created.",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "The date and time when the guest profile was last updated.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "firstName",
+        "lastName",
+        "email"
+      ]
+    },
+    "StaffUser": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "StaffUser",
+      "type": "object",
+      "description": "Represents an internal staff member with role-based access to the application.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the StaffUser entity (corresponds to Firebase Auth UID)."
+        },
+        "firstName": {
+          "type": "string",
+          "description": "The first name of the staff member."
+        },
+        "lastName": {
+          "type": "string",
+          "description": "The last name of the staff member."
+        },
+        "email": {
+          "type": "string",
+          "description": "The email address of the staff member.",
+          "format": "email"
+        },
+        "role": {
+          "type": "string",
+          "description": "The role of the staff member (e.g., 'Admin', 'Chef', 'KitchenManager', 'FrontOfHouse')."
+        },
+        "phoneNumber": {
+          "type": "string",
+          "description": "The phone number of the staff member.",
+          "format": "tel"
+        },
+        "hireDate": {
+          "type": "string",
+          "description": "The date when the staff member was hired.",
+          "format": "date"
+        },
+        "lastLogin": {
+          "type": "string",
+          "description": "The date and time of the staff member's last login.",
+          "format": "date-time"
+        },
+        "isActive": {
+          "type": "boolean",
+          "description": "Indicates if the staff member's account is currently active."
+        },
+        "preferredLanguage": {
+          "type": "string",
+          "description": "The preferred language for the staff member's interface."
+        }
+      },
+      "required": [
+        "id",
+        "firstName",
+        "lastName",
+        "email",
+        "role"
+      ]
+    },
+    "Ingredient": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Ingredient",
+      "type": "object",
+      "description": "Represents a single culinary ingredient used in the kitchen.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Ingredient entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "The common name of the ingredient."
+        },
+        "description": {
+          "type": "string",
+          "description": "A brief description of the ingredient."
+        },
+        "unitOfMeasure": {
+          "type": "string",
+          "description": "The standard unit of measure for this ingredient (e.g., 'gram', 'milliliter', 'each')."
+        },
+        "supplier": {
+          "type": "string",
+          "description": "The primary supplier for this ingredient."
+        },
+        "storageConditions": {
+          "type": "string",
+          "description": "Recommended storage conditions for the ingredient (e.g., 'refrigerated', 'dry storage')."
+        },
+        "allergyIds": {
+          "type": "array",
+          "description": "References to Allergy entities that this ingredient contains. (Relationship: Ingredient N:N Allergy)",
+          "items": {
+            "type": "string"
+          }
+        },
+        "compatibleDietaryRestrictions": {
+          "type": "array",
+          "description": "A list of dietary restrictions this ingredient is compatible with (e.g., 'Vegetarian', 'Vegan').",
+          "items": {
+            "type": "string"
+          }
+        },
+        "costPerUnit": {
+          "type": "number",
+          "description": "The cost of one unit of the ingredient."
+        },
+        "imageUrl": {
+          "type": "string",
+          "description": "URL to an image of the ingredient.",
+          "format": "uri"
+        },
+        "isLocalSourced": {
+          "type": "boolean",
+          "description": "Indicates if the ingredient is sourced locally."
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "unitOfMeasure",
+        "costPerUnit"
+      ]
+    },
+    "MenuItem": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "MenuItem",
+      "type": "object",
+      "description": "Represents a dish or beverage available on the restaurant's menu.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the MenuItem entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the menu item."
+        },
+        "description": {
+          "type": "string",
+          "description": "A detailed description of the menu item."
+        },
+        "price": {
+          "type": "number",
+          "description": "The price of the menu item."
+        },
+        "imageUrl": {
+          "type": "string",
+          "description": "URL to an image of the prepared menu item.",
+          "format": "uri"
+        },
+        "preparationTimeMinutes": {
+          "type": "number",
+          "description": "The estimated time in minutes required to prepare the menu item."
+        },
+        "ingredientIds": {
+          "type": "array",
+          "description": "References to Ingredient entities used in this menu item. (Relationship: MenuItem N:N Ingredient)",
+          "items": {
+            "type": "string"
+          }
+        },
+        "dietaryRestrictionIds": {
+          "type": "array",
+          "description": "References to DietaryRestriction entities that this menu item is compatible with. (Relationship: MenuItem N:N DietaryRestriction)",
+          "items": {
+            "type": "string"
+          }
+        },
+        "allergyIds": {
+          "type": "array",
+          "description": "References to Allergy entities that this menu item contains. (Relationship: MenuItem N:N Allergy)",
+          "items": {
+            "type": "string"
+          }
+        },
+        "category": {
+          "type": "string",
+          "description": "The category of the menu item (e.g., 'Appetizer', 'Main Course', 'Dessert')."
+        },
+        "chefRecommendation": {
+          "type": "boolean",
+          "description": "Indicates if this item is a chef's special recommendation."
+        },
+        "isActive": {
+          "type": "boolean",
+          "description": "Indicates if the menu item is currently available."
+        },
+        "nutritionInfoId": {
+          "type": "string",
+          "description": "Reference to the associated NutritionInfo entity for this menu item. (Relationship: MenuItem 1:1 NutritionInfo)"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "The date and time when the menu item was created.",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "The date and time when the menu item was last updated.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "price",
+        "description",
+        "category",
+        "isActive"
+      ]
+    },
+    "NutritionInfo": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "NutritionInfo",
+      "type": "object",
+      "description": "Provides detailed nutritional information for a specific menu item.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the NutritionInfo entity."
+        },
+        "menuItemId": {
+          "type": "string",
+          "description": "Reference to the MenuItem entity this nutrition information belongs to. (Relationship: NutritionInfo 1:1 MenuItem)"
+        },
+        "calories": {
+          "type": "number",
+          "description": "Total calories per serving."
+        },
+        "proteinGrams": {
+          "type": "number",
+          "description": "Protein content in grams per serving."
+        },
+        "fatGrams": {
+          "type": "number",
+          "description": "Fat content in grams per serving."
+        },
+        "carbsGrams": {
+          "type": "number",
+          "description": "Carbohydrate content in grams per serving."
+        },
+        "servingSize": {
+          "type": "string",
+          "description": "Description of the serving size (e.g., '1 cup', '1 piece')."
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "The date and time when this nutrition information was last updated.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "menuItemId",
+        "calories",
+        "proteinGrams",
+        "fatGrams",
+        "carbsGrams"
+      ]
+    },
+    "Inventory": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Inventory",
+      "type": "object",
+      "description": "Tracks the current stock levels and details for a specific ingredient.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Inventory record."
+        },
+        "ingredientId": {
+          "type": "string",
+          "description": "Reference to the Ingredient entity this inventory record is for. (Relationship: Ingredient 1:N Inventory)"
+        },
+        "quantity": {
+          "type": "number",
+          "description": "The current quantity of the ingredient in stock."
+        },
+        "unitOfMeasure": {
+          "type": "string",
+          "description": "The unit of measure for the current quantity (should match ingredient's unit)."
+        },
+        "minimumStockLevel": {
+          "type": "number",
+          "description": "The minimum desired quantity of the ingredient before reordering."
+        },
+        "reorderPoint": {
+          "type": "number",
+          "description": "The stock level at which a reorder alert should be triggered."
+        },
+        "lastRestockDate": {
+          "type": "string",
+          "description": "The date and time when the ingredient was last restocked.",
+          "format": "date-time"
+        },
+        "expirationDate": {
+          "type": "string",
+          "description": "The expiration date of the current stock batch.",
+          "format": "date"
+        },
+        "location": {
+          "type": "string",
+          "description": "The physical storage location of the ingredient (e.g., 'Pantry', 'Fridge A')."
+        },
+        "status": {
+          "type": "string",
+          "description": "The current stock status (e.g., 'In Stock', 'Low Stock', 'Out of Stock')."
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "The date and time when this inventory record was last updated.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "ingredientId",
+        "quantity",
+        "unitOfMeasure",
+        "minimumStockLevel",
+        "status"
+      ]
+    },
+    "WearableData": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "WearableData",
+      "type": "object",
+      "description": "Stores raw, time-series health data collected from a guest's wearable device.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the WearableData record."
+        },
+        "guestProfileId": {
+          "type": "string",
+          "description": "Reference to the GuestProfile entity this data belongs to. (Relationship: GuestProfile 1:N WearableData)"
+        },
+        "deviceId": {
+          "type": "string",
+          "description": "Identifier for the wearable device (e.g., 'Galaxy Watch 5', 'Apple Watch Series 8')."
+        },
+        "dataType": {
+          "type": "string",
+          "description": "The type of health metric recorded (e.g., 'HeartRate', 'GlucoseLevel', 'BloodOxygen')."
+        },
+        "value": {
+          "type": "number",
+          "description": "The numerical value of the recorded data point."
+        },
+        "unit": {
+          "type": "string",
+          "description": "The unit of measurement for the value (e.g., 'bpm', 'mg/dL', '%')."
+        },
+        "timestamp": {
+          "type": "string",
+          "description": "The date and time when the data point was recorded.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "guestProfileId",
+        "deviceId",
+        "dataType",
+        "value",
+        "unit",
+        "timestamp"
+      ]
+    },
+    "HealthData": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "HealthData",
+      "type": "object",
+      "description": "A summarized and consolidated health profile for a guest, potentially derived from wearable data and manual input.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the HealthData entity."
+        },
+        "guestProfileId": {
+          "type": "string",
+          "description": "Reference to the associated GuestProfile entity. (Relationship: GuestProfile 1:1 HealthData)"
+        },
+        "averageHeartRate": {
+          "type": "number",
+          "description": "The guest's average heart rate."
+        },
+        "latestGlucoseLevel": {
+          "type": "number",
+          "description": "The guest's most recent glucose level reading."
+        },
+        "bloodPressure": {
+          "type": "string",
+          "description": "The guest's blood pressure reading (e.g., '120/80')."
+        },
+        "preExistingConditions": {
+          "type": "array",
+          "description": "A list of any pre-existing medical conditions the guest has.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "guestNotes": {
+          "type": "string",
+          "description": "Specific health-related notes provided by the guest or staff."
+        },
+        "lastUpdated": {
+          "type": "string",
+          "description": "The date and time when this health data was last updated.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "guestProfileId",
+        "lastUpdated"
+      ]
+    },
+    "DietaryRestriction": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "DietaryRestriction",
+      "type": "object",
+      "description": "Defines a specific dietary restriction or preference.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the DietaryRestriction entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the dietary restriction (e.g., 'Vegetarian', 'Vegan', 'Gluten-Free')."
+        },
+        "description": {
+          "type": "string",
+          "description": "A description of the dietary restriction."
+        },
+        "isCommon": {
+          "type": "boolean",
+          "description": "Indicates if this is a commonly requested dietary restriction."
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ]
+    },
+    "Allergy": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Allergy",
+      "type": "object",
+      "description": "Defines a specific food allergy that guests or ingredients may have.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Allergy entity."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the allergen (e.g., 'Peanuts', 'Shellfish', 'Dairy')."
+        },
+        "description": {
+          "type": "string",
+          "description": "A description of the allergy and its typical reactions."
+        },
+        "severity": {
+          "type": "string",
+          "description": "The typical severity of the allergic reaction (e.g., 'Mild', 'Moderate', 'Severe')."
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ]
+    },
+    "Order": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Order",
+      "type": "object",
+      "description": "Represents a guest's food or beverage order placed at the restaurant.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Order entity."
+        },
+        "guestProfileId": {
+          "type": "string",
+          "description": "Reference to the GuestProfile entity if the order is associated with a specific guest. (Relationship: GuestProfile 1:N Order)"
+        },
+        "staffUserId": {
+          "type": "string",
+          "description": "Reference to the StaffUser entity who managed or processed this order. (Relationship: StaffUser 1:N Order)"
+        },
+        "orderDateTime": {
+          "type": "string",
+          "description": "The date and time when the order was placed.",
+          "format": "date-time"
+        },
+        "status": {
+          "type": "string",
+          "description": "The current status of the order (e.g., 'Pending', 'Preparing', 'Ready', 'Served', 'Completed', 'Cancelled')."
+        },
+        "totalAmount": {
+          "type": "number",
+          "description": "The total monetary amount of the order."
+        },
+        "specialInstructions": {
+          "type": "string",
+          "description": "Any special instructions or modifications for the order."
+        },
+        "tableNumber": {
+          "type": "string",
+          "description": "The table number where the order is to be served."
+        },
+        "menuItemIds": {
+          "type": "array",
+          "description": "References to MenuItem entities included in this order. (Relationship: Order N:N MenuItem)",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "id",
+        "orderDateTime",
+        "status",
+        "totalAmount"
+      ]
+    },
+    "Reservation": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Reservation",
+      "type": "object",
+      "description": "Represents a guest's reservation at the restaurant.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Reservation entity."
+        },
+        "guestProfileId": {
+          "type": "string",
+          "description": "Reference to the GuestProfile entity associated with this reservation. (Relationship: GuestProfile 1:N Reservation)"
+        },
+        "reservationDateTime": {
+          "type": "string",
+          "description": "The date and time for which the reservation is made.",
+          "format": "date-time"
+        },
+        "numberOfGuests": {
+          "type": "number",
+          "description": "The number of guests for this reservation."
+        },
+        "status": {
+          "type": "string",
+          "description": "The current status of the reservation (e.g., 'Confirmed', 'Seated', 'Cancelled', 'No-Show')."
+        },
+        "specialRequests": {
+          "type": "string",
+          "description": "Any special requests made for the reservation (e.g., 'window seat', 'high chair')."
+        },
+        "staffUserId": {
+          "type": "string",
+          "description": "Reference to the StaffUser entity who handled this reservation. (Relationship: StaffUser 1:N Reservation)"
+        },
+        "tablePreference": {
+          "type": "string",
+          "description": "Any specific table preferences for the reservation."
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "The date and time when the reservation was created.",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "The date and time when the reservation was last updated.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "guestProfileId",
+        "reservationDateTime",
+        "numberOfGuests",
+        "status"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous",
+      "google.com"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/staffUsers/{staffUserId}",
+        "definition": {
+          "entityName": "StaffUser",
+          "schema": {
+            "$ref": "#/backend/entities/StaffUser"
+          },
+          "description": "Stores staff member profiles and roles for role-based access control. `staffUserId` corresponds to Firebase Auth UID.",
+          "params": [
+            {
+              "name": "staffUserId",
+              "description": "The unique identifier of the staff user, matching their Firebase Authentication UID."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/guests/{guestId}",
+        "definition": {
+          "entityName": "GuestProfile",
+          "schema": {
+            "$ref": "#/backend/entities/GuestProfile"
+          },
+          "description": "Stores guest profiles. `guestId` corresponds to Firebase Auth UID. Includes denormalized 'id' as `guestId` to simplify authorization rules based on `request.auth.uid`.",
+          "params": [
+            {
+              "name": "guestId",
+              "description": "The unique identifier of the guest, matching their Firebase Authentication UID."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/guests/{guestId}/healthData/current",
+        "definition": {
+          "entityName": "HealthData",
+          "schema": {
+            "$ref": "#/backend/entities/HealthData"
+          },
+          "description": "Stores a guest's summarized health profile. This is a 1:1 relationship with GuestProfile. The document ID 'current' is used for a single, predictable health data record per guest. Includes denormalized `guestProfileId` matching the parent `guestId` for authorization independence.",
+          "params": [
+            {
+              "name": "guestId",
+              "description": "The unique identifier of the guest, matching their Firebase Authentication UID."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/guests/{guestId}/wearableData/{wearableDataId}",
+        "definition": {
+          "entityName": "WearableData",
+          "schema": {
+            "$ref": "#/backend/entities/WearableData"
+          },
+          "description": "Stores time-series health data collected from a guest's wearable device. Each document includes denormalized `guestProfileId` matching the parent `guestId` for authorization independence.",
+          "params": [
+            {
+              "name": "guestId",
+              "description": "The unique identifier of the guest, matching their Firebase Authentication UID."
+            },
+            {
+              "name": "wearableDataId",
+              "description": "The unique identifier for a specific wearable data record."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/orders/{orderId}",
+        "definition": {
+          "entityName": "Order",
+          "schema": {
+            "$ref": "#/backend/entities/Order"
+          },
+          "description": "Stores guest food and beverage orders. Includes `guestProfileId` and `staffUserId` fields, which are crucial for authorization independence, allowing direct checks in security rules for both guest and staff access without `get()` operations.",
+          "params": [
+            {
+              "name": "orderId",
+              "description": "The unique identifier for the order."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/reservations/{reservationId}",
+        "definition": {
+          "entityName": "Reservation",
+          "schema": {
+            "$ref": "#/backend/entities/Reservation"
+          },
+          "description": "Stores guest reservations. Includes `guestProfileId` and `staffUserId` fields, which are crucial for authorization independence, allowing direct checks in security rules for both guest and staff access without `get()` operations.",
+          "params": [
+            {
+              "name": "reservationId",
+              "description": "The unique identifier for the reservation."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/dietaryRestrictions/{dietaryRestrictionId}",
+        "definition": {
+          "entityName": "DietaryRestriction",
+          "schema": {
+            "$ref": "#/backend/entities/DietaryRestriction"
+          },
+          "description": "Master data for dietary restrictions. Publicly readable for menu filtering and guest preferences; staff-manageable.",
+          "params": [
+            {
+              "name": "dietaryRestrictionId",
+              "description": "The unique identifier for a specific dietary restriction."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/allergies/{allergyId}",
+        "definition": {
+          "entityName": "Allergy",
+          "schema": {
+            "$ref": "#/backend/entities/Allergy"
+          },
+          "description": "Master data for food allergies. Publicly readable for menu filtering and guest health data; staff-manageable.",
+          "params": [
+            {
+              "name": "allergyId",
+              "description": "The unique identifier for a specific allergy."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/ingredients/{ingredientId}",
+        "definition": {
+          "entityName": "Ingredient",
+          "schema": {
+            "$ref": "#/backend/entities/Ingredient"
+          },
+          "description": "Master data for culinary ingredients. Publicly readable for menu transparency; staff-manageable (Chef, Kitchen Manager, Admin).",
+          "params": [
+            {
+              "name": "ingredientId",
+              "description": "The unique identifier for a specific ingredient."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/menuItems/{menuItemId}",
+        "definition": {
+          "entityName": "MenuItem",
+          "schema": {
+            "$ref": "#/backend/entities/MenuItem"
+          },
+          "description": "Master data for menu items. Publicly readable for guests and staff; staff-manageable (Chef, Admin).",
+          "params": [
+            {
+              "name": "menuItemId",
+              "description": "The unique identifier for a specific menu item."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/menuItems/{menuItemId}/nutritionInfo/current",
+        "definition": {
+          "entityName": "NutritionInfo",
+          "schema": {
+            "$ref": "#/backend/entities/NutritionInfo"
+          },
+          "description": "Detailed nutritional information for a specific menu item. This is a 1:1 relationship with MenuItem. The document ID 'current' is used for a single, predictable nutrition record per menu item. Includes denormalized `menuItemId` matching the parent `menuItemId` for authorization independence. Publicly readable; staff-manageable.",
+          "params": [
+            {
+              "name": "menuItemId",
+              "description": "The unique identifier for the parent menu item."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/inventory/{inventoryId}",
+        "definition": {
+          "entityName": "Inventory",
+          "schema": {
+            "$ref": "#/backend/entities/Inventory"
+          },
+          "description": "Tracks stock levels for ingredients. Accessible only by authorized staff (Kitchen Manager, Admin) for read and write operations. Includes `ingredientId` for direct reference to the associated ingredient.",
+          "params": [
+            {
+              "name": "inventoryId",
+              "description": "The unique identifier for an inventory record."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The recommended Firestore structure for Gastronomic AI prioritizes security, scalability, and debuggability by strictly adhering to the core design principles and strategy mandates. \n\n**Authorization Independence and Denormalization:**\n\n1.  **Guest-owned Data:** For entities like `GuestProfile`, `HealthData`, and `WearableData`, a hierarchical path structure `/guests/{guestId}/healthData/{healthDataId}` or `/guests/{guestId}/wearableData/{wearableDataId}` is used. Critically, each subcollection document (`healthData`, `wearableData`) will explicitly contain a `guestProfileId` field that mirrors the parent `guestId`. This denormalization ensures that authorization rules can perform direct field checks (`request.auth.uid == resource.data.guestProfileId`) without needing `get()` operations on parent documents, thus preserving atomic operations and simplifying rule debugging.\n\n2.  **Shared/Collaborative Data:** For entities like `Order` and `Reservation`, which involve both a `GuestProfile` and a `StaffUser`, these are placed in root-level collections (`/orders/{orderId}`, `/reservations/{reservationId}`). Each `Order` and `Reservation` document explicitly includes both `guestProfileId` and `staffUserId` fields. This denormalization allows security rules to directly verify access for either the guest owner or the managing staff member, eliminating hierarchical authorization dependencies and enabling secure `list` operations.\n\n3.  **Master Data:** `MenuItem` and `NutritionInfo` are treated similarly. `NutritionInfo` is nested under `MenuItem` (`/menuItems/{menuItemId}/nutritionInfo/{nutritionInfoId}`), and each `NutritionInfo` document will contain its parent `menuItemId` field. This allows both entities to be read by all (guests and staff) but written only by authorized staff, with independent security checks if needed.\n\n**QAPs (Queries as Authorization Primitives):**\n\n1.  **Path-Based Ownership:** For guest-specific data, the path itself (`/guests/{guestId}/...`) acts as a primary authorization primitive. A guest can only query their own path. For example, a guest requesting their `WearableData` can only do so if `guestId == request.auth.uid` is enforced in the rules. This ensures any `list` operation on these subcollections is implicitly scoped to the authenticated user.\n\n2.  **Denormalized Fields for Root Collections:** For `Order` and `Reservation` collections, which are root-level but have guest-specific access, the denormalized `guestProfileId` field is used. Guests can securely `list` their own orders by adding a `where('guestProfileId', '==', request.auth.uid)` clause to their query. Staff can query without this restriction, and security rules will enforce their role-based access for `list` operations.\n\n3.  **Structural Segregation for Public/Internal Data:** Collections like `MenuItem`, `Ingredient`, `DietaryRestriction`, and `Allergy` are designated as 'publicly readable' master data, allowing all users (guests and staff) to perform `list` operations to populate menus or provide dietary information. In contrast, `Inventory` and `StaffUser` data are strictly internal, readable and writable only by authorized staff roles, ensuring that `list` operations on these collections are inherently secure for internal operations. This segregation prevents 'rules as filters' issues by ensuring homogeneous security postures within each collection.\n\n**DBAC (Database-Based Access Control):**\n\n*   The `StaffUser` collection at `/staffUsers/{staffUserId}` centrally stores staff member profiles, with the `staffUserId` mapping directly to the Firebase Auth UID. The `role` field within each `StaffUser` document is the single source of truth for role-based access control. Security rules will use `exists()` and `get()` calls on this collection to verify staff roles before granting elevated permissions, fully avoiding custom claims.\n\nThis structure provides clear separation of concerns, explicit authorization context, and robust support for secure `list` operations, making the Firestore rules simpler, more efficient, and easier to debug."
+  }
+}
