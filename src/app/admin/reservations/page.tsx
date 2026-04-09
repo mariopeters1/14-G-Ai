@@ -140,7 +140,7 @@ export default function ReservationsPage() {
               <Button asChild variant="outline">
                 <Link href="https://www.opentable.com" target="_blank" rel="noopener noreferrer">
                   <Image
-                    src="https://firebasestorage.googleapis.com/v0/b/gastronomic-ai-hvnr3.firebasestorage.app/o/Gastronomic%2Fopentable-logo-ZGYRVF2L.svg?alt=media&token=41e63ffc-e4e0-4600-a12b-d95bc9b087b8"
+                    src="https://firebasestorage.googleapis.com/v0/b/gastronomic-ai-landing.firebasestorage.app/o/Chez%20Lui%20Cafe%2FGastronomic%20Ai%2FImages%2Fopentable-logo-ZGYRVF2L.svg?alt=media&token=a8c5d24b-c029-4cab-97f2-ddec2c49dba8"
                     alt="OpenTable Logo"
                     width={90}
                     height={20}
@@ -150,7 +150,7 @@ export default function ReservationsPage() {
                <Button asChild variant="outline">
                 <Link href="https://www.yelp.com" target="_blank" rel="noopener noreferrer">
                   <Image
-                    src="https://firebasestorage.googleapis.com/v0/b/gastronomic-ai-hvnr3.firebasestorage.app/o/Gastronomic%2Fdownload.png?alt=media&token=d5bbad95-63fa-4906-939b-c7fdb6941bbd"
+                    src="https://firebasestorage.googleapis.com/v0/b/gastronomic-ai-landing.firebasestorage.app/o/Chez%20Lui%20Cafe%2FGastronomic%20Ai%2FImages%2Fdownload.png?alt=media&token=89815a8e-77cb-4d83-aab6-cea509ea8f2d"
                     alt="Yelp Logo"
                     width={80}
                     height={30}

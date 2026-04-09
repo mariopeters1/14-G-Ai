@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chef - Gastronomic AI</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav class="sidebar">
+        <a href="landing.html" class="brand" style="text-decoration: none; color: inherit; cursor: pointer;">Gastronomic AI</a>
+        <a href="dashboard.html" class="nav-link" id="nav-dashboard">Formula 86 Hub</a>
+        <a href="module1.html" class="nav-link active" id="nav-module1">AI Chef Assistant</a>
+        <a href="module2.html" class="nav-link" id="nav-module2">Smart Menu Editor</a>
+    </nav>
+    <main class="main-content">
+        <h1>AI Chef Simulator</h1>
+        <p>Prototyping recipe generation and deep flavor profiling seamlessly in the browser.</p>
+        
+        <div class="card" style="display:flex; flex-direction:column; gap: 1rem;">
+            <div id="chat-output" style="min-height: 200px; background: #0a0a0a; padding: 1rem; border-radius: 4px; overflow-y: auto;"></div>
+            <form id="chat-form" style="display: flex; gap: 0.5rem;">
+                <input type="text" id="chat-input" placeholder="Ask the AI Chef a culinary question..." style="flex:1; padding:0.5rem; background:#222; border:1px solid var(--border); color:#fff; border-radius:4px;" required>
+                <button type="submit" class="btn">Send</button>
+            </form>
+        </div>
+    </main>
+
+    <script src="js/shared.js"></script>
+    <script src="js/module1.js"></script>
+</body>
+</html>

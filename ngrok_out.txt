@@ -1,0 +1,11 @@
+t=2026-04-07T13:13:39-0400 lvl=info msg="no configuration paths supplied"
+t=2026-04-07T13:13:39-0400 lvl=info msg="using configuration at default config path" path=C:\\Users\\djmar\\AppData\\Local/ngrok/ngrok.yml
+t=2026-04-07T13:13:39-0400 lvl=info msg="open config file" path=C:\\Users\\djmar\\AppData\\Local\\ngrok\\ngrok.yml err=nil
+t=2026-04-07T13:13:39-0400 lvl=info msg="FIPS 140 mode" enabled=false
+t=2026-04-07T13:13:39-0400 lvl=info msg="starting web service" obj=web addr=127.0.0.1:4040 allow_hosts=[]
+t=2026-04-07T13:13:39-0400 lvl=eror msg="failed to reconnect session" obj=tunnels.session err="failed to send authentication request: failed to fetch CRL. errors encountered: Get \"http://crl.ngrok-agent.com/ngrok.crl\": read tcp [2603:900b:fb40:300d:f552:938d:7f6d:a203]:61751->[2600:9000:204f:e200:8:ba10:9900:93a1]:80: wsarecv: An existing connection was forcibly closed by the remote host."
+t=2026-04-07T13:13:39-0400 lvl=info msg="update available" obj=updater
+t=2026-04-07T13:13:40-0400 lvl=eror msg="failed to reconnect session" obj=tunnels.session err="failed to send authentication request: failed to fetch CRL. errors encountered: Get \"http://crl.ngrok-agent.com/ngrok.crl\": read tcp [2603:900b:fb40:300d:f552:938d:7f6d:a203]:61753->[2600:9000:204f:e200:8:ba10:9900:93a1]:80: wsarecv: An existing connection was forcibly closed by the remote host."
+t=2026-04-07T13:13:41-0400 lvl=info msg="client session established" obj=tunnels.session
+t=2026-04-07T13:13:41-0400 lvl=info msg="tunnel session started" obj=tunnels.session
+t=2026-04-07T13:13:42-0400 lvl=info msg="started tunnel" obj=tunnels name=command_line addr=http://localhost:3000 url=https://nonironical-shae-unduly.ngrok-free.dev

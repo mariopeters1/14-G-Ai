@@ -1,0 +1,155 @@
+﻿
+   Thank you for trying our [3mearly preview[23m of Next.js support on Firebase Hosting.
+   [31mDuring the preview, support is best-effort and breaking changes can be expected. Proceed with caution.[39m
+
+   [1mDocumentation:[22m https://firebase.google.com/docs/hosting/frameworks/nextjs
+   [1mFile a bug:[22m https://github.com/firebase/firebase-tools/issues/new?template=bug_report.md
+   [1mSubmit a feature request:[22m https://github.com/firebase/firebase-tools/issues/new?template=feature_request.md
+
+   We'd love to learn from you. Express your interest in helping us shape the future of Firebase Hosting: https://goo.gle/41enW5X
+
+ ΓÜá Invalid next.config.js options detected: 
+
+ ΓÜá     Unrecognized key(s) in object: 'serverExternalPackages'
+ ΓÜá See more info here: https://nextjs.org/docs/messages/invalid-next-config
+
+  Γû▓ Next.js 14.2.35
+
+  - Environments: .env.local, .env
+
+
+   Creating an optimized production build ...
+
+ ΓÜá Compiled with warnings
+
+
+./node_modules/@opentelemetry/sdk-node/build/src/TracerProviderWithEnvExporter.js
+Module not found: Can't resolve '@opentelemetry/exporter-jaeger' in 'C:\Users\djmar\OneDrive\Documents\14 G Ai\node_modules\@opentelemetry\sdk-node\build\src'
+
+Import trace for requested module:
+./node_modules/@opentelemetry/sdk-node/build/src/TracerProviderWithEnvExporter.js
+./node_modules/@opentelemetry/sdk-node/build/src/sdk.js
+./node_modules/@opentelemetry/sdk-node/build/src/index.js
+./node_modules/@genkit-ai/core/lib/tracing/node-telemetry-provider.js
+./node_modules/@genkit-ai/core/lib/node.js
+./node_modules/genkit/lib/common.js
+./node_modules/genkit/lib/index.mjs
+./src/ai/flows/ai-chef-flow.ts
+
+./node_modules/require-in-the-middle/index.js
+Critical dependency: require function is used in a way in which dependencies cannot be statically extracted
+
+Import trace for requested module:
+./node_modules/require-in-the-middle/index.js
+./node_modules/@opentelemetry/instrumentation/build/esm/platform/node/instrumentation.js
+./node_modules/@opentelemetry/instrumentation/build/esm/platform/node/index.js
+./node_modules/@opentelemetry/instrumentation/build/esm/platform/index.js
+./node_modules/@opentelemetry/instrumentation/build/esm/index.js
+./node_modules/@opentelemetry/sdk-node/build/src/sdk.js
+./node_modules/@opentelemetry/sdk-node/build/src/index.js
+./node_modules/@genkit-ai/core/lib/tracing/node-telemetry-provider.js
+./node_modules/@genkit-ai/core/lib/node.js
+./node_modules/genkit/lib/common.js
+./node_modules/genkit/lib/index.mjs
+./src/ai/flows/ai-chef-flow.ts
+
+
+ Γ£ô Compiled successfully
+
+   Skipping validation of types
+
+   Skipping linting
+
+   Collecting page data ...
+
+   Generating static pages (0/20) ...
+
+   Generating static pages (5/20) 
+
+   Generating static pages (10/20) 
+
+   Generating static pages (15/20) 
+
+ Γ£ô Generating static pages (20/20)
+
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+
+
+Route (app)                              Size     First Load JS
+Γöî Γùï /                                    19.3 kB         328 kB
+Γö£ Γùï /_not-found                          880 B          88.4 kB
+Γö£ Γùï /admin                               3.72 kB         272 kB
+Γö£ Γùï /admin/ai-chef                       4.57 kB         264 kB
+Γö£ Γùï /admin/feedback                      6.06 kB         134 kB
+Γö£ Γùï /admin/formula86                     4.05 kB         127 kB
+Γö£ Γùï /admin/inventory                     11.7 kB         135 kB
+Γö£ Γùï /admin/menu                          7.55 kB         167 kB
+Γö£ Γùï /admin/reports                       16.4 kB         240 kB
+Γö£ Γùï /admin/reservations                  24.3 kB         187 kB
+Γö£ Γùï /admin/sales                         7.6 kB          229 kB
+Γö£ Γùï /admin/smart-menu                    4.9 kB          127 kB
+Γö£ Γùï /admin/staff                         8.24 kB         159 kB
+Γö£ Γùï /api/hello                           0 B                0 B
+Γö£ Γùï /careers                             9.06 kB         331 kB
+Γö£ Γùï /login                               5.64 kB         271 kB
+Γöö Γùï /roadmap                             9.76 kB         143 kB
++ First Load JS shared by all            87.6 kB
+  Γö£ chunks/2117-94f252f045f07e76.js      31.9 kB
+  Γö£ chunks/fd9d1056-dda8f8960881b7f6.js  53.6 kB
+  Γöö other shared chunks (total)          2.01 kB
+
+
+
+Γùï  (Static)  prerendered as static content
+
+
+Building a Cloud Function to run this application. This is needed due to:
+ ΓÇó route with server action /careers
+ ΓÇó route with server action /admin/ai-chef
+ ΓÇó route with server action /admin/sales
+ ΓÇó route with server action /admin/feedback
+ ΓÇó route with server action /admin/inventory
+ ΓÇó and 3 other reasons, use --debug to see more
+
+node.exe : Warning: Global esbuild version 
+(0.27.7) does not match the required version 
+(^0.19.2).
+At C:\Users\djmar\AppData\Roaming\npm\firebase.p
+s1:24 char:5
++     & "node$exe"  "$basedir/node_modules/fireb
+ase-tools/lib/bin/fireb ...
++     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: 
+(Warn    ing: Global...sion (^0.19.2).:String) 
+[], Rem    oteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+npm warn EBADENGINE Unsupported engine {
+npm warn EBADENGINE   package: 
+'firebase-frameworks@0.11.8',
+npm warn EBADENGINE   required: { node: 
+'^16.0.0 || ^18.0.0 || ^20.0.0 || ^22.0.0' },
+npm warn EBADENGINE   current: { node: 
+'v24.14.1', npm: '11.11.0' }
+npm warn EBADENGINE }
+
+up to date in 8s
+
+86 packages are looking for funding
+  run `npm fund` for details
+
+[1m[37m===[39m Deploying to 'gastronomic14g'...[22m
+
+[36m[1mi [22m[39m deploying [1mfunctions, firestore, hosting[22m
+[36m[1mi  functions:[22m[39m preparing codebase [1mfirebase-frameworks-gastronomic14g[22m for deployment
+[36m[1mi  functions:[22m[39m ensuring required API [1mcloudfunctions.googleapis.com[22m is enabled...
+[36m[1mi  functions:[22m[39m ensuring required API [1mcloudbuild.googleapis.com[22m is enabled...
+[36m[1mi  artifactregistry:[22m[39m ensuring required API [1martifactregistry.googleapis.com[22m is enabled...
+[33m[1m!  artifactregistry:[22m[39m missing required API [1martifactregistry.googleapis.com[22m. Enabling now...
+[33m[1m!  functions:[22m[39m missing required API [1mcloudbuild.googleapis.com[22m. Enabling now...
+
+[1m[31mError:[39m[22m Request to https://serviceusage.googleapis.com/v1/projects/gastronomic14g/services/artifactregistry.googleapis.com:enable had HTTP Error: 400, Billing account for project '755614320114' is not open. Billing must be enabled for activation of service(s) 'artifactregistry.googleapis.com' to proceed.
+Help Token: AVnrbfkDknuXN_IjU_-PSx0UkHbKIqayxh2hOBRJbUsStS7NEleTuBq0keCgN6sVvzuaRTulfFxLeo9c-jI0uof89io3k86qbHJbVgZ12nHv5MH-

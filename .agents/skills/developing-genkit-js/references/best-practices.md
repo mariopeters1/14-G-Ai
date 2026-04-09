@@ -1,4 +1,5 @@
-# Genkit Best Practices
+# Genkit Best Practices`"comment": "Testing build trigger",`
+`"comment": "Testing build trigger",` 
 
 ## Project Structure
 -   **Organized Layout**: Keep flows and tools in separate directories (e.g., `src/flows`, `src/tools`) to maintain a clean codebase.

@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formula 86 - Operations Suite</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --bg-dark: #0a0a0b;
+            --bg-card: #141416;
+            --bg-surface: #1e1e21;
+            --text-primary: #ededed;
+            --text-muted: #a0a0a6;
+            --accent: #d4a373;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --border: #222;
+        }
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            display: flex;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        
+        /* Sidebar styling */
+        .sidebar {
+            width: 270px;
+            background-color: var(--bg-card);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            z-index: 20;
+        }
+        .brand {
+            padding: 1.5rem;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--accent);
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 0.5rem;
+        }
+        .nav-list { list-style: none; padding: 0 1rem; margin: 0; flex-grow: 1; overflow-y: auto;}
+        .nav-item { margin-bottom: 0.25rem; }
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .nav-link i { width: 18px; height: 18px; opacity: 0.7; transition: all 0.2s ease; }
+        .nav-link:hover { background-color: rgba(255, 255, 255, 0.03); color: var(--text-primary); }
+        .nav-link:hover i { opacity: 1; color: var(--text-primary); }
+        .nav-link.active {
+            background-color: rgba(212, 163, 115, 0.1);
+            color: var(--accent);
+            position: relative;
+        }
+        .nav-link.active i { opacity: 1; color: var(--accent); }
+        .nav-link.active::before {
+            content: ''; position: absolute; left: -1rem; top: 50%; transform: translateY(-50%);
+            height: 60%; width: 4px; background: var(--accent); border-radius: 0 4px 4px 0;
+        }
+        .sidebar-footer { padding: 1.5rem; border-top: 1px solid var(--border); }
+        
+        /* Main Layout */
+        .main-wrapper { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative;}
+        
+        /* Top Navigation */
+        .topbar {
+            height: 80px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 3rem;
+            background: rgba(20, 20, 22, 0.8);
+            backdrop-filter: blur(12px);
+            z-index: 10;
+        }
+        .topbar-left h1 { margin: 0; font-size: 1.5rem; font-weight: 600; }
+        .topbar-right { display: flex; align-items: center; gap: 1.25rem; }
+        .venue-select {
+            background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--text-primary);
+            padding: 0.6rem 1.25rem; border-radius: 8px; font-size: 0.9rem; outline: none; cursor: pointer; font-weight: 500;
+        }
+        .btn-icon {
+            background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--text-muted);
+            display: flex; align-items: center; justify-content: center; width: 42px; height: 42px;
+            border-radius: 50%; cursor: pointer; transition: all 0.2s;
+        }
+        .btn-icon:hover { color: var(--text-primary); background: rgba(255,255,255,0.1); }
+        .user-profile {
+            display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.05);
+            padding: 0.4rem 1.25rem 0.4rem 0.4rem; border-radius: 30px; border: 1px solid var(--border); cursor: pointer; transition: background 0.2s;
+        }
+        .user-profile:hover { background: rgba(255,255,255,0.1); }
+        .avatar {
+            width: 32px; height: 32px; background: var(--accent); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; color: #000; font-weight: 700; font-size: 0.85rem;
+        }
+        .username { font-size: 0.95rem; font-weight: 500; }
+
+        /* SPA Pages container */
+        .pages-container { flex: 1; overflow-y: auto; overflow-x: hidden; position: relative;}
+        
+        .page-content {
+            display: none; padding: 3rem; max-width: 1400px; margin: 0 auto; width: 100%; box-sizing: border-box;
+        }
+        .page-content.active { display: block; animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .section-title { font-size: 1.3rem; font-weight: 600; margin-bottom: 1.5rem; color: #fff; display: flex; align-items: center; gap: 10px; }
+        
+        /* Dashboard Page Styles */
+        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 4rem; }
+        .kpi-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; position: relative; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+        .kpi-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--accent); }
+        .kpi-card.success::before { background: var(--success); }
+        .kpi-card.danger::before { background: var(--danger); }
+        .kpi-card.highlight { border-color: rgba(212, 163, 115, 0.4); background: linear-gradient(135deg, var(--bg-card) 0%, rgba(212,163,115,0.05) 100%); }
+        .kpi-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .kpi-title { color: var(--text-muted); font-size: 0.95rem; font-weight: 500; margin: 0; }
+        .kpi-icon { color: var(--accent); opacity: 0.8; width: 20px; height: 20px; }
+        .kpi-card.success .kpi-icon { color: var(--success); opacity: 1;}
+        .kpi-card.danger .kpi-icon { color: var(--danger); opacity: 1;}
+        .kpi-value { font-size: 2.75rem; font-weight: 700; margin: 0 0 0.5rem 0; color: #fff; letter-spacing: -1px; }
+        .kpi-subtext { font-size: 0.85rem; color: rgba(255,255,255,0.4); margin: 0; font-weight: 400; }
+        .text-success { color: var(--success) !important; }
+        .text-danger { color: var(--danger) !important; }
+
+        /* Shared Components */
+        .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+        .card-header { padding: 1.5rem; border-bottom: 1px solid var(--border); }
+        .card-title { font-size: 1.25rem; font-weight: 600; margin: 0 0 0.5rem 0; }
+        .card-description { color: var(--text-muted); font-size: 0.9rem; margin: 0; }
+        .card-content { padding: 1.5rem; }
+        
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table th, .data-table td { padding: 1rem 1.5rem; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.95rem;}
+        .data-table th { font-weight: 500; color: var(--text-muted); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.5px;}
+        .badge { padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.8rem; font-weight: 500; display: inline-block; background: var(--bg-surface); border: 1px solid var(--border); }
+        .badge.success { background: rgba(16, 185, 129, 0.1); color: var(--success); border-color: rgba(16, 185, 129, 0.2); }
+        .badge.warning { background: rgba(245, 158, 11, 0.1); color: var(--warning); border-color: rgba(245, 158, 11, 0.2); }
+        
+        .btn-primary { background: var(--accent); color: #000; font-weight: 600; padding: 0.75rem 1.5rem; border: none; border-radius: 8px; cursor: pointer; transition: opacity 0.2s; display: flex; align-items: center; gap: 8px; font-size: 0.9rem;}
+        .btn-primary:hover { opacity: 0.9; }
+
+        .btn-outline { background: transparent; color: var(--text-primary); border: 1px solid var(--border); padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; height: 100%;}
+        .btn-outline:hover { background: rgba(255,255,255,0.05); }
+        .btn-outline img { height: 20px; object-fit: contain; }
+
+        .btn-action { background: transparent; border: none; color: var(--text-muted); cursor: pointer; padding: 0.4rem; border-radius: 4px; transition: all 0.2s; }
+        .btn-action:hover { background: rgba(255,255,255,0.05); color: var(--accent); }
+
+        /* Inventory Layout */
+        .inventory-grid { display: grid; grid-template-columns: 2fr 3fr; gap: 2rem; align-items: start;}
+        @media (max-width: 1024px) { .inventory-grid { grid-template-columns: 1fr; } }
+        .input-group { margin-bottom: 1rem; }
+        .input-group label { display: block; margin-bottom: 0.5rem; font-size: 0.9rem; font-weight: 500; color: var(--text-muted); }
+        .input-group textarea, .input-group input { width: 100%; box-sizing: border-box; padding: 0.75rem; background: var(--bg-surface); border: 1px solid var(--border); color: #fff; border-radius: 8px; font-family: inherit; font-size: 0.9rem; outline: none; transition: border-color 0.2s;}
+        .input-group textarea:focus { border-color: var(--accent); }
+        .ai-resultsbox { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 400px; text-align: center; background: rgba(212,163,115,0.02); border: 1px dashed var(--border); border-radius: 12px; padding: 2rem; }
+    </style>
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <nav class="sidebar">
+        <a href="../landing.html" class="brand">
+            <i data-lucide="chef-hat"></i>
+            Gastronomic AI
+        </a>
+        <ul class="nav-list" style="margin-top: 1rem;">
+            <li class="nav-item">
+                <a class="nav-link" id="nav-contact" onclick="switchPage('contact')">
+                    <i data-lucide="mail"></i> Contact Messages
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="nav-reservations" onclick="switchPage('reservations')">
+                    <i data-lucide="users"></i> Reservations
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="nav-pos" onclick="switchPage('pos')">
+                    <i data-lucide="receipt"></i> Sales & POS
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="nav-reports" onclick="switchPage('reports')">
+                    <i data-lucide="bar-chart-4"></i> Reports & Analytics
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="nav-staff" onclick="switchPage('staff')">
+                    <i data-lucide="user-cog"></i> Staff Scheduler
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="nav-inventory" onclick="switchPage('inventory')">
+                    <i data-lucide="archive"></i> Inventory AI
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="../module2.html" class="nav-link" id="nav-menu">
+                    <i data-lucide="clipboard-list"></i> Menu Editor
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="nav-feedback" onclick="switchPage('feedback')">
+                    <i data-lucide="message-square"></i> Customer Feedback
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="../module1.html" class="nav-link" id="nav-aichef">
+                    <i data-lucide="bot"></i> AI Chef Chat
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" id="nav-formula86" onclick="switchPage('formula86')">
+                    <i data-lucide="utensils-crossed"></i> Formula-86 AI
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="nav-smartmenu" onclick="switchPage('smartmenu')">
+                    <i data-lucide="sparkles"></i> Smart Menu AI
+                </a>
+            </li>
+        </ul>
+        <div class="sidebar-footer">
+            <a href="#" class="nav-link" style="color: var(--danger);">
+                <i data-lucide="log-out"></i> Sign Out
+            </a>
+        </div>
+    </nav>
+
+    <!-- MAIN PLATFORM -->
+    <div class="main-wrapper">
+        <header class="topbar">
+            <div class="topbar-left">
+                <h1 id="topbar-title">Overview Dashboard</h1>
+            </div>
+            <div class="topbar-right">
+                <select class="venue-select">
+                    <option>Select a venue</option>
+                    <option selected>Chez Lui Cafe (Main)</option>
+                    <option>Chez Lui (Downtown)</option>
+                </select>
+                <button class="btn-icon" title="Use Voice Command">
+                    <i data-lucide="mic"></i>
+                </button>
+                <div class="user-profile">
+                    <div class="avatar">U</div>
+                    <span class="username">@user</span>
+                    <i data-lucide="chevron-down" style="width: 16px; height: 16px; color: var(--text-muted); margin-left: 4px;"></i>
+                </div>
+            </div>
+        </header>
+
+        <div class="pages-container">
+
+            <!-- PAGE: DASHBOARD (Formula-86 AI) -->
+            <div id="page-formula86" class="page-content active">
+                <h2 class="section-title"><i data-lucide="activity" style="color: var(--accent);"></i> Today's Operating Metrics</h2>
+                
+                <div class="kpi-grid">
+                    <div class="kpi-card success">
+                        <div class="kpi-header"><h3 class="kpi-title">Total Revenue (Today)</h3><i data-lucide="trending-up" class="kpi-icon"></i></div>
+                        <p class="kpi-value text-success">$<span class="animate-number" data-value="4254.82">0.00</span></p>
+                        <p class="kpi-subtext">From POS Integration</p>
+                    </div>
+                    <div class="kpi-card danger">
+                        <div class="kpi-header"><h3 class="kpi-title">Labor Cost (Today)</h3><i data-lucide="users-2" class="kpi-icon"></i></div>
+                        <p class="kpi-value text-danger">$<span class="animate-number" data-value="1256.35">0.00</span></p>
+                        <p class="kpi-subtext">From Staff Scheduling</p>
+                    </div>
+                    <div class="kpi-card danger">
+                        <div class="kpi-header"><h3 class="kpi-title">Food Cost (Today)</h3><i data-lucide="apple" class="kpi-icon"></i></div>
+                        <p class="kpi-value text-danger">$<span class="animate-number" data-value="1480.29">0.00</span></p>
+                        <p class="kpi-subtext">From Inventory & POS</p>
+                    </div>
+                    <div class="kpi-card danger">
+                        <div class="kpi-header"><h3 class="kpi-title">Waste Cost (Today)</h3><i data-lucide="trash-2" class="kpi-icon"></i></div>
+                        <p class="kpi-value text-danger">$<span class="animate-number" data-value="194.21">0.00</span></p>
+                        <p class="kpi-subtext">From Inventory Logs</p>
+                    </div>
+                    <div class="kpi-card highlight">
+                        <div class="kpi-header"><h3 class="kpi-title">Calculated EBITDA (Today)</h3><i data-lucide="calculator" class="kpi-icon"></i></div>
+                        <p class="kpi-value" style="color: var(--accent);">$<span class="animate-number" data-value="1323.97">0.00</span></p>
+                        <p class="kpi-subtext">Revenue - (Labor + Food + Waste)</p>
+                    </div>
+                    <div class="kpi-card highlight">
+                        <div class="kpi-header"><h3 class="kpi-title">EBITDA Margin</h3><i data-lucide="percent" class="kpi-icon"></i></div>
+                        <p class="kpi-value" style="color: var(--accent);"><span class="animate-number" data-value="31.1" data-is-percent="true">0.0</span>%</p>
+                        <p class="kpi-subtext">(EBITDA / Revenue) x 100</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PAGE: RESERVATIONS -->
+            <div id="page-reservations" class="page-content">
+                <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem;">
+                    <div>
+                        <h2 class="section-title" style="margin-bottom: 0.5rem; font-size: 1.8rem;"><i data-lucide="calendar-check" style="color: var(--accent); width: 28px; height: 28px;"></i> Reservations Management</h2>
+                        <p style="color: var(--text-muted); margin: 0; font-size: 1rem;">A list of all bookings for today and beyond.</p>
+                    </div>
+                    <div style="display: flex; gap: 1rem; align-items: stretch;">
+                        <!-- OpenTable Logo Button -->
+                        <button class="btn-outline">
+                            <img src="https://firebasestorage.googleapis.com/v0/b/gastronomic-ai-landing.firebasestorage.app/o/Chez%20Lui%20Cafe%2FGastronomic%20Ai%2FImages%2Fopentable-logo-ZGYRVF2L.svg?alt=media&token=a8c5d24b-c029-4cab-97f2-ddec2c49dba8" alt="OpenTable">
+                        </button>
+                        <!-- Yelp Logo Button -->
+                        <button class="btn-outline">
+                            <img src="https://firebasestorage.googleapis.com/v0/b/gastronomic-ai-landing.firebasestorage.app/o/Chez%20Lui%20Cafe%2FGastronomic%20Ai%2FImages%2Fdownload.png?alt=media&token=89815a8e-77cb-4d83-aab6-cea509ea8f2d" alt="Yelp">
+                        </button>
+                        <button class="btn-primary"><i data-lucide="user-plus" class="w-4 h-4"></i> Add Reservation</button>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Guest</th>
+                                <th>Time</th>
+                                <th>Status</th>
+                                <th>Table</th>
+                                <th>Notes</th>
+                                <th style="text-align: right;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div style="font-weight: 500;">Diana Prince</div>
+                                    <div style="font-size: 0.8rem; color: var(--text-muted);">2 people</div>
+                                </td>
+                                <td>5:30 PM</td>
+                                <td><span class="badge warning">Seated</span></td>
+                                <td>12</td>
+                                <td></td>
+                                <td style="text-align: right;">
+                                    <button class="btn-action"><i data-lucide="edit" style="width: 16px; height: 16px;"></i></button>
+                                    <button class="btn-action" style="color: var(--danger);"><i data-lucide="trash-2" style="width: 16px; height: 16px;"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div style="font-weight: 500;">Bob Williams</div>
+                                    <div style="font-size: 0.8rem; color: var(--text-muted);">2 people</div>
+                                </td>
+                                <td>6:30 PM</td>
+                                <td><span class="badge success">Confirmed</span></td>
+                                <td>1</td>
+                                <td></td>
+                                <td style="text-align: right;">
+                                    <button class="btn-action"><i data-lucide="edit" style="width: 16px; height: 16px;"></i></button>
+                                    <button class="btn-action" style="color: var(--danger);"><i data-lucide="trash-2" style="width: 16px; height: 16px;"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div style="font-weight: 500;">Alice Johnson</div>
+                                    <div style="font-size: 0.8rem; color: var(--text-muted);">4 people</div>
+                                </td>
+                                <td>7:00 PM</td>
+                                <td><span class="badge success">Confirmed</span></td>
+                                <td>3</td>
+                                <td>Window seat requested</td>
+                                <td style="text-align: right;">
+                                    <button class="btn-action"><i data-lucide="edit" style="width: 16px; height: 16px;"></i></button>
+                                    <button class="btn-action" style="color: var(--danger);"><i data-lucide="trash-2" style="width: 16px; height: 16px;"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div style="font-weight: 500;">Charlie Brown</div>
+                                    <div style="font-size: 0.8rem; color: var(--text-muted);">5 people</div>
+                                </td>
+                                <td>8:00 PM</td>
+                                <td><span class="badge success">Confirmed</span></td>
+                                <td>N/A</td>
+                                <td></td>
+                                <td style="text-align: right;">
+                                    <button class="btn-action"><i data-lucide="edit" style="width: 16px; height: 16px;"></i></button>
+                                    <button class="btn-action" style="color: var(--danger);"><i data-lucide="trash-2" style="width: 16px; height: 16px;"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div style="font-weight: 500;">Ethan Hunt</div>
+                                    <div style="font-size: 0.8rem; color: var(--text-muted);">3 people</div>
+                                </td>
+                                <td>8:30 PM</td>
+                                <td><span class="badge success">Confirmed</span></td>
+                                <td>N/A</td>
+                                <td>Birthday celebration</td>
+                                <td style="text-align: right;">
+                                    <button class="btn-action"><i data-lucide="edit" style="width: 16px; height: 16px;"></i></button>
+                                    <button class="btn-action" style="color: var(--danger);"><i data-lucide="trash-2" style="width: 16px; height: 16px;"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- PAGE: INVENTORY -->
+            <div id="page-inventory" class="page-content">
+                 <div style="margin-bottom: 2rem;">
+                    <h2 class="section-title" style="margin-bottom: 0.5rem;"><i data-lucide="boxes" style="color: var(--accent);"></i> AI Inventory Analysis</h2>
+                    <p style="color: var(--text-muted); margin: 0;">Let AI cross-reference your stock levels with upcoming events to generate smart recommendations.</p>
+                </div>
+                
+                <div class="inventory-grid">
+                    <!-- Form Side -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Event & Sales Context</h3>
+                        </div>
+                        <div class="card-content">
+                            <div class="input-group">
+                                <label>Sales Forecast</label>
+                                <textarea rows="2">Expecting 15% growth this week.</textarea>
+                            </div>
+                            <div class="input-group">
+                                <label>Upcoming Events</label>
+                                <textarea rows="2">Corporate party for 50 on Friday.</textarea>
+                            </div>
+                            <div class="input-group">
+                                <label>Current Key Deficits (Dry Storage)</label>
+                                <textarea rows="2">Flour: 50 lbs, Sugar: 20 lbs, Pasta: 10 lbs</textarea>
+                            </div>
+                            <button class="btn-primary" style="justify-content: center; margin-top: 1rem;" onclick="simulateAI()">
+                                <i data-lucide="sparkles"></i> Get AI-Powered Suggestions
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- AI Results Side -->
+                    <div class="ai-resultsbox" id="inventory-ai-box">
+                        <i data-lucide="brain-circuit" style="width: 48px; height: 48px; color: var(--accent); margin-bottom: 1rem;"></i>
+                        <h3 style="font-size: 1.5rem; margin: 0 0 0.5rem 0;">Recommendations Will Appear Here</h3>
+                        <p style="color: var(--text-muted); max-width: 400px; margin: 0 auto; line-height: 1.5;">Fill in your inventory data and click the button to let Gastronomic AI generate your next purchasing order.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- OTHER STUB PAGES -->
+            <div id="page-contact" class="page-content">
+                <div class="ai-resultsbox">
+                    <i data-lucide="mail" style="width: 48px; height: 48px; color: var(--accent); margin-bottom: 1rem;"></i>
+                    <h2>Contact Messages</h2>
+                    <p style="color: var(--text-muted);">View all incoming inquiries from the landing page.</p>
+                </div>
+            </div>
+            <div id="page-staff" class="page-content">
+                <div class="ai-resultsbox">
+                    <i data-lucide="calendar-clock" style="width: 48px; height: 48px; color: var(--accent); margin-bottom: 1rem;"></i>
+                    <h2>Staff & Scheduling</h2>
+                    <p style="color: var(--text-muted);">AI-optimized rostering module is loading...</p>
+                </div>
+            </div>
+            <div id="page-pos" class="page-content">
+                <div class="ai-resultsbox">
+                    <i data-lucide="credit-card" style="width: 48px; height: 48px; color: var(--accent); margin-bottom: 1rem;"></i>
+                    <h2>Sales & POS Integration</h2>
+                    <p style="color: var(--text-muted);">Integrating with Toast & Square APIs...</p>
+                </div>
+            </div>
+            <div id="page-feedback" class="page-content">
+                <div class="ai-resultsbox">
+                    <i data-lucide="message-square" style="width: 48px; height: 48px; color: var(--accent); margin-bottom: 1rem;"></i>
+                    <h2>Customer Feedback AI</h2>
+                    <p style="color: var(--text-muted);">Aggregating sentiment analysis from Yelp and Google...</p>
+                </div>
+            </div>
+            <div id="page-reports" class="page-content">
+                <div class="ai-resultsbox">
+                    <i data-lucide="bar-chart-3" style="width: 48px; height: 48px; color: var(--accent); margin-bottom: 1rem;"></i>
+                    <h2>Reports & Analytics</h2>
+                    <p style="color: var(--text-muted);">Generating end-of-week financial summaries...</p>
+                </div>
+            </div>
+            <div id="page-smartmenu" class="page-content">
+                <div class="ai-resultsbox">
+                    <i data-lucide="sparkles" style="width: 48px; height: 48px; color: var(--accent); margin-bottom: 1rem;"></i>
+                    <h2>Smart Menu AI</h2>
+                    <p style="color: var(--text-muted);">AI engine to optimize menu items for maximum ROI.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        const pageTitles = {
+            'formula86': 'Overview Dashboard',
+            'contact': 'Contact Messages',
+            'reservations': 'Reservations Management',
+            'inventory': 'AI Inventory Analysis',
+            'staff': 'Staff Scheduling',
+            'pos': 'Sales & POS',
+            'feedback': 'Customer Feedback',
+            'reports': 'Reports & Analytics',
+            'smartmenu': 'Smart Menu AI'
+        };
+
+        // Tab Switching Logic for SPA
+        function switchPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page-content').forEach(el => el.classList.remove('active'));
+            // Deselect all nav links
+            document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
+            
+            // Show target page
+            document.getElementById('page-' + pageId).classList.add('active');
+            // Highlight target nav
+            document.getElementById('nav-' + pageId).classList.add('active');
+            // Update topbar title
+            if(pageTitles[pageId]) {
+                document.getElementById('topbar-title').innerText = pageTitles[pageId];
+            }
+
+            if(pageId === 'formula86') {
+                animateNumbers();
+            }
+        }
+
+        function simulateAI() {
+            const box = document.getElementById('inventory-ai-box');
+            box.innerHTML = `<i data-lucide="loader-2" class="lucide-animate-spin" style="width: 40px; height: 40px; color: var(--accent); margin-bottom: 1rem; animation: spin 2s linear infinite;"></i>
+                             <h3 style="font-size: 1.25rem;">AI is analyzing your inventory...</h3>`;
+            lucide.createIcons();
+            
+            setTimeout(() => {
+                box.style.textAlign = 'left';
+                box.style.display = 'block';
+                box.innerHTML = `
+                    <h3 style="margin-top: 0; color: #fff;">Purchasing Recommendations</h3>
+                    <div style="background: var(--bg-card); border: 1px solid var(--border); padding: 1.5rem; border-radius: 8px; margin-bottom: 1rem;">
+                        <h4 style="margin: 0 0 0.5rem 0; color: var(--accent); display: flex; align-items: center; gap: 8px;"><i data-lucide="shopping-cart" style="width: 16px; height: 16px;"></i> Order 50 lbs Flour</h4>
+                        <p style="margin: 0; color: var(--text-muted); font-size: 0.9rem;">With the corporate party of 50 on Friday, and a 15% sales bump expected, your current stock of 50 lbs will not cover pastry prep.</p>
+                    </div>
+                     <div style="background: var(--bg-card); border: 1px solid var(--border); padding: 1.5rem; border-radius: 8px;">
+                        <h4 style="margin: 0 0 0.5rem 0; color: var(--accent); display: flex; align-items: center; gap: 8px;"><i data-lucide="shopping-cart" style="width: 16px; height: 16px;"></i> Order 3 Extra Bottles Vodka</h4>
+                        <p style="margin: 0; color: var(--text-muted); font-size: 0.9rem;">Bar inventory is low for weekend service. Suggesting immediate restock.</p>
+                    </div>
+                `;
+                lucide.createIcons();
+            }, 1500);
+        }
+
+        // Animate statistic numbers
+        function animateNumbers() {
+            const counters = document.querySelectorAll('.animate-number');
+            counters.forEach(counter => {
+                const target = parseFloat(counter.getAttribute('data-value'));
+                const isPercent = counter.hasAttribute('data-is-percent');
+                const duration = 1200; 
+                let startTimestamp = null;
+                const step = (timestamp) => {
+                    if (!startTimestamp) startTimestamp = timestamp;
+                    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                    const easeOut = 1 - Math.pow(1 - progress, 4);
+                    const currentValue = easeOut * target;
+                    if (isPercent) {
+                        counter.innerText = currentValue.toFixed(1);
+                    } else {
+                        counter.innerText = currentValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    }
+                    if (progress < 1) {
+                        window.requestAnimationFrame(step);
+                    }
+                };
+                window.requestAnimationFrame(step);
+            });
+        }
+        
+        // Initial setup
+        const style = document.createElement('style');
+        style.innerHTML = `@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`;
+        document.head.appendChild(style);
+        animateNumbers();
+    </script>
+</body>
+</html>

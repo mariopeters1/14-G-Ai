@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gastronomic AI | Michelin-Star Tech</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        background: '#0a0a0b',
+                        foreground: '#ededed',
+                        primary: '#d4a373',
+                        muted: '#18181b',
+                        'muted-foreground': '#a1a1aa',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        headline: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { background-color: #0a0a0b; color: #ededed; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0a0a0b; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        .fade-up { opacity: 0; transform: translateY(30px); transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+        .fade-up.visible { opacity: 1; transform: translateY(0); }
+        svg { display: inline-block; }
+        
+        @keyframes panVertical {
+            0% { transform: scale(1.4) translateY(18%); }
+            50% { transform: scale(1.4) translateY(-18%); }
+            100% { transform: scale(1.4) translateY(18%); }
+        }
+        .animate-pan-vertical {
+            animation: panVertical 12s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col font-sans overflow-x-hidden selection:bg-primary/30 selection:text-white">
+
+    <!-- HEADER -->
+    <header class="fixed top-0 left-0 right-0 z-50 border-b border-white/5 bg-background/80 backdrop-blur-md">
+        <div class="container mx-auto px-6 h-20 flex items-center justify-between">
+            <a href="#" class="flex items-center gap-2 group">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" class="w-8 h-8 drop-shadow-md transition-transform duration-500 group-hover:scale-105">
+                  <defs>
+                    <linearGradient id="gold-gradient-logo-1" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#FFF1B8" />
+                      <stop offset="40%" stop-color="#FFC01E" />
+                      <stop offset="100%" stop-color="#CC8B00" />
+                    </linearGradient>
+                    <filter id="glow-logo-1">
+                      <feGaussianBlur stdDeviation="1.5" result="coloredBlur"/>
+                      <feMerge>
+                          <feMergeNode in="coloredBlur"/>
+                          <feMergeNode in="SourceGraphic"/>
+                      </feMerge>
+                    </filter>
+                  </defs>
+                  <g filter="url(#glow-logo-1)">
+                    <circle cx="50" cy="25" r="20" fill="url(#gold-gradient-logo-1)" />
+                    <circle cx="30" cy="35" r="18" fill="url(#gold-gradient-logo-1)" />
+                    <circle cx="70" cy="35" r="18" fill="url(#gold-gradient-logo-1)" />
+                    <circle cx="18" cy="55" r="16" fill="url(#gold-gradient-logo-1)" />
+                    <circle cx="82" cy="55" r="16" fill="url(#gold-gradient-logo-1)" />
+                    <path d="M 14 55 L 86 55 L 75 80 L 25 80 Z" fill="url(#gold-gradient-logo-1)" />
+                    <circle cx="50" cy="45" r="25" fill="url(#gold-gradient-logo-1)" />
+                    <path d="M 33 80 Q 30 65 31 55" stroke="#141922" stroke-width="2.5" stroke-linecap="round" fill="none" />
+                    <path d="M 41 80 Q 40 60 43 45" stroke="#141922" stroke-width="2.5" stroke-linecap="round" fill="none" />
+                    <path d="M 50 80 Q 50 55 50 40" stroke="#141922" stroke-width="2.5" stroke-linecap="round" fill="none" />
+                    <path d="M 59 80 Q 60 60 57 45" stroke="#141922" stroke-width="2.5" stroke-linecap="round" fill="none" />
+                    <path d="M 67 80 Q 70 65 69 55" stroke="#141922" stroke-width="2.5" stroke-linecap="round" fill="none" />
+                    <path d="M 28 80 L 72 80 C 74 80 75 81 75 83 L 75 92 C 75 94 74 95 72 95 L 28 95 C 26 95 25 94 25 92 L 25 83 C 25 81 26 80 28 80 Z" fill="url(#gold-gradient-logo-1)" />
+                    <line x1="28" y1="87.5" x2="72" y2="87.5" stroke="#141922" stroke-width="1.5" stroke-linecap="round" />
+                  </g>
+                </svg>
+                <div class="flex flex-col">
+                    <span class="font-headline font-bold text-xl tracking-tight text-white group-hover:text-primary transition-colors leading-none">
+                        Gastronomic<span class="text-primary italic">AI</span>
+                    </span>
+                    <span class="text-[9px] uppercase tracking-[0.2em] font-medium text-primary mt-1.5 opacity-90">Floridian Modern Cuisine</span>
+                </div>
+            </a>
+            <div class="hidden md:flex items-center gap-8 text-sm font-medium">
+                <a href="#dilemma" class="text-muted-foreground hover:text-primary transition-colors">The Dilemma</a>
+                <a href="#workflow" class="text-muted-foreground hover:text-primary transition-colors">Workflow</a>
+                <a href="#partner" class="text-muted-foreground hover:text-primary transition-colors">Partnerships</a>
+            </div>
+            <div class="flex items-center gap-4">
+                <a href="dashboard.html" class="inline-flex items-center justify-center px-5 py-2 text-sm font-medium rounded-full bg-primary text-black hover:opacity-90 transition-opacity drop-shadow-[0_0_15px_rgba(212,163,115,0.4)]">
+                    Access Dashboard
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- HERO SECTION -->
+    <section class="relative h-[90vh] min-h-[700px] flex items-center justify-center text-center overflow-hidden">
+        <video autoPlay loop muted playsInline class="absolute inset-0 w-full h-full object-cover z-0 fade-in">
+            <source src="https://firebasestorage.googleapis.com/v0/b/gastronomic-ai-landing.firebasestorage.app/o/Chez%20Lui%20Cafe%2FGastronomic%20Ai%2FVideo%2FReady_House_Music_Cue%20salmon.mp4?alt=media&token=0b26e351-3a7f-4777-8af3-7942efdc542a" type="video/mp4">
+        </video>
+        <div class="absolute inset-0 bg-background/80 z-10"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-background/80 z-10"></div>
+        <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/30 rounded-full blur-[120px] z-0 mix-blend-screen"></div>
+
+        <div class="relative z-20 flex flex-col items-center px-6 max-w-5xl fade-up">
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 mb-8 text-sm font-medium border border-primary/50 text-primary bg-primary/10 rounded-full">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" class="w-5 h-5 drop-shadow-none transition-transform duration-500 hover:scale-105">
+                  <defs>
+                    <linearGradient id="gold-gradient-logo-2" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#FFF1B8" />
+                      <stop offset="40%" stop-color="#FFC01E" />
+                      <stop offset="100%" stop-color="#CC8B00" />
+                    </linearGradient>
+                    <filter id="glow-logo-2">
+                      <feGaussianBlur stdDeviation="1.5" result="coloredBlur"/>
+                      <feMerge>
+                          <feMergeNode in="coloredBlur"/>
+                          <feMergeNode in="SourceGraphic"/>
+                      </feMerge>
+                    </filter>
+                  </defs>
+                  <g filter="url(#glow-logo-2)">
+                    <circle cx="50" cy="25" r="20" fill="url(#gold-gradient-logo-2)" />
+                    <circle cx="30" cy="35" r="18" fill="url(#gold-gradient-logo-2)" />
+                    <circle cx="70" cy="35" r="18" fill="url(#gold-gradient-logo-2)" />
+                    <circle cx="18" cy="55" r="16" fill="url(#gold-gradient-logo-2)" />
+                    <circle cx="82" cy="55" r="16" fill="url(#gold-gradient-logo-2)" />
+                    <path d="M 14 55 L 86 55 L 75 80 L 25 80 Z" fill="url(#gold-gradient-logo-2)" />
+                    <circle cx="50" cy="45" r="25" fill="url(#gold-gradient-logo-2)" />
+                    <path d="M 33 80 Q 30 65 31 55" stroke="#141922" stroke-width="2.5" stroke-linecap="round" fill="none" />
+                    <path d="M 41 80 Q 40 60 43 45" stroke="#141922" stroke-width="2.5" stroke-linecap="round" fill="none" />
+                    <path d="M 50 80 Q 50 55 50 40" stroke="#141922" stroke-width="2.5" stroke-linecap="round" fill="none" />
+                    <path d="M 59 80 Q 60 60 57 45" stroke="#141922" stroke-width="2.5" stroke-linecap="round" fill="none" />
+                    <path d="M 67 80 Q 70 65 69 55" stroke="#141922" stroke-width="2.5" stroke-linecap="round" fill="none" />
+                    <path d="M 28 80 L 72 80 C 74 80 75 81 75 83 L 75 92 C 75 94 74 95 72 95 L 28 95 C 26 95 25 94 25 92 L 25 83 C 25 81 26 80 28 80 Z" fill="url(#gold-gradient-logo-2)" />
+                    <line x1="28" y1="87.5" x2="72" y2="87.5" stroke="#141922" stroke-width="1.5" stroke-linecap="round" />
+                  </g>
+                </svg>
+                <span>The Next Evolution of Culinary AI</span>
+            </div>
+            <h1 class="text-5xl md:text-7xl lg:text-8xl font-headline font-bold mb-6 tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-primary/80 to-white pb-2">
+                Where Culinary Art <br class="hidden md:block"/>
+                <span class="text-white drop-shadow-[0_0_15px_rgba(255,192,30,0.5)]">Meets Intelligence.</span>
+            </h1>
+            <p class="text-lg md:text-2xl text-muted-foreground font-light max-w-3xl mx-auto mb-10 leading-relaxed">
+                Personalized menus, precision operations, and unrivaled guest delight. 
+                Elevate your establishment with Gastronomic AI.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4">
+                <a href="#partner" class="inline-flex items-center justify-center px-8 py-4 text-lg font-semibold rounded-full bg-primary text-black hover:shadow-[0_0_30px_rgba(212,163,115,0.5)] transition-all">
+                    Request a Demo
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- PROBLEM / PROMISE SECTION -->
+    <section id="dilemma" class="relative bg-background py-24 overflow-hidden">
+        <div class="absolute top-0 right-0 w-[40rem] h-[40rem] bg-primary/5 rounded-full blur-[100px] pointer-events-none"></div>
+        <div class="container relative z-10 px-4 md:px-6 mx-auto max-w-7xl">
+            <div class="grid gap-16 lg:grid-cols-2 lg:gap-24">
+                
+                <!-- The Pains -->
+                <div class="space-y-8 fade-up">
+                    <div class="space-y-4">
+                        <div class="inline-flex items-center rounded-full bg-white/5 border border-white/10 px-4 py-1.5 text-sm font-medium text-white/70 tracking-wide uppercase">The Dilemma</div>
+                        <h2 class="text-4xl md:text-5xl font-bold font-headline tracking-tighter text-white">The Status Quo<br/><span class="text-white/40">Is Flawed.</span></h2>
+                    </div>
+                    <div class="space-y-6">
+                        <!-- Card 1 -->
+                        <div class="group flex items-start space-x-5 p-6 rounded-2xl border border-white/5 bg-white/5 hover:bg-white/10 transition-all hover:border-primary/30">
+                            <div class="bg-gradient-to-br from-primary/20 to-transparent text-primary p-4 rounded-xl">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-semibold text-white mb-2 group-hover:text-primary transition-colors">Rising Labor Costs</h3>
+                                <p class="text-white/60 font-light leading-relaxed">Manual prep scheduling and inventory management are time-consuming and prone to error, driving up overhead.</p>
+                            </div>
+                        </div>
+                        <!-- Card 2 -->
+                        <div class="group flex items-start space-x-5 p-6 rounded-2xl border border-white/5 bg-white/5 hover:bg-white/10 transition-all hover:border-primary/30">
+                            <div class="bg-gradient-to-br from-primary/20 to-transparent text-primary p-4 rounded-xl">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 16l3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1z"></path><path d="M2 16l3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1z"></path><path d="M7 21h10"></path><path d="M12 3v18"></path><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"></path></svg>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-semibold text-white mb-2 group-hover:text-primary transition-colors">Menu Complexity</h3>
+                                <p class="text-white/60 font-light leading-relaxed">Catering to diverse dietary needs without compromising creativity is a constant, high-stakes balancing act.</p>
+                            </div>
+                        </div>
+                        <!-- Card 3 -->
+                        <div class="group flex items-start space-x-5 p-6 rounded-2xl border border-white/5 bg-white/5 hover:bg-white/10 transition-all hover:border-primary/30">
+                            <div class="bg-gradient-to-br from-primary/20 to-transparent text-primary p-4 rounded-xl">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-semibold text-white mb-2 group-hover:text-primary transition-colors">Operational Anxiety</h3>
+                                <p class="text-white/60 font-light leading-relaxed">Guests worry about their needs being met, and staff stress over executing every complex order perfectly.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- The Promises -->
+                <div class="space-y-8 fade-up" style="transition-delay: 200ms;">
+                    <div class="space-y-4">
+                        <div class="inline-flex items-center rounded-full bg-primary/10 border border-primary/20 px-4 py-1.5 text-sm font-medium text-primary tracking-wide uppercase">The Solution</div>
+                        <h2 class="text-4xl md:text-5xl font-bold font-headline tracking-tighter text-white">Intelligent Design.<br/><span class="text-primary drop-shadow-[0_0_10px_rgba(255,192,30,0.3)]">Flawless Execution.</span></h2>
+                    </div>
+                    <div class="space-y-6">
+                        <div class="group flex items-start space-x-5 p-6 rounded-2xl border border-white/5 bg-white/5 hover:bg-white/10 transition-all hover:border-primary/30">
+                            <div class="bg-gradient-to-br from-primary/20 to-transparent text-primary p-4 rounded-xl">
+                                <span class="text-2xl drop-shadow-[0_0_8px_rgba(255,192,30,0.8)]">👨‍🍳</span>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-semibold text-white mb-2 group-hover:text-primary transition-colors">Automated Prep Workflows</h3>
+                                <p class="text-white/60 font-light leading-relaxed">Optimize your entire kitchen workflow with AI-driven task management, reducing waste and saving valuable floor hours.</p>
+                            </div>
+                        </div>
+                        <div class="group flex items-start space-x-5 p-6 rounded-2xl border border-white/5 bg-white/5 hover:bg-white/10 transition-all hover:border-primary/30">
+                            <div class="bg-gradient-to-br from-primary/20 to-transparent text-primary p-4 rounded-xl">
+                                <span class="text-2xl drop-shadow-[0_0_8px_rgba(255,192,30,0.8)]">✨</span>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-semibold text-white mb-2 group-hover:text-primary transition-colors">AI-Assisted Curation</h3>
+                                <p class="text-white/60 font-light leading-relaxed">Instantly generate personalized menus that astonish guests and dynamically utilize your active inventory.</p>
+                            </div>
+                        </div>
+                        <div class="group flex items-start space-x-5 p-6 rounded-2xl border border-white/5 bg-white/5 hover:bg-white/10 transition-all hover:border-primary/30">
+                            <div class="bg-gradient-to-br from-primary/20 to-transparent text-primary p-4 rounded-xl">
+                                <span class="text-2xl drop-shadow-[0_0_8px_rgba(255,192,30,0.8)]">🧠</span>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-semibold text-white mb-2 group-hover:text-primary transition-colors">Real-time Guest Insights</h3>
+                                <p class="text-white/60 font-light leading-relaxed">Leverage preferences and dietary profiles to provide a genuinely bespoke dining experience every single time.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- HOW IT WORKS SECTION -->
+    <section id="workflow" class="relative py-24 bg-background border-t border-white/5 overflow-hidden">
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[300px] bg-primary/5 blur-[120px] rounded-[100%] pointer-events-none"></div>
+        <div class="container px-4 md:px-6 relative z-10 max-w-7xl mx-auto">
+            <div class="flex flex-col items-center justify-center space-y-4 text-center fade-up">
+                <div class="inline-flex items-center rounded-full bg-white/5 border border-white/10 px-4 py-1.5 text-sm font-medium text-white/70 tracking-wide uppercase">The Workflow</div>
+                <h2 class="text-4xl font-bold font-headline tracking-tighter sm:text-5xl lg:text-6xl text-white">
+                    A Seamless Flow <br/> <span class="text-primary drop-shadow-[0_0_10px_rgba(255,192,30,0.3)]">From Data to Delight.</span>
+                </h2>
+                <p class="max-w-[700px] text-white/60 text-lg md:text-xl font-light mt-4">
+                    Our platform integrates every aspect of your culinary operation into one intelligent, self-optimizing ecosystem.
+                </p>
+            </div>
+
+            <div class="mx-auto grid max-w-6xl items-start gap-8 sm:grid-cols-2 lg:grid-cols-4 mt-20 relative fade-up">
+                <div class="hidden lg:block absolute top-[3rem] left-[10%] right-[10%] h-[1px] bg-gradient-to-r from-transparent via-primary/50 to-transparent"></div>
+                <!-- Step 1 -->
+                <div class="relative group grid gap-4 text-center">
+                    <div class="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-background border border-primary/20 text-primary mb-2 z-10 relative">
+                        <span class="text-3xl">📡</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-white group-hover:text-primary transition-colors">1. Collect Data</h3>
+                    <p class="text-md text-white/60 font-light px-4">Integrate wearables, POS systems, and real-time inventory.</p>
+                </div>
+                <!-- Step 2 -->
+                <div class="relative group grid gap-4 text-center">
+                    <div class="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-background border border-primary/20 text-primary mb-2 z-10 relative">
+                        <span class="text-3xl">⚙️</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-white group-hover:text-primary transition-colors">2. Predict & Process</h3>
+                    <p class="text-md text-white/60 font-light px-4">Cloud functions and AI models analyze data to find patterns.</p>
+                </div>
+                <!-- Step 3 -->
+                <div class="relative group grid gap-4 text-center">
+                    <div class="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-background border border-primary/20 text-primary mb-2 z-10 relative">
+                        <span class="text-3xl">❤️</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-white group-hover:text-primary transition-colors">3. Delight Guests</h3>
+                    <p class="text-md text-white/60 font-light px-4">Deliver smart menus and personalized recommendations instantly.</p>
+                </div>
+                <!-- Step 4 -->
+                <div class="relative group grid gap-4 text-center">
+                    <div class="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-background border border-primary/20 text-primary mb-2 z-10 relative">
+                        <span class="text-3xl">🍽️</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-white group-hover:text-primary transition-colors">4. Optimize Ops</h3>
+                    <p class="text-md text-white/60 font-light px-4">Use live dashboards and inventory alerts to stay ahead of the rush.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TEASER -->
+    <!-- (Retained identically from previous layout) -->
+    <section id="dashboard" class="py-24 bg-background relative border-t border-white/5">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-16 fade-up">
+                <h2 class="text-4xl md:text-5xl font-bold mb-4 font-headline text-white">The Central Intelligence Hub</h2>
+                <p class="text-xl text-muted-foreground max-w-2xl mx-auto font-light">Monitor kitchen efficiency, execute dynamic pricing, and communicate seamlessly in real-time.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Video Card 1 -->
+                <div class="rounded-2xl border border-white/10 bg-muted/50 overflow-hidden relative group fade-up transition-all hover:border-primary/50">
+                    <div class="aspect-video w-full overflow-hidden relative">
+                         <div class="absolute inset-0 bg-gradient-to-t from-background/90 to-transparent z-10"></div>
+                         <video autoPlay loop muted playsInline class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                             <source src="https://firebasestorage.googleapis.com/v0/b/gastronomic-ai-landing.firebasestorage.app/o/Chez%20Lui%20Cafe%2FGastronomic%20Ai%2FVideo%2FKitchen_Video_Peters.mp4?alt=media&token=05ea5be3-4ab2-40e7-b9ee-b645b4d4719c" type="video/mp4">
+                         </video>
+                         <div class="absolute bottom-4 left-4 z-20">
+                             <span class="px-2 py-1 text-[10px] uppercase font-bold tracking-wider bg-primary text-black rounded-sm mb-2 inline-block">Live Module</span>
+                             <h3 class="text-xl font-bold text-white font-headline">AI Menu Intelligence</h3>
+                         </div>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-muted-foreground font-light leading-relaxed">Auto-generate customized multi-course pairings designed specifically for individual guest profiles instantly.</p>
+                    </div>
+                </div>
+
+                <!-- Video Card 2 -->
+                 <div class="rounded-2xl border border-white/10 bg-muted/50 overflow-hidden relative group fade-up transition-all hover:border-primary/50" style="transition-delay: 100ms;">
+                    <div class="aspect-video w-full overflow-hidden relative">
+                         <div class="absolute inset-0 bg-gradient-to-t from-background/90 to-transparent z-10"></div>
+                         <video autoPlay loop muted playsInline class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                             <source src="https://firebasestorage.googleapis.com/v0/b/gastronomic-ai-landing.firebasestorage.app/o/Chez%20Lui%20Cafe%2FGastronomic%20Ai%2FVideo%2FKitchen_Video_.mp4?alt=media&token=29cc82d2-dd59-4cb0-ae91-fb1ac1ef5004" type="video/mp4">
+                         </video>
+                         <div class="absolute bottom-4 left-4 z-20">
+                             <span class="px-2 py-1 text-[10px] uppercase font-bold tracking-wider bg-primary text-black rounded-sm mb-2 inline-block">Real-time</span>
+                             <h3 class="text-xl font-bold text-white font-headline">Smart Operations</h3>
+                         </div>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-muted-foreground font-light leading-relaxed">Predict inventory flow and automatically analyze supply chain cost fluctuations to maintain massive margins.</p>
+                    </div>
+                </div>
+
+                <!-- Video Card 3 -->
+                 <div class="rounded-2xl border border-white/10 bg-muted/50 overflow-hidden relative group fade-up transition-all hover:border-primary/50" style="transition-delay: 200ms;">
+                    <div class="aspect-video w-full overflow-hidden relative">
+                         <div class="absolute inset-0 bg-gradient-to-t from-background/90 to-transparent z-10"></div>
+                         <video autoPlay loop muted playsInline class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                             <source src="https://firebasestorage.googleapis.com/v0/b/gastronomic-ai-landing.firebasestorage.app/o/Chez%20Lui%20Cafe%2FGastronomic%20Ai%2FVideo%2FKitchen_Video_Chef%20MPmp4.mp4?alt=media&token=1a51770e-aac9-4ed3-8c42-04999bda844a" type="video/mp4">
+                         </video>
+                         <div class="absolute bottom-4 left-4 z-20">
+                             <span class="px-2 py-1 text-[10px] uppercase font-bold tracking-wider bg-primary text-black rounded-sm mb-2 inline-block">Formula-86</span>
+                             <h3 class="text-xl font-bold text-white font-headline">Task Orchestration</h3>
+                         </div>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-muted-foreground font-light leading-relaxed">Direct complex kitchen brigades smoothly with automated shift schedules and priority ticket routing.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="py-24 bg-[#050505] relative border-t border-white/5 overflow-hidden">
+        <div class="absolute top-0 right-0 w-1/2 h-full bg-primary/5 blur-[150px] pointer-events-none"></div>
+        <div class="container mx-auto px-6 relative z-10 max-w-7xl">
+            <div class="mx-auto grid items-center gap-16 lg:grid-cols-2">
+                <div class="space-y-10 fade-up">
+                    <div class="relative">
+                        <span class="absolute -top-10 -left-6 text-[100px] text-white/5 font-serif leading-none">"</span>
+                        <blockquote class="text-3xl font-semibold font-headline leading-tight lg:text-4xl lg:leading-snug text-white relative z-10">
+                            I wanted a sous-chef that never sleeps and a concierge who knows every guest’s needs. <span class="text-primary">We built both in one app.</span>
+                        </blockquote>
+                    </div>
+                    <div class="flex items-center gap-6 mt-8">
+                        <div class="relative w-24 sm:w-32 shadow-lg drop-shadow-[0_0_15px_rgba(255,192,30,0.2)] rounded-lg overflow-hidden shrink-0">
+                            <img src="https://firebasestorage.googleapis.com/v0/b/gastronomic-ai-landing.firebasestorage.app/o/Chez%20Lui%20Cafe%2FGastronomic%20Ai%2FImages%2FMario%20Peters%20(1).png?alt=media&token=20d65f5e-ab91-4522-b619-3b471ca7f842" 
+                                 alt="Chef Mario Peters" 
+                                 class="w-full h-auto object-contain">
+                        </div>
+                        <div>
+                            <div class="font-semibold text-xl text-white">Chef Mario Peters</div>
+                            <div class="text-sm font-light text-primary tracking-wide uppercase mt-1">Founder, Gastronomic AI</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="w-full relative fade-up" style="transition-delay: 200ms;">
+                    <div class="grid grid-cols-2 gap-4">
+                        <!-- Big Main Image - Bartender -->
+                        <div class="relative overflow-hidden rounded-2xl aspect-[4/5] shadow-2xl border border-white/10 group">
+                            <!-- Pure CSS pan animation -->
+                            <div class="absolute inset-0 w-full h-full transform scale-125 animate-pan-vertical">
+                                <img src="https://firebasestorage.googleapis.com/v0/b/gastronomic-ai-landing.firebasestorage.app/o/Chez%20Lui%20Cafe%2FGastronomic%20Ai%2FImages%2FBartender%2001.png?alt=media&token=df8b58ca-bf0e-4be9-80a8-faf70f327ea4"
+                                     alt="Bartender"
+                                     class="w-full h-full object-cover object-center">
+                            </div>
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 pointer-events-none"></div>
+                        </div>
+
+                        <!-- Stacked Sidebar Images -->
+                        <div class="grid gap-4">
+                            <div class="relative overflow-hidden rounded-2xl aspect-[1.6/1] shadow-2xl border border-white/10 group">
+                                <img src="https://firebasestorage.googleapis.com/v0/b/gastronomic-ai-landing.firebasestorage.app/o/Chez%20Lui%20Cafe%2FGastronomic%20Ai%2FImages%2FChefs.jpg?alt=media&token=77a75c99-4768-4b1d-a599-441112490480"
+                                     alt="Professional Chef"
+                                     class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 contrast-[1.15] saturate-[1.2] sepia-[.15]">
+                                <div class="absolute inset-0 bg-orange-950/20 mix-blend-color-burn pointer-events-none"></div>
+                                <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500"></div>
+                            </div>
+                            <div class="relative overflow-hidden rounded-2xl aspect-[1.6/1] shadow-2xl border border-white/10 group">
+                                <img src="https://firebasestorage.googleapis.com/v0/b/gastronomic-ai-landing.firebasestorage.app/o/Chez%20Lui%20Cafe%2FGastronomic%20Ai%2FImages%2FConciergs.jpg?alt=media&token=2834be3d-7725-46df-a85a-000231ec6f5d"
+                                     alt="Concierge Desk"
+                                     class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                                <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ROI CALCULATOR -->
+    <section id="calculator" class="bg-background py-24 relative overflow-hidden border-t border-white/5">
+        <div class="container px-4 md:px-6 relative z-10 max-w-7xl mx-auto">
+            <div class="mx-auto grid lg:grid-cols-2 gap-16 items-center">
+                
+                <div class="space-y-8 fade-up">
+                    <div class="inline-flex items-center rounded-full bg-white/5 border border-white/10 px-4 py-1.5 text-sm font-medium text-white/70 tracking-wide uppercase">ROI Calculator</div>
+                    <h2 class="font-headline text-4xl md:text-5xl font-bold text-white tracking-tight">Project Your Savings</h2>
+                    <p class="text-white/60 text-lg font-light leading-relaxed">
+                        Our Interactive Cost-Savings Calculator demonstrates how Gastronomic AI can directly impact your bottom line. Add your restaurant's details to get a personalized projection of your potential annual savings.
+                    </p>
+                    <div class="space-y-6 pt-4">
+                        <h3 class="font-headline text-xl font-bold text-white">Estimated Annual Savings</h3>
+                        <p id="calc-annual" class="text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent drop-shadow-[0_0_10px_rgba(255,192,30,0.3)] transition-all duration-500">
+                            $75,000
+                        </p>
+                        <div class="grid grid-cols-2 gap-6 pt-4">
+                            <div class="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-md">
+                                <p class="text-sm font-light text-white/50 tracking-wide uppercase">Labor Hours</p>
+                                <p id="calc-labor" class="text-3xl font-bold text-white mt-2">250</p>
+                            </div>
+                            <div class="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-md">
+                                <p class="text-sm font-light text-white/50 tracking-wide uppercase">Extra Revenue</p>
+                                <p id="calc-revenue" class="text-3xl font-bold text-white mt-2">$5,000</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="fade-up" style="transition-delay: 200ms;">
+                    <div class="shadow-[0_0_40px_rgba(255,192,30,0.1)] border border-white/10 bg-black/40 backdrop-blur-lg rounded-xl overflow-hidden p-8">
+                        <div class="pb-4 border-b border-white/10 mb-6">
+                            <h3 class="font-headline text-2xl text-white font-semibold">Get Your Free Report</h3>
+                            <p class="text-white/50 mt-1">Fill out the form for a detailed breakdown emailed to you.</p>
+                        </div>
+                        <form id="roi-form" class="space-y-6" onsubmit="event.preventDefault(); alert('Report successfully sent to the cloud!');">
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <div>
+                                    <label class="text-white/70 block mb-2 text-sm">Seats</label>
+                                    <input type="number" id="input-seats" value="50" class="w-full bg-white/5 border border-white/10 text-white p-3 rounded-md focus:border-primary focus:outline-none" required>
+                                </div>
+                                <div>
+                                    <label class="text-white/70 block mb-2 text-sm">Daily Covers</label>
+                                    <input type="number" id="input-covers" value="100" class="w-full bg-white/5 border border-white/10 text-white p-3 rounded-md focus:border-primary focus:outline-none" required>
+                                </div>
+                                <div>
+                                    <label class="text-white/70 block mb-2 text-sm">Menu Items</label>
+                                    <input type="number" id="input-items" value="25" class="w-full bg-white/5 border border-white/10 text-white p-3 rounded-md focus:border-primary focus:outline-none" required>
+                                </div>
+                            </div>
+                            <hr class="border-white/10 my-6">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="text-white/70 block mb-2 text-sm">First Name</label>
+                                    <input type="text" class="w-full bg-white/5 border border-white/10 text-white p-3 rounded-md focus:border-primary focus:outline-none" required>
+                                </div>
+                                <div>
+                                    <label class="text-white/70 block mb-2 text-sm">Last Name</label>
+                                    <input type="text" class="w-full bg-white/5 border border-white/10 text-white p-3 rounded-md focus:border-primary focus:outline-none" required>
+                                </div>
+                                <div>
+                                    <label class="text-white/70 block mb-2 text-sm">Business Name</label>
+                                    <input type="text" class="w-full bg-white/5 border border-white/10 text-white p-3 rounded-md focus:border-primary focus:outline-none" required>
+                                </div>
+                                <div>
+                                    <label class="text-white/70 block mb-2 text-sm">Your Email</label>
+                                    <input type="email" placeholder="you@restaurant.com" class="w-full bg-white/5 border border-white/10 text-white p-3 rounded-md focus:border-primary focus:outline-none" required>
+                                </div>
+                            </div>
+                            <button type="submit" class="w-full h-12 bg-primary text-background hover:bg-white transition-colors font-bold rounded-lg shadow-lg">
+                                Generate Full Report
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PLANS & PARTNERSHIPS -->
+    <section id="partner" class="relative py-24 bg-background overflow-hidden border-t border-white/5">
+        <div class="absolute bottom-1/2 right-1/4 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] pointer-events-none"></div>
+        <div class="container px-4 md:px-6 relative z-10 max-w-7xl mx-auto">
+            <div class="flex flex-col items-center space-y-4 text-center fade-up">
+                <div class="inline-flex items-center rounded-full bg-white/5 border border-white/10 px-4 py-1.5 text-sm font-medium text-white/70 tracking-wide uppercase">Partnerships</div>
+                <h2 class="text-4xl font-bold font-headline tracking-tighter sm:text-5xl lg:text-6xl text-white">Find the Perfect Fit</h2>
+                <p class="max-w-[700px] text-white/60 text-lg md:text-xl font-light mt-4">
+                    Join our exclusive waitlist to secure lifetime pilot rates as a founding partner.
+                </p>
+            </div>
+            
+            <div class="mx-auto mt-16 grid max-w-md gap-8 lg:max-w-5xl lg:grid-cols-3 fade-up">
+                <!-- Prototype Plan -->
+                <div class="relative flex flex-col h-full bg-black/40 backdrop-blur-sm border border-white/10 rounded-xl overflow-hidden hover:border-white/30 transition-all hover:-translate-y-2 p-8">
+                    <div class="text-center pb-8 border-b border-white/10">
+                        <h3 class="font-headline text-2xl text-white">Prototype</h3>
+                        <p class="text-white/60 mt-2">For small teams testing the waters.</p>
+                        <div class="text-5xl font-bold pt-6 tracking-tight text-white">Free</div>
+                    </div>
+                    <ul class="space-y-4 mt-8 flex-1">
+                        <li class="flex items-start gap-3"><span class="text-white/40">✓</span> <span class="text-white/80 font-light">AI Menu Generation</span></li>
+                        <li class="flex items-start gap-3"><span class="text-white/40">✓</span> <span class="text-white/80 font-light">Basic Inventory</span></li>
+                        <li class="flex items-start gap-3"><span class="text-white/40">✓</span> <span class="text-white/80 font-light">1 Location</span></li>
+                    </ul>
+                    <a href="#contact-us" class="mt-8 block text-center w-full py-3 rounded-full bg-white/5 text-white hover:bg-white/10 border border-white/10 transition-all">Join Waitlist</a>
+                </div>
+
+                <!-- Pilot Plan (Popular) -->
+                <div class="relative flex flex-col h-full bg-black/40 backdrop-blur-sm border border-primary/50 shadow-[0_0_30px_rgba(255,192,30,0.15)] rounded-xl overflow-hidden scale-105 z-10 p-8">
+                    <div class="absolute inset-0 bg-gradient-to-b from-primary/10 to-transparent pointer-events-none"></div>
+                    <div class="absolute top-0 left-0 w-full text-center py-1 bg-gradient-to-r from-primary to-accent text-background font-bold text-xs tracking-widest uppercase">Most Popular</div>
+                    <div class="text-center pb-8 pt-4 border-b border-white/10 relative z-10">
+                        <h3 class="font-headline text-2xl text-white">Pilot</h3>
+                        <p class="text-white/60 mt-2">For growing restaurants ready to scale.</p>
+                        <div class="text-5xl font-bold pt-6 tracking-tight text-primary drop-shadow-[0_0_8px_rgba(255,192,30,0.5)]">Custom</div>
+                    </div>
+                    <ul class="space-y-4 mt-8 flex-1 relative z-10">
+                        <li class="flex items-start gap-3"><span class="text-primary font-bold">✓</span> <span class="text-white/80 font-light">All Prototype features</span></li>
+                        <li class="flex items-start gap-3"><span class="text-primary font-bold">✓</span> <span class="text-white/80 font-light">Live Dashboard</span></li>
+                        <li class="flex items-start gap-3"><span class="text-primary font-bold">✓</span> <span class="text-white/80 font-light">Wearable Integration</span></li>
+                        <li class="flex items-start gap-3"><span class="text-primary font-bold">✓</span> <span class="text-white/80 font-light">Priority Support</span></li>
+                    </ul>
+                    <a href="#contact-us" class="mt-8 block text-center w-full py-3 rounded-full bg-primary text-background hover:bg-white transition-all font-bold relative z-10 shadow-[0_0_20px_rgba(255,192,30,0.3)]">Join Waitlist</a>
+                </div>
+
+                <!-- Enterprise Plan -->
+                <div class="relative flex flex-col h-full bg-black/40 backdrop-blur-sm border border-white/10 rounded-xl overflow-hidden hover:border-white/30 transition-all hover:-translate-y-2 p-8">
+                    <div class="text-center pb-8 border-b border-white/10">
+                        <h3 class="font-headline text-2xl text-white">Enterprise</h3>
+                        <p class="text-white/60 mt-2">For large-scale operations and chains.</p>
+                        <div class="text-5xl font-bold pt-6 tracking-tight text-white">Let's Talk</div>
+                    </div>
+                    <ul class="space-y-4 mt-8 flex-1">
+                        <li class="flex items-start gap-3"><span class="text-white/40">✓</span> <span class="text-white/80 font-light">All Pilot features</span></li>
+                        <li class="flex items-start gap-3"><span class="text-white/40">✓</span> <span class="text-white/80 font-light">Multi-location Sync</span></li>
+                        <li class="flex items-start gap-3"><span class="text-white/40">✓</span> <span class="text-white/80 font-light">Dedicated Account Manager</span></li>
+                        <li class="flex items-start gap-3"><span class="text-white/40">✓</span> <span class="text-white/80 font-light">API Access</span></li>
+                    </ul>
+                    <a href="#contact-us" class="mt-8 block text-center w-full py-3 rounded-full bg-white/5 text-white hover:bg-white/10 border border-white/10 transition-all">Contact Sales</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CONTACT US -->
+    <section id="contact-us" class="bg-background py-24 relative overflow-hidden border-t border-white/5">
+        <div class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5 pointer-events-none"></div>
+        <div class="container px-4 md:px-6 relative z-10 max-w-7xl mx-auto">
+            <div class="mx-auto max-w-2xl text-center fade-up">
+                <div class="inline-flex items-center rounded-full bg-white/5 border border-white/10 px-4 py-1.5 text-sm font-medium text-white/70 tracking-wide uppercase">Contact Us</div>
+                <h2 class="font-headline text-4xl font-bold mt-4 text-white">Let's Build the Future of Food.</h2>
+                <p class="text-white/60 mt-4 font-light text-lg">
+                    Have questions or want to be part of our pilot? Drop us a line.
+                </p>
+            </div>
+
+            <div class="max-w-xl mx-auto mt-12 fade-up">
+                <div class="bg-white/5 backdrop-blur-md border border-white/10 shadow-2xl rounded-xl p-8">
+                    <h3 class="text-2xl text-white font-headline mb-6 border-b border-white/10 pb-4">Send us a Message</h3>
+                    <form class="space-y-6" onsubmit="event.preventDefault(); alert('Message successfully sent to the cloud!');">
+                        <div>
+                            <label class="text-white/80 block mb-2 text-sm">Full Name</label>
+                            <input type="text" class="w-full bg-black/40 border border-white/10 text-white placeholder:text-white/20 p-3 rounded-md focus:border-primary focus:outline-none" placeholder="John Doe" required>
+                        </div>
+                        <div>
+                            <label class="text-white/80 block mb-2 text-sm">Email Address</label>
+                            <input type="email" class="w-full bg-black/40 border border-white/10 text-white placeholder:text-white/20 p-3 rounded-md focus:border-primary focus:outline-none" placeholder="you@example.com" required>
+                        </div>
+                        <div>
+                            <label class="text-white/80 block mb-2 text-sm">Message</label>
+                            <textarea class="w-full min-h-[120px] bg-black/40 border border-white/10 text-white placeholder:text-white/20 p-3 rounded-md focus:border-primary focus:outline-none" placeholder="Your message..." required></textarea>
+                        </div>
+                        <button type="submit" class="w-full py-4 text-md font-bold rounded-md transition-all duration-300 bg-primary/20 text-primary hover:bg-primary hover:text-background border border-primary/50">
+                            Send Message
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="py-12 border-t border-white/10 bg-background text-center">
+        <div class="container mx-auto px-6 flex flex-col items-center">
+            <a href="#" class="flex items-center gap-3 font-headline font-bold text-3xl text-white mb-6 group">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" class="w-10 h-10 drop-shadow-md transition-transform duration-500 group-hover:scale-105">
+                  <defs>
+                    <linearGradient id="gold-gradient-logo-3" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#FFF1B8" />
+                      <stop offset="40%" stop-color="#FFC01E" />
+                      <stop offset="100%" stop-color="#CC8B00" />
+                    </linearGradient>
+                    <filter id="glow-logo-3">
+                      <feGaussianBlur stdDeviation="1.5" result="coloredBlur"/>
+                      <feMerge>
+                          <feMergeNode in="coloredBlur"/>
+                          <feMergeNode in="SourceGraphic"/>
+                      </feMerge>
+                    </filter>
+                  </defs>
+                  <g filter="url(#glow-logo-3)">
+                    <circle cx="50" cy="25" r="20" fill="url(#gold-gradient-logo-3)" />
+                    <circle cx="30" cy="35" r="18" fill="url(#gold-gradient-logo-3)" />
+                    <circle cx="70" cy="35" r="18" fill="url(#gold-gradient-logo-3)" />
+                    <circle cx="18" cy="55" r="16" fill="url(#gold-gradient-logo-3)" />
+                    <circle cx="82" cy="55" r="16" fill="url(#gold-gradient-logo-3)" />
+                    <path d="M 14 55 L 86 55 L 75 80 L 25 80 Z" fill="url(#gold-gradient-logo-3)" />
+                    <circle cx="50" cy="45" r="25" fill="url(#gold-gradient-logo-3)" />
+                    <path d="M 33 80 Q 30 65 31 55" stroke="#141922" stroke-width="2.5" stroke-linecap="round" fill="none" />
+                    <path d="M 41 80 Q 40 60 43 45" stroke="#141922" stroke-width="2.5" stroke-linecap="round" fill="none" />
+                    <path d="M 50 80 Q 50 55 50 40" stroke="#141922" stroke-width="2.5" stroke-linecap="round" fill="none" />
+                    <path d="M 59 80 Q 60 60 57 45" stroke="#141922" stroke-width="2.5" stroke-linecap="round" fill="none" />
+                    <path d="M 67 80 Q 70 65 69 55" stroke="#141922" stroke-width="2.5" stroke-linecap="round" fill="none" />
+                    <path d="M 28 80 L 72 80 C 74 80 75 81 75 83 L 75 92 C 75 94 74 95 72 95 L 28 95 C 26 95 25 94 25 92 L 25 83 C 25 81 26 80 28 80 Z" fill="url(#gold-gradient-logo-3)" />
+                    <line x1="28" y1="87.5" x2="72" y2="87.5" stroke="#141922" stroke-width="1.5" stroke-linecap="round" />
+                  </g>
+                </svg>
+                <div class="flex flex-col text-left text-white group-hover:text-primary transition-colors">
+                    <span class="leading-none">Gastronomic<span class="text-primary italic">AI</span></span>
+                    <span class="text-[10px] uppercase tracking-[0.25em] font-medium text-primary mt-1.5 opacity-90">Floridian Modern Cuisine</span>
+                </div>
+            </a>
+            <div class="flex gap-6 mb-8 text-sm">
+                <a href="dashboard.html" class="text-muted-foreground hover:text-primary transition-colors">Client Login</a>
+                <a href="#" class="text-muted-foreground hover:text-primary transition-colors">Privacy Policy</a>
+                <a href="#" class="text-muted-foreground hover:text-primary transition-colors">Terms of Service</a>
+            </div>
+            <p class="text-muted-foreground text-sm font-light">
+                &copy; 2026 Gastronomic AI. Built for culinary excellence. <br/>All models and imagery are proprietary IP.
+            </p>
+        </div>
+    </footer>
+
+    <!-- INTERSECTION OBSERVER FOR ANIMATIONS -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            });
+
+            document.querySelectorAll('.fade-up').forEach((el) => {
+                observer.observe(el);
+            });
+
+            // ROI Calculator Logic
+            const seatsInput = document.getElementById('input-seats');
+            const coversInput = document.getElementById('input-covers');
+            const itemsInput = document.getElementById('input-items');
+            
+            const uiAnnual = document.getElementById('calc-annual');
+            const uiLabor = document.getElementById('calc-labor');
+            const uiRevenue = document.getElementById('calc-revenue');
+
+            function calculateROI() {
+                if (!seatsInput) return;
+                const menuItems = Math.max(0, parseInt(itemsInput.value) || 0);
+                const dailyCovers = Math.max(0, parseInt(coversInput.value) || 0);
+                
+                const laborHours = menuItems * 10;
+                const extraRevenue = dailyCovers * 50;
+                const laborCostSavings = laborHours * 20;
+                const newAnnualSavings = laborCostSavings + extraRevenue;
+
+                uiAnnual.innerText = "$" + newAnnualSavings.toLocaleString();
+                uiLabor.innerText = laborHours.toLocaleString();
+                uiRevenue.innerText = "$" + extraRevenue.toLocaleString();
+            }
+
+            if (seatsInput) {
+                [seatsInput, coversInput, itemsInput].forEach(inp => inp.addEventListener('input', calculateROI));
+                calculateROI(); // init
+            }
+        });
+    </script>
+</body>
+</html>

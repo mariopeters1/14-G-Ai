@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formula 86 - Operations Suite</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --bg-dark: #0a0a0b;
+            --bg-card: #141416;
+            --bg-surface: #1e1e21;
+            --text-primary: #ededed;
+            --text-muted: #a0a0a6;
+            --accent: #d4a373;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --border: #222;
+        }
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-primary);
+            display: flex;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        
+        /* Sidebar styling */
+        .sidebar {
+            width: 270px;
+            background-color: var(--bg-card);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+            z-index: 20;
+        }
+        .brand {
+            padding: 1.5rem;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--accent);
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 0.5rem;
+        }
+        .nav-list { list-style: none; padding: 0 1rem; margin: 0; flex-grow: 1; overflow-y: auto;}
+        .nav-item { margin-bottom: 0.25rem; }
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .nav-link i { width: 18px; height: 18px; opacity: 0.7; transition: all 0.2s ease; }
+        .nav-link:hover { background-color: rgba(255, 255, 255, 0.03); color: var(--text-primary); }
+        .nav-link:hover i { opacity: 1; color: var(--text-primary); }
+        .nav-link.active {
+            background-color: rgba(212, 163, 115, 0.1);
+            color: var(--accent);
+            position: relative;
+        }
+        .nav-link.active i { opacity: 1; color: var(--accent); }
+        .nav-link.active::before {
+            content: ''; position: absolute; left: -1rem; top: 50%; transform: translateY(-50%);
+            height: 60%; width: 4px; background: var(--accent); border-radius: 0 4px 4px 0;
+        }
+        .sidebar-footer { padding: 1.5rem; border-top: 1px solid var(--border); }
+        
+        /* Main Layout */
+        .main-wrapper { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative;}
+        
+        /* Top Navigation */
+        .topbar {
+            height: 80px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 3rem;
+            background: rgba(20, 20, 22, 0.8);
+            backdrop-filter: blur(12px);
+            z-index: 10;
+        }
+        .topbar-left h1 { margin: 0; font-size: 1.5rem; font-weight: 600; }
+        .topbar-right { display: flex; align-items: center; gap: 1.25rem; }
+        .venue-select {
+            background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--text-primary);
+            padding: 0.6rem 1.25rem; border-radius: 8px; font-size: 0.9rem; outline: none; cursor: pointer; font-weight: 500;
+        }
+        .btn-icon {
+            background: rgba(255,255,255,0.05); border: 1px solid var(--border); color: var(--text-muted);
+            display: flex; align-items: center; justify-content: center; width: 42px; height: 42px;
+            border-radius: 50%; cursor: pointer; transition: all 0.2s;
+        }
+        .btn-icon:hover { color: var(--text-primary); background: rgba(255,255,255,0.1); }
+        .user-profile {
+            display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.05);
+            padding: 0.4rem 1.25rem 0.4rem 0.4rem; border-radius: 30px; border: 1px solid var(--border); cursor: pointer; transition: background 0.2s;
+        }
+        .user-profile:hover { background: rgba(255,255,255,0.1); }
+        .avatar {
+            width: 32px; height: 32px; background: var(--accent); border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; color: #000; font-weight: 700; font-size: 0.85rem;
+        }
+        .username { font-size: 0.95rem; font-weight: 500; }
+
+        /* SPA Pages container */
+        .pages-container { flex: 1; overflow-y: auto; overflow-x: hidden; position: relative;}
+        
+        .page-content {
+            display: none; padding: 3rem; max-width: 1400px; margin: 0 auto; width: 100%; box-sizing: border-box;
+        }
+        .page-content.active { display: block; animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .section-title { font-size: 1.3rem; font-weight: 600; margin-bottom: 1.5rem; color: #fff; display: flex; align-items: center; gap: 10px; }
+        
+        /* Dashboard Page Styles */
+        .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 4rem; }
+        .kpi-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; position: relative; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+        .kpi-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--accent); }
+        .kpi-card.success::before { background: var(--success); }
+        .kpi-card.danger::before { background: var(--danger); }
+        .kpi-card.highlight { border-color: rgba(212, 163, 115, 0.4); background: linear-gradient(135deg, var(--bg-card) 0%, rgba(212,163,115,0.05) 100%); }
+        .kpi-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .kpi-title { color: var(--text-muted); font-size: 0.95rem; font-weight: 500; margin: 0; }
+        .kpi-icon { color: var(--accent); opacity: 0.8; width: 20px; height: 20px; }
+        .kpi-card.success .kpi-icon { color: var(--success); opacity: 1;}
+        .kpi-card.danger .kpi-icon { color: var(--danger); opacity: 1;}
+        .kpi-value { font-size: 2.75rem; font-weight: 700; margin: 0 0 0.5rem 0; color: #fff; letter-spacing: -1px; }
+        .kpi-subtext { font-size: 0.85rem; color: rgba(255,255,255,0.4); margin: 0; font-weight: 400; }
+        .text-success { color: var(--success) !important; }
+        .text-danger { color: var(--danger) !important; }
+
+        /* Shared Components */
+        .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+        .card-header { padding: 1.5rem; border-bottom: 1px solid var(--border); }
+        .card-title { font-size: 1.25rem; font-weight: 600; margin: 0 0 0.5rem 0; }
+        .card-description { color: var(--text-muted); font-size: 0.9rem; margin: 0; }
+        .card-content { padding: 1.5rem; }
+        
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table th, .data-table td { padding: 1rem 1.5rem; text-align: left; border-bottom: 1px solid var(--border); font-size: 0.95rem;}
+        .data-table th { font-weight: 500; color: var(--text-muted); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.5px;}
+        .badge { padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.8rem; font-weight: 500; display: inline-block; background: var(--bg-surface); border: 1px solid var(--border); }
+        .badge.success { background: rgba(16, 185, 129, 0.1); color: var(--success); border-color: rgba(16, 185, 129, 0.2); }
+        .badge.warning { background: rgba(245, 158, 11, 0.1); color: var(--warning); border-color: rgba(245, 158, 11, 0.2); }
+        
+        .btn-primary { background: var(--accent); color: #000; font-weight: 600; padding: 0.75rem 1.5rem; border: none; border-radius: 8px; cursor: pointer; transition: opacity 0.2s; display: flex; align-items: center; gap: 8px; font-size: 0.9rem;}
+        .btn-primary:hover { opacity: 0.9; }
+
+        .btn-outline { background: transparent; color: var(--text-primary); border: 1px solid var(--border); padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; height: 100%;}
+        .btn-outline:hover { background: rgba(255,255,255,0.05); }
+        .btn-outline img { height: 20px; object-fit: contain; }
+
+        .btn-action { background: transparent; border: none; color: var(--text-muted); cursor: pointer; padding: 0.4rem; border-radius: 4px; transition: all 0.2s; }
+        .btn-action:hover { background: rgba(255,255,255,0.05); color: var(--accent); }
+
+        /* Inventory Layout */
+        .inventory-grid { display: grid; grid-template-columns: 2fr 3fr; gap: 2rem; align-items: start;}
+        @media (max-width: 1024px) { .inventory-grid { grid-template-columns: 1fr; } }
+        .input-group { margin-bottom: 1rem; }
+        .input-group label { display: block; margin-bottom: 0.5rem; font-size: 0.9rem; font-weight: 500; color: var(--text-muted); }
+        .input-group textarea, .input-group input { width: 100%; box-sizing: border-box; padding: 0.75rem; background: var(--bg-surface); border: 1px solid var(--border); color: #fff; border-radius: 8px; font-family: inherit; font-size: 0.9rem; outline: none; transition: border-color 0.2s;}
+        .input-group textarea:focus { border-color: var(--accent); }
+        .ai-resultsbox { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 400px; text-align: center; background: rgba(212,163,115,0.02); border: 1px dashed var(--border); border-radius: 12px; padding: 2rem; }
+    </style>
+</head>
+<body>
+
+    <!-- SIDEBAR -->
+    <nav class="sidebar">
+        <a href="landing.html" class="brand">
+            <i data-lucide="chef-hat"></i>
+            Gastronomic AI
+        </a>
+        <ul class="nav-list" style="margin-top: 1rem;">
+            <li class="nav-item">
+                <a class="nav-link" id="nav-contact" onclick="switchPage('contact')">
+                    <i data-lucide="mail"></i> Contact Messages
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="nav-reservations" onclick="switchPage('reservations')">
+                    <i data-lucide="users"></i> Reservations
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="nav-pos" onclick="switchPage('pos')">
+                    <i data-lucide="receipt"></i> Sales & POS
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="nav-reports" onclick="switchPage('reports')">
+                    <i data-lucide="bar-chart-4"></i> Reports & Analytics
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="nav-staff" onclick="switchPage('staff')">
+                    <i data-lucide="user-cog"></i> Staff Scheduler
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="nav-inventory" onclick="switchPage('inventory')">
+                    <i data-lucide="package"></i> Inventory & Purchasing
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="nav-menu" onclick="switchPage('menu')">
+                    <i data-lucide="clipboard-list"></i> Menu Editor
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="nav-feedback" onclick="switchPage('feedback')">
+                    <i data-lucide="message-square"></i> Customer Feedback
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="module1.html" class="nav-link" id="nav-aichef">
+                    <i data-lucide="bot"></i> AI Chef Chat
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" id="nav-formula86" onclick="switchPage('formula86')">
+                    <i data-lucide="utensils-crossed"></i> Formula-86 AI
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="nav-smartmenu" onclick="switchPage('smartmenu')">
+                    <i data-lucide="sparkles"></i> Smart Menu AI
+                </a>
+            </li>
+        </ul>
+        <div class="sidebar-footer">
+            <a href="#" class="nav-link" style="color: var(--danger);">
+                <i data-lucide="log-out"></i> Sign Out
+            </a>
+        </div>
+    </nav>
+
+    <!-- MAIN PLATFORM -->
+    <div class="main-wrapper">
+        <header class="topbar">
+            <div class="topbar-left">
+                <h1 id="topbar-title">Overview Dashboard</h1>
+            </div>
+            <div class="topbar-right">
+                <select class="venue-select">
+                    <option>Select a venue</option>
+                    <option selected>Chez Lui Cafe (Main)</option>
+                    <option>Chez Lui (Downtown)</option>
+                </select>
+                <button class="btn-icon" title="Use Voice Command">
+                    <i data-lucide="mic"></i>
+                </button>
+                <div class="user-profile">
+                    <div class="avatar">U</div>
+                    <span class="username">@user</span>
+                    <i data-lucide="chevron-down" style="width: 16px; height: 16px; color: var(--text-muted); margin-left: 4px;"></i>
+                </div>
+            </div>
+        </header>
+
+        <div class="pages-container">
+
+            <!-- PAGE: DASHBOARD (Formula-86 AI) -->
+            <div id="page-formula86" class="page-content active">
+                <h2 class="section-title"><i data-lucide="activity" style="color: var(--accent);"></i> Today's Operating Metrics</h2>
+                
+                <div class="kpi-grid">
+                    <div class="kpi-card success">
+                        <div class="kpi-header"><h3 class="kpi-title">Total Revenue (Today)</h3><i data-lucide="trending-up" class="kpi-icon"></i></div>
+                        <p class="kpi-value text-success">$<span class="animate-number" data-value="4254.82">0.00</span></p>
+                        <p class="kpi-subtext">From POS Integration</p>
+                    </div>
+                    <div class="kpi-card danger">
+                        <div class="kpi-header"><h3 class="kpi-title">Labor Cost (Today)</h3><i data-lucide="users-2" class="kpi-icon"></i></div>
+                        <p class="kpi-value text-danger">$<span class="animate-number" data-value="1256.35">0.00</span></p>
+                        <p class="kpi-subtext">From Staff Scheduling</p>
+                    </div>
+                    <div class="kpi-card danger">
+                        <div class="kpi-header"><h3 class="kpi-title">Food Cost (Today)</h3><i data-lucide="apple" class="kpi-icon"></i></div>
+                        <p class="kpi-value text-danger">$<span class="animate-number" data-value="1480.29">0.00</span></p>
+                        <p class="kpi-subtext">From Inventory & POS</p>
+                    </div>
+                    <div class="kpi-card danger">
+                        <div class="kpi-header"><h3 class="kpi-title">Waste Cost (Today)</h3><i data-lucide="trash-2" class="kpi-icon"></i></div>
+                        <p class="kpi-value text-danger">$<span class="animate-number" data-value="194.21">0.00</span></p>
+                        <p class="kpi-subtext">From Inventory Logs</p>
+                    </div>
+                    <div class="kpi-card highlight">
+                        <div class="kpi-header"><h3 class="kpi-title">Calculated EBITDA (Today)</h3><i data-lucide="calculator" class="kpi-icon"></i></div>
+                        <p class="kpi-value" style="color: var(--accent);">$<span class="animate-number" data-value="1323.97">0.00</span></p>
+                        <p class="kpi-subtext">Revenue - (Labor + Food + Waste)</p>
+                    </div>
+                    <div class="kpi-card highlight">
+                        <div class="kpi-header"><h3 class="kpi-title">EBITDA Margin</h3><i data-lucide="percent" class="kpi-icon"></i></div>
+                        <p class="kpi-value" style="color: var(--accent);"><span class="animate-number" data-value="31.1" data-is-percent="true">0.0</span>%</p>
+                        <p class="kpi-subtext">(EBITDA / Revenue) x 100</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PAGE: RESERVATIONS -->
+            <div id="page-reservations" class="page-content">
+                <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem;">
+                    <div>
+                        <h2 class="section-title" style="margin-bottom: 0.5rem; font-size: 1.8rem;"><i data-lucide="calendar-check" style="color: var(--accent); width: 28px; height: 28px;"></i> Reservations Management</h2>
+                        <p style="color: var(--text-muted); margin: 0; font-size: 1rem;">A list of all bookings for today and beyond.</p>
+                    </div>
+                    <div style="display: flex; gap: 1rem; align-items: stretch;">
+                        <!-- OpenTable Logo Button -->
+                        <button class="btn-outline">
+                            <img src="https://firebasestorage.googleapis.com/v0/b/gastronomic-ai-landing.firebasestorage.app/o/Chez%20Lui%20Cafe%2FGastronomic%20Ai%2FImages%2Fopentable-logo-ZGYRVF2L.svg?alt=media&token=a8c5d24b-c029-4cab-97f2-ddec2c49dba8" alt="OpenTable">
+                        </button>
+                        <!-- Yelp Logo Button -->
+                        <button class="btn-outline">
+                            <img src="https://firebasestorage.googleapis.com/v0/b/gastronomic-ai-landing.firebasestorage.app/o/Chez%20Lui%20Cafe%2FGastronomic%20Ai%2FImages%2Fdownload.png?alt=media&token=89815a8e-77cb-4d83-aab6-cea509ea8f2d" alt="Yelp">
+                        </button>
+                        <button class="btn-primary"><i data-lucide="user-plus" class="w-4 h-4"></i> Add Reservation</button>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Guest</th>
+                                <th>Time</th>
+                                <th>Status</th>
+                                <th>Table</th>
+                                <th>Notes</th>
+                                <th style="text-align: right;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <div style="font-weight: 500;">Diana Prince</div>
+                                    <div style="font-size: 0.8rem; color: var(--text-muted);">2 people</div>
+                                </td>
+                                <td>5:30 PM</td>
+                                <td><span class="badge warning">Seated</span></td>
+                                <td>12</td>
+                                <td></td>
+                                <td style="text-align: right;">
+                                    <button class="btn-action"><i data-lucide="edit" style="width: 16px; height: 16px;"></i></button>
+                                    <button class="btn-action" style="color: var(--danger);"><i data-lucide="trash-2" style="width: 16px; height: 16px;"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div style="font-weight: 500;">Bob Williams</div>
+                                    <div style="font-size: 0.8rem; color: var(--text-muted);">2 people</div>
+                                </td>
+                                <td>6:30 PM</td>
+                                <td><span class="badge success">Confirmed</span></td>
+                                <td>1</td>
+                                <td></td>
+                                <td style="text-align: right;">
+                                    <button class="btn-action"><i data-lucide="edit" style="width: 16px; height: 16px;"></i></button>
+                                    <button class="btn-action" style="color: var(--danger);"><i data-lucide="trash-2" style="width: 16px; height: 16px;"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div style="font-weight: 500;">Alice Johnson</div>
+                                    <div style="font-size: 0.8rem; color: var(--text-muted);">4 people</div>
+                                </td>
+                                <td>7:00 PM</td>
+                                <td><span class="badge success">Confirmed</span></td>
+                                <td>3</td>
+                                <td>Window seat requested</td>
+                                <td style="text-align: right;">
+                                    <button class="btn-action"><i data-lucide="edit" style="width: 16px; height: 16px;"></i></button>
+                                    <button class="btn-action" style="color: var(--danger);"><i data-lucide="trash-2" style="width: 16px; height: 16px;"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div style="font-weight: 500;">Charlie Brown</div>
+                                    <div style="font-size: 0.8rem; color: var(--text-muted);">5 people</div>
+                                </td>
+                                <td>8:00 PM</td>
+                                <td><span class="badge success">Confirmed</span></td>
+                                <td>N/A</td>
+                                <td></td>
+                                <td style="text-align: right;">
+                                    <button class="btn-action"><i data-lucide="edit" style="width: 16px; height: 16px;"></i></button>
+                                    <button class="btn-action" style="color: var(--danger);"><i data-lucide="trash-2" style="width: 16px; height: 16px;"></i></button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div style="font-weight: 500;">Ethan Hunt</div>
+                                    <div style="font-size: 0.8rem; color: var(--text-muted);">3 people</div>
+                                </td>
+                                <td>8:30 PM</td>
+                                <td><span class="badge success">Confirmed</span></td>
+                                <td>N/A</td>
+                                <td>Birthday celebration</td>
+                                <td style="text-align: right;">
+                                    <button class="btn-action"><i data-lucide="edit" style="width: 16px; height: 16px;"></i></button>
+                                    <button class="btn-action" style="color: var(--danger);"><i data-lucide="trash-2" style="width: 16px; height: 16px;"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- PAGE: INVENTORY -->
+            <div id="page-inventory" class="page-content">
+                <style>
+                    .inventory-accordion { margin-bottom: 1.5rem; width: 100%; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-surface); overflow: hidden; }
+                    .inventory-accordion details { border-bottom: 1px solid var(--border); }
+                    .inventory-accordion details:last-child { border-bottom: none; }
+                    .inventory-accordion summary { padding: 1rem 1.25rem; display: flex; align-items: center; gap: 12px; font-weight: 500; cursor: pointer; list-style: none; transition: background 0.2s; outline: none; margin: 0; color: var(--text-primary);}
+                    .inventory-accordion summary::-webkit-details-marker { display: none; }
+                    .inventory-accordion summary:hover { background: rgba(255,255,255,0.03); }
+                    .inventory-accordion .content { padding: 1rem 1.25rem; background: var(--bg-card); border-top: 1px solid var(--border); }
+                    .inventory-accordion .content textarea { width: 100%; box-sizing: border-box; background: var(--bg-surface); border: 1px solid var(--border); color: #fff; padding: 0.75rem; border-radius: 6px; font-family: monospace; font-size: 0.85rem; outline: none; transition: border-color 0.2s; min-height: 80px;}
+                    .inventory-accordion .content textarea:focus { border-color: var(--accent); }
+                </style>
+                 <div style="margin-bottom: 2rem;">
+                    <h2 class="section-title" style="margin-bottom: 0.5rem;"><i data-lucide="boxes" style="color: var(--accent);"></i> AI Inventory Analysis</h2>
+                    <p style="color: var(--text-muted); margin: 0;">Let AI analyze your stock and provide smart purchasing recommendations.</p>
+                </div>
+                
+                <div class="inventory-grid">
+                    <!-- Form Side -->
+                    <div class="card" style="position: sticky; top: 2rem;">
+                        <div class="card-content">
+                            <div class="input-group">
+                                <label>Sales Forecast</label>
+                                <textarea rows="2">Expecting 15% growth this week.</textarea>
+                            </div>
+                            <div class="input-group">
+                                <label>Upcoming Events</label>
+                                <textarea rows="2">Corporate party for 50 on Friday.</textarea>
+                            </div>
+                            
+                            <!-- Accordion Inventory List -->
+                            <div class="inventory-accordion">
+                                <details>
+                                    <summary><i data-lucide="package" style="width: 18px; height: 18px; opacity: 0.8;"></i> Dry Storage</summary>
+                                    <div class="content"><textarea>Flour: 50 lbs, Sugar: 20 lbs, Pasta: 10 lbs, Olive Oil: 5L</textarea></div>
+                                </details>
+                                <details>
+                                    <summary><i data-lucide="glass-water" style="width: 18px; height: 18px; opacity: 0.8;"></i> Bar</summary>
+                                    <div class="content"><textarea>Vodka: 5 bottles, Wine: 12 bottles, Whiskey: 3 bottles</textarea></div>
+                                </details>
+                                <details>
+                                    <summary><i data-lucide="snowflake" style="width: 18px; height: 18px; opacity: 0.8;"></i> Freezer</summary>
+                                    <div class="content"><textarea>Frozen Fries: 30 lbs, Ice Cream: 10L, Shrimp: 15 lbs</textarea></div>
+                                </details>
+                                <details>
+                                    <summary><i data-lucide="carrot" style="width: 18px; height: 18px; opacity: 0.8;"></i> Produce</summary>
+                                    <div class="content"><textarea>Tomatoes: 5 lbs, Lettuce: 5 heads, Onions: 10 lbs, Lemons: 20 units</textarea></div>
+                                </details>
+                                <details>
+                                    <summary><i data-lucide="milk" style="width: 18px; height: 18px; opacity: 0.8;"></i> Dairy</summary>
+                                    <div class="content"><textarea>Milk: 8L, Cheese: 10 lbs, Butter: 5 lbs</textarea></div>
+                                </details>
+                                <details>
+                                    <summary><i data-lucide="bird" style="width: 18px; height: 18px; opacity: 0.8;"></i> Poultry</summary>
+                                    <div class="content"><textarea>Chicken Breast: 30 lbs, Whole Chickens: 5 units</textarea></div>
+                                </details>
+                                <details>
+                                    <summary><i data-lucide="beef" style="width: 18px; height: 18px; opacity: 0.8;"></i> Meat</summary>
+                                    <div class="content"><textarea>Beef Sirloin: 20 lbs, Ground Beef: 10 lbs</textarea></div>
+                                </details>
+                                <details>
+                                    <summary><i data-lucide="fish" style="width: 18px; height: 18px; opacity: 0.8;"></i> Fish</summary>
+                                    <div class="content"><textarea>Salmon Fillets: 15 lbs, Tuna Steaks: 5 lbs</textarea></div>
+                                </details>
+                            </div>
+
+                            <button class="btn-primary" style="justify-content: center; width: 100%; margin-top: 0.5rem;" onclick="simulateAI()">
+                                <i data-lucide="sparkles"></i> Get AI-Powered Suggestions
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- AI Results Side -->
+                    <div class="ai-resultsbox" id="inventory-ai-box">
+                        <div style="background: var(--bg-card); padding: 1.5rem; border-radius: 50%; border: 1px solid var(--border); box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 1.5rem;">
+                            <i data-lucide="sparkles" style="width: 48px; height: 48px; color: var(--accent);"></i>
+                        </div>
+                        <h3 style="font-size: 1.5rem; margin: 0 0 0.5rem 0;">Recommendations Will Appear Here</h3>
+                        <p style="color: var(--text-muted); max-width: 400px; margin: 0 auto; line-height: 1.5;">Fill in your inventory data and click the button to let Gastronomic AI generate your next purchase order.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- OTHER STUB PAGES -->
+            <div id="page-contact" class="page-content">
+                <div class="ai-resultsbox">
+                    <i data-lucide="mail" style="width: 48px; height: 48px; color: var(--accent); margin-bottom: 1rem;"></i>
+                    <h2>Contact Messages</h2>
+                    <p style="color: var(--text-muted);">View all incoming inquiries from the landing page.</p>
+                </div>
+            </div>
+            <div id="page-staff" class="page-content">
+                <div style="margin-bottom: 2rem;">
+                    <h2 class="section-title" style="margin-bottom: 0.5rem;"><i data-lucide="calendar-clock" style="color: var(--accent);"></i> Staff & Scheduling</h2>
+                    <p style="color: var(--text-muted); margin: 0;">AI-optimized rostering and team management.</p>
+                </div>
+
+                <div class="inventory-grid">
+                    <!-- Left Side: Forms -->
+                    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                        <!-- AI Scheduler Form -->
+                        <div class="card">
+                            <div class="card-header" style="display: flex; gap: 15px; align-items: flex-start;">
+                                <div style="background: rgba(212, 163, 115, 0.1); color: var(--accent); padding: 12px; border-radius: 50%;">
+                                    <i data-lucide="brain-circuit" style="width: 24px; height: 24px;"></i>
+                                </div>
+                                <div>
+                                    <h3 class="card-title">AI Staff Scheduler</h3>
+                                    <p class="card-description">Provide data to generate an optimized weekly schedule.</p>
+                                </div>
+                            </div>
+                            <div class="card-content">
+                                <div class="input-group">
+                                    <label>Demand Forecast & Peak Hours</label>
+                                    <textarea rows="3">High traffic expected Friday and Saturday from 7-9 PM. Lunch rush is 12-2 PM daily.</textarea>
+                                </div>
+                                <div class="input-group">
+                                    <label>Special Events or Requests</label>
+                                    <textarea rows="2">Private party for 30 on Saturday requires 2 extra servers and 1 bartender from 6 PM.</textarea>
+                                </div>
+                                <div class="input-group">
+                                    <label>Employee Availability, Roles, & Pay Rates</label>
+                                    <textarea rows="4" style="font-family: monospace; font-size: 0.8rem; line-height: 1.5; opacity: 0.9;">Alice (Chef, $25.00/hr): Mon-Fri 9am-5pm; Bob (Server, $15.50/hr): available weekends; Charlie (Bartender, $18.00/hr): not available Tuesdays; David (Server, $15.50/hr): any day after 5pm.</textarea>
+                                </div>
+                                <button class="btn-primary" style="justify-content: center; width: 100%; margin-top: 0.5rem;" onclick="simulateStaffAI()">
+                                    <i data-lucide="sparkles"></i> Get AI-Powered Schedule
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Add New Hire Form -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title" style="display: flex; align-items: center; gap: 8px;"><i data-lucide="user-plus" style="width: 20px; height: 20px;"></i> Add New Hire</h3>
+                                <p class="card-description">Add an employee to use in the AI Scheduler.</p>
+                            </div>
+                            <div class="card-content">
+                                <div class="input-group">
+                                    <label>Full Name</label>
+                                    <input type="text" placeholder="e.g., Jane Doe">
+                                </div>
+                                <div class="input-group">
+                                    <label>Role</label>
+                                    <select style="width: 100%; padding: 0.75rem; background: var(--bg-surface); border: 1px solid var(--border); color: #fff; border-radius: 8px; outline: none; appearance: none; cursor: pointer;">
+                                        <option>Select a role</option>
+                                        <option>Server</option>
+                                        <option>Bartender</option>
+                                        <option>Chef</option>
+                                    </select>
+                                </div>
+                                <div class="input-group">
+                                    <label>Hourly Pay Rate ($)</label>
+                                    <input type="number" placeholder="e.g., 25.50">
+                                </div>
+                                <div class="input-group">
+                                    <label>Availability / Notes</label>
+                                    <textarea rows="2" placeholder="e.g., Available evenings and weekends."></textarea>
+                                </div>
+                                <button class="btn-outline" style="justify-content: center; width: 100%;">Add Employee to Roster</button>
+                            </div>
+                        </div>
+
+                        <!-- Manage Roles Form -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title" style="display: flex; align-items: center; gap: 8px;"><i data-lucide="settings" style="width: 20px; height: 20px;"></i> Manage Roles</h3>
+                                <p class="card-description">Add or remove roles available for scheduling.</p>
+                            </div>
+                            <div class="card-content">
+                                <div style="display: flex; gap: 8px; margin-bottom: 1.5rem;">
+                                    <input type="text" placeholder="New role name..." style="flex: 1; padding: 0.75rem; background: var(--bg-surface); border: 1px solid var(--border); color: #fff; border-radius: 8px; outline: none;">
+                                    <button class="btn-outline">Add</button>
+                                </div>
+                                <label style="font-size: 0.9rem; font-weight: 500; color: var(--text-muted); display: block; margin-bottom: 0.5rem;">Existing Roles</label>
+                                <div style="max-height: 200px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0.75rem; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 6px;">
+                                        <span style="font-size: 0.9rem;">AI Systems Coordinator</span>
+                                        <button class="btn-action" style="color: var(--danger);"><i data-lucide="trash-2" style="width: 16px; height: 16px;"></i></button>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0.75rem; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 6px;">
+                                        <span style="font-size: 0.9rem;">Assistant Manager</span>
+                                        <button class="btn-action" style="color: var(--danger);"><i data-lucide="trash-2" style="width: 16px; height: 16px;"></i></button>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0.75rem; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 6px;">
+                                        <span style="font-size: 0.9rem;">Audio/Visual Technician</span>
+                                        <button class="btn-action" style="color: var(--danger);"><i data-lucide="trash-2" style="width: 16px; height: 16px;"></i></button>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0.75rem; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 6px;">
+                                        <span style="font-size: 0.9rem;">Baker</span>
+                                        <button class="btn-action" style="color: var(--danger);"><i data-lucide="trash-2" style="width: 16px; height: 16px;"></i></button>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0.75rem; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 6px;">
+                                        <span style="font-size: 0.9rem;">Banquet Chef</span>
+                                        <button class="btn-action" style="color: var(--danger);"><i data-lucide="trash-2" style="width: 16px; height: 16px;"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Right Side: AI Results -->
+                    <div class="ai-resultsbox" id="staff-ai-box" style="align-items: center; min-height: 50vh;">
+                        <div style="background: var(--bg-card); padding: 1.5rem; border-radius: 50%; border: 1px solid var(--border); box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 1.5rem;">
+                            <i data-lucide="calendar-days" style="width: 48px; height: 48px; color: var(--accent);"></i>
+                        </div>
+                        <h3 style="font-size: 1.5rem; margin: 0 0 0.5rem 0;">Your Optimized Schedule Will Appear Here</h3>
+                        <p style="color: var(--text-muted); max-width: 400px; margin: 0 auto; line-height: 1.5;">Fill in your staffing data and let Gastronomic AI create a balanced and cost-effective weekly schedule.</p>
+                    </div>
+                </div>
+            </div>
+            <div id="page-pos" class="page-content">
+                <div class="ai-resultsbox">
+                    <i data-lucide="credit-card" style="width: 48px; height: 48px; color: var(--accent); margin-bottom: 1rem;"></i>
+                    <h2>Sales & POS Integration</h2>
+                    <p style="color: var(--text-muted);">Integrating with Toast & Square APIs...</p>
+                </div>
+            </div>
+
+            <!-- PAGE: MENU EDITOR -->
+            <div id="page-menu" class="page-content">
+                <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem;">
+                    <div>
+                        <h2 class="section-title" style="margin-bottom: 0.5rem; font-size: 1.8rem;"><i data-lucide="clipboard-list" style="color: var(--accent); width: 28px; height: 28px;"></i> Online Ordering & Menu Management</h2>
+                        <p style="color: var(--text-muted); margin: 0; font-size: 1rem;">Menu for Floridian Modern Cuisine. Manage your menu items, descriptions, prices, and modifiers below.</p>
+                    </div>
+                    <button class="btn-primary"><i data-lucide="plus" class="w-4 h-4"></i> Add New Menu Item</button>
+                </div>
+                
+                <!-- Appetizers -->
+                <div style="margin-bottom: 2.5rem;">
+                    <h3 style="font-size: 1.4rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">Appetizers</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem;">
+                        <!-- Gator Bites -->
+                        <div class="card">
+                            <div class="card-content" style="position: relative;">
+                                <button class="btn-outline" style="position: absolute; top: 1rem; right: 1rem; padding: 0.4rem 0.8rem; font-size: 0.8rem;"><i data-lucide="edit" style="width: 14px; height: 14px; margin-right: 4px;"></i> Edit</button>
+                                <h4 style="margin: 0 0 0.2rem 0; font-size: 1.25rem;">Gator Bites</h4>
+                                <p style="color: var(--accent); font-weight: 600; font-size: 1.1rem; margin: 0 0 1rem 0;">$18.00</p>
+                                <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; margin-bottom: 1rem;">Crispy fried alligator tail served with a zesty datil pepper aioli. A true taste of Florida.</p>
+                                <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); padding: 0.75rem; border-radius: 6px;">
+                                    <p style="margin: 0 0 0.5rem 0; font-size: 0.85rem; font-weight: 600;">Modifiers:</p>
+                                    <ul style="margin: 0; padding-left: 1.25rem; font-size: 0.85rem; color: var(--text-muted);">
+                                        <li>Extra Aioli (+$1.50)</li>
+                                        <li>Make it Spicy (+$1.00)</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Key West Conch Fritters -->
+                        <div class="card">
+                            <div class="card-content" style="position: relative;">
+                                <button class="btn-outline" style="position: absolute; top: 1rem; right: 1rem; padding: 0.4rem 0.8rem; font-size: 0.8rem;"><i data-lucide="edit" style="width: 14px; height: 14px; margin-right: 4px;"></i> Edit</button>
+                                <h4 style="margin: 0 0 0.2rem 0; font-size: 1.25rem;">Key West Conch Fritters</h4>
+                                <p style="color: var(--accent); font-weight: 600; font-size: 1.1rem; margin: 0 0 1rem 0;">$16.00</p>
+                                <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; margin-bottom: 0;">Golden brown and delicious fritters packed with fresh conch, served with a lime-mustard sauce.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Courses -->
+                <div style="margin-bottom: 2.5rem;">
+                    <h3 style="font-size: 1.4rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">Main Courses</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem;">
+                        <!-- Snapper -->
+                        <div class="card">
+                            <div class="card-content" style="position: relative;">
+                                <button class="btn-outline" style="position: absolute; top: 1rem; right: 1rem; padding: 0.4rem 0.8rem; font-size: 0.8rem;"><i data-lucide="edit" style="width: 14px; height: 14px; margin-right: 4px;"></i> Edit</button>
+                                <h4 style="margin: 0 0 0.2rem 0; font-size: 1.25rem;">Pan-Seared Gulf Snapper</h4>
+                                <p style="color: var(--accent); font-weight: 600; font-size: 1.1rem; margin: 0 0 1rem 0;">$38.00</p>
+                                <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; margin-bottom: 1rem;">Locally sourced snapper with a citrus butter sauce, served over coconut-infused rice and seasonal vegetables.</p>
+                                <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); padding: 0.75rem; border-radius: 6px;">
+                                    <p style="margin: 0 0 0.5rem 0; font-size: 0.85rem; font-weight: 600;">Modifiers:</p>
+                                    <ul style="margin: 0; padding-left: 1.25rem; font-size: 0.85rem; color: var(--text-muted);">
+                                        <li>Add Grilled Shrimp (+$12.00)</li>
+                                        <li>Blackened Seasoning (+$2.00)</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Skirt Steak -->
+                        <div class="card">
+                            <div class="card-content" style="position: relative;">
+                                <button class="btn-outline" style="position: absolute; top: 1rem; right: 1rem; padding: 0.4rem 0.8rem; font-size: 0.8rem;"><i data-lucide="edit" style="width: 14px; height: 14px; margin-right: 4px;"></i> Edit</button>
+                                <h4 style="margin: 0 0 0.2rem 0; font-size: 1.25rem;">Floridian Skirt Steak</h4>
+                                <p style="color: var(--accent); font-weight: 600; font-size: 1.1rem; margin: 0 0 1rem 0;">$42.00</p>
+                                <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; margin-bottom: 1rem;">Marinated in sour orange and fresh herbs, this grilled skirt steak is served with yucca fries and chimichurri.</p>
+                                <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); padding: 0.75rem; border-radius: 6px;">
+                                    <p style="margin: 0 0 0.5rem 0; font-size: 0.85rem; font-weight: 600;">Modifiers:</p>
+                                    <ul style="margin: 0; padding-left: 1.25rem; font-size: 0.85rem; color: var(--text-muted);">
+                                        <li>Add Blue Cheese (+$4.00)</li>
+                                        <li>Sautéed Onions (+$3.00)</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Desserts -->
+                <div style="margin-bottom: 2.5rem;">
+                    <h3 style="font-size: 1.4rem; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem;">Desserts</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem;">
+                        <!-- Key Lime Pie -->
+                        <div class="card">
+                            <div class="card-content" style="position: relative;">
+                                <button class="btn-outline" style="position: absolute; top: 1rem; right: 1rem; padding: 0.4rem 0.8rem; font-size: 0.8rem;"><i data-lucide="edit" style="width: 14px; height: 14px; margin-right: 4px;"></i> Edit</button>
+                                <h4 style="margin: 0 0 0.2rem 0; font-size: 1.25rem;">Key Lime Pie</h4>
+                                <p style="color: var(--accent); font-weight: 600; font-size: 1.1rem; margin: 0 0 1rem 0;">$12.00</p>
+                                <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.5; margin-bottom: 0;">An iconic Florida dessert. Tangy, sweet, and perfectly balanced.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- PAGE: FEEDBACK -->
+            <div id="page-feedback" class="page-content">
+                <div style="margin-bottom: 2rem;">
+                    <h2 class="section-title" style="margin-bottom: 0.5rem;"><i data-lucide="message-square" style="color: var(--accent);"></i> Customer Feedback</h2>
+                    <p style="color: var(--text-muted); margin: 0;">Analyze reviews to find actionable insights.</p>
+                </div>
+
+                <div class="inventory-grid">
+                    <!-- Left Side: Form -->
+                    <div class="card" style="position: sticky; top: 2rem;">
+                        <div class="card-header" style="display: flex; gap: 15px; align-items: flex-start;">
+                            <div style="background: rgba(212, 163, 115, 0.1); color: var(--accent); padding: 12px; border-radius: 50%;">
+                                <i data-lucide="brain-circuit" style="width: 24px; height: 24px;"></i>
+                            </div>
+                            <div>
+                                <h3 class="card-title">AI Feedback Analysis</h3>
+                                <p class="card-description">Let AI analyze reviews to find actionable insights.</p>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <div class="input-group">
+                                <label>Customer Feedback Text</label>
+                                <textarea rows="4">The service was incredibly slow, but the steak was the best I've ever had. The music was a bit too loud.</textarea>
+                            </div>
+                            <div class="input-group">
+                                <label>Attach a Photo (optional)</label>
+                                <input type="file" style="padding: 0.5rem; cursor: pointer; color: var(--text-muted);">
+                            </div>
+                            <button class="btn-primary" style="justify-content: center; width: 100%; margin-top: 0.5rem;" onclick="simulateFeedbackAI()">
+                                <i data-lucide="sparkles"></i> Get AI Analysis
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Right Side: AI Results -->
+                    <div class="ai-resultsbox" id="feedback-ai-box" style="align-items: center; min-height: 50vh;">
+                        <div style="background: var(--bg-card); padding: 1.5rem; border-radius: 50%; border: 1px solid var(--border); box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 1.5rem;">
+                            <i data-lucide="message-square-plus" style="width: 48px; height: 48px; color: var(--accent);"></i>
+                        </div>
+                        <h3 style="font-size: 1.5rem; margin: 0 0 0.5rem 0;">Feedback Analysis Will Appear Here</h3>
+                        <p style="color: var(--text-muted); max-width: 400px; margin: 0 auto; line-height: 1.5;">Paste a customer review into the form and let Gastronomic AI turn complaints and compliments into opportunities.</p>
+                    </div>
+                </div>
+            </div>
+            <!-- PAGE: REPORTS -->
+            <div id="page-reports" class="page-content">
+                <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 2rem;">
+                    <div>
+                        <h2 class="section-title" style="margin-bottom: 0.5rem;"><i data-lucide="bar-chart-3" style="color: var(--accent);"></i> Reports & Analytics</h2>
+                        <p style="color: var(--text-muted); margin: 0;">Key performance indicators and data visualizations for your restaurant.</p>
+                    </div>
+                    <select style="padding: 0.5rem 1rem; background: var(--bg-surface); border: 1px solid var(--border); color: #fff; border-radius: 8px; outline: none; appearance: none; cursor: pointer; padding-right: 2rem; background-image: url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2216%22 height=%2216%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22white%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><polyline points=%226 9 12 15 18 9%22/></svg>'); background-repeat: no-repeat; background-position: right 0.7rem center;">
+                        <option>Last 7 Days</option>
+                        <option>Last 30 Days</option>
+                        <option>This Quarter</option>
+                    </select>
+                </div>
+
+                <!-- KPI Grid -->
+                <div class="kpi-grid" style="margin-bottom: 2rem;">
+                    <div class="kpi-card success">
+                        <div class="kpi-header"><h3 class="kpi-title">Total Revenue</h3><i data-lucide="dollar-sign" class="kpi-icon"></i></div>
+                        <p class="kpi-value text-success">$<span class="animate-number" data-value="29606.00">0.00</span></p>
+                        <p class="kpi-subtext" style="color: var(--success); opacity: 0.9;"><i data-lucide="trending-up" style="width: 12px; height: 12px; margin-right: 4px;"></i>+15.2% from last week</p>
+                    </div>
+                    <div class="kpi-card danger">
+                        <div class="kpi-header"><h3 class="kpi-title">Food Cost</h3><i data-lucide="apple" class="kpi-icon"></i></div>
+                        <p class="kpi-value text-danger">$<span class="animate-number" data-value="8141.65">0.00</span></p>
+                        <p class="kpi-subtext" style="color: var(--danger); opacity: 0.9;"><i data-lucide="trending-up" style="width: 12px; height: 12px; margin-right: 4px;"></i>+3.1% from last week (27.5% of rev)</p>
+                    </div>
+                    <div class="kpi-card highlight">
+                        <div class="kpi-header"><h3 class="kpi-title">Total Orders</h3><i data-lucide="receipt" class="kpi-icon"></i></div>
+                        <p class="kpi-value" style="color: var(--accent);">+<span class="animate-number" data-value="852" data-is-int="true">0</span></p>
+                        <p class="kpi-subtext" style="color: var(--accent); opacity: 0.9;"><i data-lucide="trending-up" style="width: 12px; height: 12px; margin-right: 4px;"></i>+18.5% from last week</p>
+                    </div>
+                    <div class="kpi-card highlight">
+                        <div class="kpi-header"><h3 class="kpi-title">Avg. Guests per Day</h3><i data-lucide="users" class="kpi-icon"></i></div>
+                        <p class="kpi-value" style="color: var(--accent);"><span class="animate-number" data-value="122" data-is-int="true">0</span></p>
+                        <p class="kpi-subtext" style="color: var(--accent); opacity: 0.9;"><i data-lucide="trending-up" style="width: 12px; height: 12px; margin-right: 4px;"></i>+8% from last week</p>
+                    </div>
+                    <div class="kpi-card" style="border-color: var(--accent); background: rgba(212,163,115,0.05); grid-column: span 2;">
+                        <div class="kpi-header"><h3 class="kpi-title">Top Selling Item</h3><i data-lucide="trophy" class="kpi-icon" style="color: var(--accent);"></i></div>
+                        <p class="kpi-value" style="font-size: 1.25rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-top: 0.5rem; padding-bottom: 0.25rem;">Pan-Seared Snapper</p>
+                        <p class="kpi-subtext" style="color: var(--text-muted);">120 units sold this week</p>
+                    </div>
+                </div>
+
+                <!-- Charts Area: CSS Mockups -->
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+                    
+                    <!-- Graph 1: Daily Revenue -->
+                    <div class="card" style="display: flex; flex-direction: column;">
+                        <div class="card-header" style="border-bottom: none; padding-bottom: 0;">
+                            <h3 style="margin: 0 0 0.5rem 0; font-size: 1.2rem;">Daily Revenue</h3>
+                            <p style="margin: 0; font-size: 0.9rem; color: var(--text-muted);">Revenue for the last 7 days.</p>
+                        </div>
+                        <div class="card-content" style="flex: 1; display: flex; align-items: flex-end; justify-content: space-around; padding-top: 2rem; position: relative;">
+                            <!-- Y-axis guide lines mock -->
+                            <div style="position: absolute; left: 1.5rem; right: 1.5rem; top: 1rem; bottom: 3.5rem; display: flex; flex-direction: column; justify-content: space-between; z-index: 0; opacity: 0.1;">
+                                <div style="border-bottom: 1px dashed #fff; position: relative;"><span style="position: absolute; left: -2rem; top: -0.5rem; font-size: 0.7rem;">$10k</span></div>
+                                <div style="border-bottom: 1px dashed #fff; position: relative;"><span style="position: absolute; left: -2rem; top: -0.5rem; font-size: 0.7rem;">$7.5k</span></div>
+                                <div style="border-bottom: 1px dashed #fff; position: relative;"><span style="position: absolute; left: -2rem; top: -0.5rem; font-size: 0.7rem;">$5k</span></div>
+                                <div style="border-bottom: 1px dashed #fff; position: relative;"><span style="position: absolute; left: -2rem; top: -0.5rem; font-size: 0.7rem;">$2.5k</span></div>
+                            </div>
+                            
+                            <!-- bars -->
+                            <div style="z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; height: 100%; justify-content: flex-end;">
+                                <div style="width: 40px; height: 40%; background: var(--accent); border-radius: 4px 4px 0 0; opacity: 0.8;"></div>
+                                <span style="font-size: 0.8rem; color: var(--text-muted);">Mon</span>
+                            </div>
+                            <div style="z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; height: 100%; justify-content: flex-end;">
+                                <div style="width: 40px; height: 45%; background: var(--accent); border-radius: 4px 4px 0 0; opacity: 0.8;"></div>
+                                <span style="font-size: 0.8rem; color: var(--text-muted);">Tue</span>
+                            </div>
+                            <div style="z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; height: 100%; justify-content: flex-end;">
+                                <div style="width: 40px; height: 35%; background: var(--accent); border-radius: 4px 4px 0 0; opacity: 0.8;"></div>
+                                <span style="font-size: 0.8rem; color: var(--text-muted);">Wed</span>
+                            </div>
+                            <div style="z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; height: 100%; justify-content: flex-end;">
+                                <div style="width: 40px; height: 60%; background: var(--accent); border-radius: 4px 4px 0 0; opacity: 0.8;"></div>
+                                <span style="font-size: 0.8rem; color: var(--text-muted);">Thu</span>
+                            </div>
+                            <div style="z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; height: 100%; justify-content: flex-end;">
+                                <div style="width: 40px; height: 85%; background: var(--success); border-radius: 4px 4px 0 0;"></div>
+                                <span style="font-size: 0.8rem; color: var(--text-primary); font-weight: 600;">Fri</span>
+                            </div>
+                            <div style="z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; height: 100%; justify-content: flex-end;">
+                                <div style="width: 40px; height: 95%; background: var(--success); border-radius: 4px 4px 0 0;"></div>
+                                <span style="font-size: 0.8rem; color: var(--text-primary); font-weight: 600;">Sat</span>
+                            </div>
+                            <div style="z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; height: 100%; justify-content: flex-end;">
+                                <div style="width: 40px; height: 65%; background: var(--accent); border-radius: 4px 4px 0 0; opacity: 0.8;"></div>
+                                <span style="font-size: 0.8rem; color: var(--text-muted);">Sun</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                        <!-- Graph 2: Sales by Category -->
+                        <div class="card">
+                            <div class="card-header" style="border-bottom: none; padding-bottom: 0;">
+                                <h3 style="margin: 0 0 0.5rem 0; font-size: 1.1rem;">Sales by Category</h3>
+                                <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted);">Click a category to drill down into items.</p>
+                            </div>
+                            <div class="card-content" style="display: flex; flex-direction: column; gap: 0.8rem;">
+                                <div>
+                                    <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 0.3rem;"><span style="color: var(--text-primary);">Main Courses (45%)</span><span style="font-family: monospace;">$13.3k</span></div>
+                                    <div style="width: 100%; height: 8px; background: var(--bg-surface); border-radius: 4px; overflow: hidden;"><div style="width: 45%; height: 100%; background: var(--accent);"></div></div>
+                                </div>
+                                <div>
+                                    <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 0.3rem;"><span style="color: var(--text-primary);">Beverages (25%)</span><span style="font-family: monospace;">$7.4k</span></div>
+                                    <div style="width: 100%; height: 8px; background: var(--bg-surface); border-radius: 4px; overflow: hidden;"><div style="width: 25%; height: 100%; background: var(--success);"></div></div>
+                                </div>
+                                <div>
+                                    <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 0.3rem;"><span style="color: var(--text-primary);">Appetizers (20%)</span><span style="font-family: monospace;">$5.9k</span></div>
+                                    <div style="width: 100%; height: 8px; background: var(--bg-surface); border-radius: 4px; overflow: hidden;"><div style="width: 20%; height: 100%; background: var(--warning);"></div></div>
+                                </div>
+                                <div>
+                                    <div style="display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 0.3rem;"><span style="color: var(--text-primary);">Desserts (10%)</span><span style="font-family: monospace;">$3.0k</span></div>
+                                    <div style="width: 100%; height: 8px; background: var(--bg-surface); border-radius: 4px; overflow: hidden;"><div style="width: 10%; height: 100%; background: rgba(255,255,255,0.5);"></div></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Graph 3: Revenue vs Labor Cost -->
+                        <div class="card">
+                            <div class="card-header" style="border-bottom: none; padding-bottom: 0;">
+                                <h3 style="margin: 0 0 0.5rem 0; font-size: 1.1rem;">Rev vs Labor Cost</h3>
+                                <p style="margin: 0; font-size: 0.85rem; color: var(--text-muted);">Comparison over last 7 days.</p>
+                            </div>
+                            <div class="card-content" style="position: relative; height: 120px; display: flex; align-items: flex-end; padding-top: 0.5rem;">
+                                <svg width="100%" height="90" viewBox="0 0 300 90" preserveAspectRatio="none" style="overflow: visible;">
+                                    <path d="M0,70 L50,60 L100,75 L150,40 L200,10 L250,5 L300,30" fill="none" stroke="var(--success)" stroke-width="3" />
+                                    <path d="M0,80 L50,75 L100,82 L150,60 L200,50 L250,45 L300,55" fill="none" stroke="var(--danger)" stroke-width="2" stroke-dasharray="4" />
+                                </svg>
+                                <div style="position: absolute; bottom: 0.5rem; left: 1.5rem; right: 1.5rem; display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text-muted);">
+                                    <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+            <div id="page-smartmenu" class="page-content">
+                <div class="ai-resultsbox">
+                    <i data-lucide="sparkles" style="width: 48px; height: 48px; color: var(--accent); margin-bottom: 1rem;"></i>
+                    <h2>Smart Menu AI</h2>
+                    <p style="color: var(--text-muted);">AI engine to optimize menu items for maximum ROI.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        const pageTitles = {
+            'formula86': 'Overview Dashboard',
+            'contact': 'Contact Messages',
+            'reservations': 'Reservations Management',
+            'inventory': 'AI Inventory Analysis',
+            'staff': 'Staff Scheduling',
+            'pos': 'Sales & POS',
+            'feedback': 'Customer Feedback',
+            'reports': 'Reports & Analytics',
+            'smartmenu': 'Smart Menu AI',
+            'menu': 'Online Ordering & Menu Management'
+        };
+
+        // Tab Switching Logic for SPA
+        function switchPage(pageId) {
+            // Hide all pages
+            document.querySelectorAll('.page-content').forEach(el => el.classList.remove('active'));
+            // Deselect all nav links
+            document.querySelectorAll('.nav-link').forEach(el => el.classList.remove('active'));
+            
+            // Show target page
+            document.getElementById('page-' + pageId).classList.add('active');
+            // Highlight target nav
+            document.getElementById('nav-' + pageId).classList.add('active');
+            // Update topbar title
+            if(pageTitles[pageId]) {
+                document.getElementById('topbar-title').innerText = pageTitles[pageId];
+            }
+
+            if(pageId === 'formula86' || pageId === 'reports') {
+                animateNumbers();
+            }
+        }
+
+        function simulateAI() {
+            const box = document.getElementById('inventory-ai-box');
+            box.innerHTML = `<i data-lucide="loader-2" class="lucide-animate-spin" style="width: 40px; height: 40px; color: var(--accent); margin-bottom: 1rem; animation: spin 2s linear infinite;"></i>
+                             <h3 style="font-size: 1.25rem;">AI is analyzing your inventory...</h3>`;
+            lucide.createIcons();
+            
+            setTimeout(() => {
+                box.style.textAlign = 'left';
+                box.style.display = 'block';
+                box.innerHTML = `
+                    <h3 style="margin-top: 0; color: #fff;">Purchasing Recommendations</h3>
+                    <div style="background: var(--bg-card); border: 1px solid var(--border); padding: 1.5rem; border-radius: 8px; margin-bottom: 1rem;">
+                        <h4 style="margin: 0 0 0.5rem 0; color: var(--accent); display: flex; align-items: center; gap: 8px;"><i data-lucide="shopping-cart" style="width: 16px; height: 16px;"></i> Order 50 lbs Flour</h4>
+                        <p style="margin: 0; color: var(--text-muted); font-size: 0.9rem;">With the corporate party of 50 on Friday, and a 15% sales bump expected, your current stock of 50 lbs will not cover pastry prep.</p>
+                    </div>
+                     <div style="background: var(--bg-card); border: 1px solid var(--border); padding: 1.5rem; border-radius: 8px;">
+                        <h4 style="margin: 0 0 0.5rem 0; color: var(--accent); display: flex; align-items: center; gap: 8px;"><i data-lucide="shopping-cart" style="width: 16px; height: 16px;"></i> Order 3 Extra Bottles Vodka</h4>
+                        <p style="margin: 0; color: var(--text-muted); font-size: 0.9rem;">Bar inventory is low for weekend service. Suggesting immediate restock.</p>
+                    </div>
+                `;
+                lucide.createIcons();
+            }, 1500);
+        }
+
+        function simulateStaffAI() {
+            const box = document.getElementById('staff-ai-box');
+            box.style.display = 'flex';
+            box.style.textAlign = 'center';
+            box.innerHTML = `<i data-lucide="loader-2" class="lucide-animate-spin" style="width: 48px; height: 48px; color: var(--accent); margin-bottom: 1rem; animation: spin 2s linear infinite;"></i>
+                             <h3 style="font-size: 1.25rem;">AI is building your schedule...</h3>
+                             <p style="color: var(--text-muted); font-size: 0.9rem; max-width: 300px; margin: 0 auto;">Optimizing shifts based on your forecasts, staff availability, and special events.</p>`;
+            lucide.createIcons();
+            
+            setTimeout(() => {
+                box.style.display = 'block';
+                box.style.textAlign = 'left';
+                box.innerHTML = `
+                    <div class="card" style="margin-bottom: 1.5rem;">
+                        <div class="card-header" style="padding-bottom: 1rem;">
+                            <h3 class="card-title" style="font-size: 1.4rem;">AI-Generated Weekly Schedule</h3>
+                            <p class="card-description">Schedule generated successfully, optimizing for peak hours and reducing overlap.</p>
+                        </div>
+                        <div class="card-content" style="background: rgba(255,255,255,0.03); display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border);">
+                            <span style="font-weight: 600; font-size: 1.1rem;">Total Weekly Labor Cost:</span>
+                            <span style="font-weight: 700; font-size: 1.5rem; color: var(--accent);">$1,452.50</span>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr; gap: 1rem;">
+                        <div class="card">
+                            <div class="card-header" style="display: flex; justify-content: space-between; padding: 1rem 1.5rem; border-bottom: 1px solid var(--border);">
+                                <h3 style="margin: 0; font-size: 1.1rem;">Friday</h3>
+                                <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted);"><i data-lucide="dollar-sign" style="width: 14px; height: 14px; margin-bottom: -2px;"></i>703.50</div>
+                            </div>
+                            <div class="card-content" style="padding: 1rem 1.5rem;">
+                                <div style="display: flex; justify-content: space-between; background: var(--bg-surface); padding: 0.75rem; border-radius: 6px; margin-bottom: 0.5rem; align-items: center;">
+                                    <div><p style="margin: 0; font-weight: 600; font-size: 0.95rem;">Alice</p><p style="margin: 0; font-size: 0.8rem; color: var(--text-muted);">Chef</p></div>
+                                    <div style="font-family: monospace; font-size: 0.85rem;"><i data-lucide="clock" style="width: 12px; height: 12px; margin-right: 4px; opacity: 0.6;"></i>9:00 AM - 5:00 PM <strong style="font-family: sans-serif; margin-left: 4px;">(8 hrs)</strong></div>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; background: var(--bg-surface); padding: 0.75rem; border-radius: 6px; margin-bottom: 0.5rem; align-items: center;">
+                                    <div><p style="margin: 0; font-weight: 600; font-size: 0.95rem;">Bob</p><p style="margin: 0; font-size: 0.8rem; color: var(--text-muted);">Server</p></div>
+                                    <div style="font-family: monospace; font-size: 0.85rem;"><i data-lucide="clock" style="width: 12px; height: 12px; margin-right: 4px; opacity: 0.6;"></i>11:00 AM - 7:00 PM <strong style="font-family: sans-serif; margin-left: 4px;">(8 hrs)</strong></div>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; background: var(--bg-surface); padding: 0.75rem; border-radius: 6px; margin-bottom: 0.5rem; align-items: center;">
+                                    <div><p style="margin: 0; font-weight: 600; font-size: 0.95rem;">Charlie</p><p style="margin: 0; font-size: 0.8rem; color: var(--text-muted);">Bartender</p></div>
+                                    <div style="font-family: monospace; font-size: 0.85rem;"><i data-lucide="clock" style="width: 12px; height: 12px; margin-right: 4px; opacity: 0.6;"></i>5:00 PM - 12:00 AM <strong style="font-family: sans-serif; margin-left: 4px;">(7 hrs)</strong></div>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; background: var(--bg-surface); padding: 0.75rem; border-radius: 6px; align-items: center;">
+                                    <div><p style="margin: 0; font-weight: 600; font-size: 0.95rem;">David</p><p style="margin: 0; font-size: 0.8rem; color: var(--text-muted);">Server</p></div>
+                                    <div style="font-family: monospace; font-size: 0.85rem;"><i data-lucide="clock" style="width: 12px; height: 12px; margin-right: 4px; opacity: 0.6;"></i>5:00 PM - 11:00 PM <strong style="font-family: sans-serif; margin-left: 4px;">(6 hrs)</strong></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                lucide.createIcons();
+            }, 1800);
+        }
+
+        function simulateFeedbackAI() {
+            const box = document.getElementById('feedback-ai-box');
+            box.style.display = 'flex';
+            box.style.textAlign = 'center';
+            box.innerHTML = `<i data-lucide="loader-2" class="lucide-animate-spin" style="width: 48px; height: 48px; color: var(--accent); margin-bottom: 1rem; animation: spin 2s linear infinite;"></i>
+                             <h3 style="font-size: 1.25rem;">AI is analyzing the feedback...</h3>
+                             <p style="color: var(--text-muted); font-size: 0.9rem; max-width: 300px; margin: 0 auto;">Extracting sentiment, identifying key issues, and drafting response suggestions.</p>`;
+            lucide.createIcons();
+            
+            setTimeout(() => {
+                box.style.display = 'block';
+                box.style.textAlign = 'left';
+                box.innerHTML = `
+                    <div class="card" style="margin-bottom: 1.5rem;">
+                        <div class="card-header" style="padding-bottom: 1rem; border-bottom: 1px solid var(--border);">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <h3 class="card-title" style="font-size: 1.4rem;">Analysis Results</h3>
+                                    <p class="card-description">Automated sentiment and action item breakdown.</p>
+                                </div>
+                                <span class="badge warning" style="font-size: 0.9rem; padding: 0.4rem 1rem;">Mixed Sentiment</span>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <h4 style="margin: 0 0 0.5rem 0; color: var(--danger); display: flex; align-items: center; gap: 8px;"><i data-lucide="alert-triangle" style="width: 18px; height: 18px;"></i> Identified Complaints</h4>
+                            <ul style="margin: 0 0 1.5rem 0; padding-left: 1.5rem; color: var(--text-muted);">
+                                <li>Service speed marked as "incredibly slow".</li>
+                                <li>Ambiance issue: "music was a bit too loud".</li>
+                            </ul>
+
+                            <h4 style="margin: 0 0 0.5rem 0; color: var(--success); display: flex; align-items: center; gap: 8px;"><i data-lucide="thumbs-up" style="width: 18px; height: 18px;"></i> Identified Compliments</h4>
+                            <ul style="margin: 0 0 1.5rem 0; padding-left: 1.5rem; color: var(--text-muted);">
+                                <li>Food quality highly praised: "steak was the best I've ever had".</li>
+                            </ul>
+
+                            <h4 style="margin: 0 0 0.5rem 0; color: var(--accent); display: flex; align-items: center; gap: 8px;"><i data-lucide="lightbulb" style="width: 18px; height: 18px;"></i> Actionable Recommendations</h4>
+                            <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); padding: 1rem; border-radius: 8px; font-size: 0.9rem; color: var(--text-primary); line-height: 1.5;">
+                                <strong style="color: var(--accent);">Immediate:</strong> Reduce master volume setting by 15% during peak hours.<br><br>
+                                <strong style="color: var(--accent);">Management:</strong> Review table turnaround times and kitchen-to-floor flow on the specific date of this review to address "slow service" bottleneck.
+                            </div>
+                        </div>
+                    </div>
+                `;
+                lucide.createIcons();
+            }, 1800);
+        }
+
+        // Animate statistic numbers
+        function animateNumbers() {
+            const counters = document.querySelectorAll('.animate-number');
+            counters.forEach(counter => {
+                const target = parseFloat(counter.getAttribute('data-value'));
+                const isPercent = counter.hasAttribute('data-is-percent');
+                const duration = 1200; 
+                let startTimestamp = null;
+                const step = (timestamp) => {
+                    if (!startTimestamp) startTimestamp = timestamp;
+                    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                    const easeOut = 1 - Math.pow(1 - progress, 4);
+                    const currentValue = easeOut * target;
+                    const isInt = counter.hasAttribute('data-is-int');
+                    if (isPercent) {
+                        counter.innerText = currentValue.toFixed(1);
+                    } else if (isInt) {
+                        counter.innerText = Math.round(currentValue).toLocaleString('en-US');
+                    } else {
+                        counter.innerText = currentValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    }
+                    if (progress < 1) {
+                        window.requestAnimationFrame(step);
+                    }
+                };
+                window.requestAnimationFrame(step);
+            });
+        }
+        
+        // Initial setup
+        const style = document.createElement('style');
+        style.innerHTML = `@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`;
+        document.head.appendChild(style);
+        animateNumbers();
+    </script>
+</body>
+</html>

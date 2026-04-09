@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Menu Editor - Gastronomic AI</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        .menu-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .menu-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            border-color: var(--accent);
+        }
+        .menu-img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-bottom: 1px solid var(--border);
+        }
+        .menu-content {
+            padding: 1.5rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .menu-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
+        }
+        .menu-title {
+            margin: 0;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #fff;
+        }
+        .menu-price {
+            color: var(--accent);
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+        .menu-desc {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            line-height: 1.4;
+            flex: 1;
+        }
+        .menu-modifiers {
+            margin-top: 1rem;
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        .modifier-badge {
+            background: #2a2a2d;
+            border: 1px solid var(--border);
+            color: #ddd;
+            font-size: 0.75rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+        }
+        .menu-action {
+            margin-top: 1.5rem;
+            width: 100%;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: #fff;
+            padding: 0.75rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-weight: 600;
+        }
+        .menu-action:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .section-header {
+            margin-top: 3rem;
+            margin-bottom: -0.5rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+        .section-header h2 {
+            font-weight: 300;
+            color: #fff;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <nav class="sidebar">
+        <a href="landing.html" class="brand" style="text-decoration: none; color: inherit; cursor: pointer;">Gastronomic AI</a>
+        <a href="dashboard.html" class="nav-link" id="nav-dashboard">Formula 86 Hub</a>
+        <a href="module1.html" class="nav-link" id="nav-module1">AI Chef Assistant</a>
+        <a href="module2.html" class="nav-link active" id="nav-module2">Smart Menu Editor</a>
+    </nav>
+    <main class="main-content">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 1rem;">
+            <div>
+                <h1 style="border: none; padding: 0; margin-bottom: 0.5rem;">Online Ordering & Menu Management</h1>
+                <p style="color: var(--text-muted); margin: 0; font-size: 0.95rem;">Menu for Floridian Modern Cuisine. Manage your menu items, descriptions, prices, and modifiers below.</p>
+            </div>
+            <button class="btn">+ Add New Menu Item</button>
+        </div>
+        
+        <div class="section-header" style="margin-top: 2rem;">
+            <h2>Appetizers</h2>
+        </div>
+        <div class="menu-grid">
+            <div class="menu-card">
+                <img src="https://firebasestorage.googleapis.com/v0/b/gastronomic-ai-landing.firebasestorage.app/o/Chez%20Lui%20Cafe%2FGastronomic%20Ai%2FImages%2FGator_Bites_with.jpeg?alt=media&token=608f7f95-9e53-45ab-a340-00165eeec108" class="menu-img" alt="Gator Bites">
+                <div class="menu-content">
+                    <div class="menu-header">
+                        <h3 class="menu-title">Gator Bites</h3>
+                        <span class="menu-price">$18.00</span>
+                    </div>
+                    <p class="menu-desc">Crispy fried alligator tail served with a zesty datil pepper aioli. A true taste of Florida.</p>
+                    <div class="menu-modifiers">
+                        <span class="modifier-badge">Extra Aioli (+$1.50)</span>
+                        <span class="modifier-badge">Make it Spicy (+$1.00)</span>
+                    </div>
+                    <button class="menu-action" onclick="alert('Mock Edit Triggered')">Edit Item</button>
+                </div>
+            </div>
+
+            <div class="menu-card">
+                <img src="https://firebasestorage.googleapis.com/v0/b/gastronomic-ai-landing.firebasestorage.app/o/Chez%20Lui%20Cafe%2FGastronomic%20Ai%2FImages%2FConch%20fritters.jpeg?alt=media&token=6856c76e-870f-4567-aa3e-3745a3810bc0" class="menu-img" alt="Conch Fritters">
+                <div class="menu-content">
+                    <div class="menu-header">
+                        <h3 class="menu-title">Key West Conch Fritters</h3>
+                        <span class="menu-price">$16.00</span>
+                    </div>
+                    <p class="menu-desc">Golden brown and delicious fritters packed with fresh conch, served with a lime-mustard sauce.</p>
+                    <button class="menu-action" onclick="alert('Mock Edit Triggered')">Edit Item</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-header">
+            <h2>Main Courses</h2>
+        </div>
+        <div class="menu-grid">
+            <div class="menu-card">
+                <img src="https://firebasestorage.googleapis.com/v0/b/gastronomic-ai-landing.firebasestorage.app/o/Chez%20Lui%20Cafe%2FGastronomic%20Ai%2FImages%2FPan-Seared%20Gulf%20Snapper.jpeg?alt=media&token=c10ec2b2-a659-4f34-a26f-9c2fe46c812c" class="menu-img" alt="Gulf Snapper">
+                <div class="menu-content">
+                    <div class="menu-header">
+                        <h3 class="menu-title">Pan-Seared Gulf Snapper</h3>
+                        <span class="menu-price">$38.00</span>
+                    </div>
+                    <p class="menu-desc">Locally sourced snapper with a citrus butter sauce, served over coconut-infused rice and seasonal vegetables.</p>
+                    <div class="menu-modifiers">
+                        <span class="modifier-badge">Add Grilled Shrimp (+$12.00)</span>
+                        <span class="modifier-badge">Blackened Seasoning (+$2.00)</span>
+                    </div>
+                    <button class="menu-action" onclick="alert('Mock Edit Triggered')">Edit Item</button>
+                </div>
+            </div>
+
+            <div class="menu-card">
+                <img src="https://firebasestorage.googleapis.com/v0/b/gastronomic-ai-landing.firebasestorage.app/o/Chez%20Lui%20Cafe%2FGastronomic%20Ai%2FImages%2FFloridian%20Skirt%20Steak.jpeg?alt=media&token=2fb45026-429b-4a89-91cb-e7d5268fbd05" class="menu-img" alt="Skirt Steak">
+                <div class="menu-content">
+                    <div class="menu-header">
+                        <h3 class="menu-title">Floridian Skirt Steak</h3>
+                        <span class="menu-price">$42.00</span>
+                    </div>
+                    <p class="menu-desc">Marinated in sour orange and fresh herbs, this grilled skirt steak is served with yucca fries and chimichurri.</p>
+                    <div class="menu-modifiers">
+                        <span class="modifier-badge">Add Blue Cheese (+$4.00)</span>
+                        <span class="modifier-badge">Sautéed Onions (+$3.00)</span>
+                    </div>
+                    <button class="menu-action" onclick="alert('Mock Edit Triggered')">Edit Item</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="section-header">
+            <h2>Desserts</h2>
+        </div>
+        <div class="menu-grid">
+            <div class="menu-card">
+                <img src="https://firebasestorage.googleapis.com/v0/b/gastronomic-ai-landing.firebasestorage.app/o/Chez%20Lui%20Cafe%2FGastronomic%20Ai%2FImages%2FKey%20Lime%20Pie.jpeg?alt=media&token=bedfa68c-0441-4370-82be-ef0d0666197a" class="menu-img" alt="Key Lime Pie">
+                <div class="menu-content">
+                    <div class="menu-header">
+                        <h3 class="menu-title">Key Lime Pie</h3>
+                        <span class="menu-price">$12.00</span>
+                    </div>
+                    <p class="menu-desc">An iconic Florida dessert. Tangy, sweet, and creamy with a graham cracker crust and whipped cream.</p>
+                    <button class="menu-action" onclick="alert('Mock Edit Triggered')">Edit Item</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/shared.js"></script>
+</body>
+</html>
