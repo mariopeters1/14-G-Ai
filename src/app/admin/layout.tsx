@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import Logo from '@/components/logo';
 import { Mail, MessageSquare, UtensilsCrossed, Sparkles, Users, Archive, UserCog, Receipt, ClipboardList, FileText, BarChart4, Bot, BellRing, ChefHat } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { motion, AnimatePresence } from 'framer-motion';
 import { useToast } from '@/hooks/use-toast';
 import { useEffect, useState } from 'react';
@@ -131,7 +132,9 @@ export default function AdminLayout({
                     href="/admin/ai-chef"
                     className={`flex items-center gap-2 py-4 px-1 transition-colors hover:text-primary whitespace-nowrap ${pathname === '/admin/ai-chef' ? 'text-primary border-b-2 border-primary' : 'text-muted-foreground'}`}
                 >
-                    <Bot className="h-4 w-4" />
+                    <Avatar className="h-5 w-5 mr-1 border border-primary/30">
+                        <AvatarImage src="https://firebasestorage.googleapis.com/v0/b/gastronomic-ai-landing.firebasestorage.app/o/Chez%20Lui%20Cafe%2FGastronomic%20Ai%2FImages%2FMario%20Peters%20(1).png?alt=media&token=20d65f5e-ab91-4522-b619-3b471ca7f842" alt="Chef Mario" />
+                    </Avatar>
                     Chef Mario Peters
                 </Link>
                 <Link
