@@ -68,7 +68,7 @@ export default function Hero() {
           className="mt-10 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:justify-center items-center"
         >
           <Button size="lg" className="h-14 px-8 text-lg rounded-full shadow-[0_0_20px_rgba(255,192,30,0.3)] hover:shadow-[0_0_30px_rgba(255,192,30,0.5)] transition-all duration-300" asChild>
-            <Link href="#contact">Request a Demo</Link>
+            <Link href="#contact-us">Request a Demo</Link>
           </Button>
           <Button size="lg" variant="outline" className="h-14 px-8 text-lg rounded-full border-primary/30 hover:border-primary hover:bg-primary/5 transition-all duration-300" asChild>
             <Link href="/roadmap">Discover Formula-86</Link>

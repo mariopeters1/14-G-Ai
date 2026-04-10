@@ -72,7 +72,9 @@ export default function SmartMenuPage() {
         <div className="lg:col-span-2">
            <Card className="sticky top-24">
             <CardHeader>
-              <CardTitle className="font-headline text-3xl">Smart Menu AI</CardTitle>
+              <CardTitle className="font-headline text-3xl flex items-center gap-2">
+                <ChefHat className="text-primary h-8 w-8" /> Smart Menu
+              </CardTitle>
               <CardDescription>
                 Generate personalized menus based on guest needs, health data, and your current inventory.
               </CardDescription>

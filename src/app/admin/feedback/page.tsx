@@ -1,266 +1,107 @@
-'use client';
+"use client";
 
-import { useState, useRef } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import Image from 'next/image';
-import { analyzeFeedback, type CustomerFeedbackOutput } from '@/ai/flows/customer-feedback-analysis-flow';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Textarea } from '@/components/ui/textarea';
-import { Input } from '@/components/ui/input';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { useToast } from '@/hooks/use-toast';
-import {
-  Loader2,
-  Sparkles,
-  Lightbulb,
-  MessageSquare,
-  ThumbsUp,
-  ThumbsDown,
-  Meh,
-  FileImage,
-  X,
-  ClipboardList,
-  BrainCircuit,
-} from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { MessageSquare, BrainCircuit, Sparkles, MessageSquarePlus, Loader2, AlertTriangle, ThumbsUp, Lightbulb } from "lucide-react";
+import { useState } from "react";
 
-const formSchema = z.object({
-  feedbackText: z.string().min(10, { message: 'Please provide more detailed feedback.' }),
-  photo: z.instanceof(File).optional(),
-});
+export default function FeedbackPage() {
+  const [isSimulating, setIsSimulating] = useState("idle");
 
-type FormData = z.infer<typeof formSchema>;
-
-const SentimentDisplay = ({ sentiment }: { sentiment: CustomerFeedbackOutput['sentiment'] }) => {
-    const sentimentConfig = {
-        Positive: { icon: ThumbsUp, color: 'text-green-500', bgColor: 'bg-green-100 dark:bg-green-900/50', label: 'Positive' },
-        Negative: { icon: ThumbsDown, color: 'text-destructive', bgColor: 'bg-destructive/10', label: 'Negative' },
-        Mixed: { icon: Meh, color: 'text-yellow-500', bgColor: 'bg-yellow-100 dark:bg-yellow-900/50', label: 'Mixed' },
-        Neutral: { icon: MessageSquare, color: 'text-muted-foreground', bgColor: 'bg-muted', label: 'Neutral' },
-    };
-    const config = sentimentConfig[sentiment];
-    const Icon = config.icon;
-
-    return (
-         <Badge variant="outline" className={`text-lg gap-2 pl-2 pr-3 border-2 ${config.bgColor} ${config.color}`}>
-            <Icon className="h-5 w-5" />
-            <span className="font-semibold">{config.label}</span>
-        </Badge>
-    )
-}
-
-export default function CustomerFeedbackPage() {
-  const { toast } = useToast();
-  const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<CustomerFeedbackOutput | null>(null);
-  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const form = useForm<FormData>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      feedbackText: "The service was incredibly slow, but the steak was the best I've ever had. The music was a bit too loud.",
-    },
-  });
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      form.setValue('photo', file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPhotoPreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const removePhoto = () => {
-      setPhotoPreview(null);
-      form.setValue('photo', undefined);
-      if (fileInputRef.current) {
-          fileInputRef.current.value = '';
-      }
-  }
-
-  const fileToDataUri = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
-  }
-
-  const onSubmit = async (data: FormData) => {
-    setLoading(true);
-    setResult(null);
-    try {
-      let photoDataUri: string | undefined;
-      if (data.photo) {
-        photoDataUri = await fileToDataUri(data.photo);
-      }
-      const aiResult = await analyzeFeedback({ feedbackText: data.feedbackText, photoDataUri });
-      setResult(aiResult);
-    } catch (error) {
-      console.error("Error calling AI flow:", error);
-      toast({
-        variant: 'destructive',
-        title: 'AI Error',
-        description: 'Failed to analyze feedback. Please try again.',
-      });
-    } finally {
-      setLoading(false);
-    }
+  const handleSimulate = () => {
+    setIsSimulating("loading");
+    setTimeout(() => {
+        setIsSimulating("done");
+    }, 1800);
   };
 
   return (
-    <div className="container mx-auto py-10">
-      <div className="grid lg:grid-cols-5 gap-8 items-start">
-        {/* Left Column: Form */}
-        <div className="lg:col-span-2">
-          <Card className="sticky top-24">
-             <CardHeader>
-              <div className="flex items-center gap-3">
-                <div className="flex-shrink-0 bg-primary/10 text-primary p-3 rounded-full">
-                  <BrainCircuit className="h-6 w-6" />
-                </div>
-                <div>
-                  <CardTitle className="font-headline text-2xl">AI Feedback Analysis</CardTitle>
-                  <CardDescription>
-                    Let AI analyze reviews to find actionable insights.
-                  </CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                  <FormField
-                    control={form.control}
-                    name="feedbackText"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Customer Feedback Text</FormLabel>
-                        <FormControl>
-                          <Textarea
-                            placeholder="e.g., 'The service was incredibly slow...'"
-                            className="min-h-[150px]"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <FormItem>
-                    <FormLabel>Attach a Photo (optional)</FormLabel>
-                    {photoPreview ? (
-                        <div className="relative">
-                            <Image src={photoPreview} alt="Photo preview" width={200} height={200} className="rounded-md w-full h-auto object-cover" />
-                            <Button variant="destructive" size="icon" className="absolute top-2 right-2 h-7 w-7" onClick={removePhoto}>
-                                <X className="h-4 w-4"/>
-                            </Button>
-                        </div>
-                    ) : (
-                        <FormControl>
-                            <Input type="file" accept="image/*" onChange={handleFileChange} ref={fileInputRef} />
-                        </FormControl>
-                    )}
-                    <FormMessage />
-                  </FormItem>
-                  <Button type="submit" disabled={loading} size="lg" className="w-full">
-                    {loading ? (
-                      <>
-                        <Loader2 className="mr-2 animate-spin" />
-                        Analyzing...
-                      </>
-                    ) : (
-                      <>
-                        <Sparkles className="mr-2" />
-                        Get AI Analysis
-                      </>
-                    )}
-                  </Button>
-                </form>
-              </Form>
-            </CardContent>
-          </Card>
+    <div className="legacy-dashboard-scope container mx-auto py-10">
+        <div style={{ marginBottom: '2rem' }}>
+            <h2 className="section-title" style={{ marginBottom: '0.5rem' }}><MessageSquare style={{ color: 'hsl(var(--accent))', width: '28px', height: '28px', marginRight: '8px' }} /> Customer Feedback</h2>
+            <p style={{ color: 'hsl(var(--muted-foreground))', margin: 0 }}>Analyze reviews to find actionable insights.</p>
         </div>
 
-        {/* Right Column: Results */}
-        <div className="lg:col-span-3">
-          {loading && (
-            <div className="flex flex-col items-center justify-center h-full min-h-[50vh] p-8 text-center bg-card rounded-lg border">
-                <Loader2 className="h-12 w-12 animate-spin text-primary" />
-                <h3 className="text-2xl font-headline font-bold mt-4">AI is reading the review...</h3>
-                <p className="text-muted-foreground mt-2 max-w-sm">Analyzing sentiment, identifying key topics, and preparing actionable suggestions for you.</p>
-            </div>
-          )}
-
-          {!loading && !result && (
-             <Card className="min-h-[50vh] flex flex-col items-center justify-center text-center p-8 bg-accent/50 border-dashed">
-                <div className="bg-background p-4 rounded-full border shadow-sm mb-4">
-                  <MessageSquare className="h-12 w-12 text-primary" />
+        <div className="inventory-grid">
+            {/* Left Side: Form */}
+            <div className="legacy-card" style={{ position: 'sticky', top: '2rem' }}>
+                <div className="legacy-card-header" style={{ display: 'flex', gap: '15px', alignItems: 'flex-start' }}>
+                    <div style={{ background: 'rgba(212, 163, 115, 0.1)', color: 'hsl(var(--accent))', padding: '12px', borderRadius: '50%' }}>
+                        <BrainCircuit style={{ width: '24px', height: '24px' }} />
+                    </div>
+                    <div>
+                        <h3 className="legacy-card-title">AI Feedback Analysis</h3>
+                        <p className="legacy-card-description">Let AI analyze reviews to find actionable insights.</p>
+                    </div>
                 </div>
-                <h3 className="text-2xl font-headline font-bold">Feedback Analysis Will Appear Here</h3>
-                <p className="text-muted-foreground mt-2 max-w-sm">Paste a customer review into the form and let Gastronomic AI turn complaints and compliments into opportunities.</p>
-            </Card>
-          )}
-
-          {!loading && result && (
-            <div className="space-y-6">
-                <Card>
-                    <CardHeader className="flex flex-row items-center justify-between">
-                         <CardTitle className="font-headline text-xl">Overall Sentiment</CardTitle>
-                         <SentimentDisplay sentiment={result.sentiment} />
-                    </CardHeader>
-                     <CardContent>
-                        <p className="text-muted-foreground">{result.overallSummary}</p>
-                    </CardContent>
-                </Card>
-
-                 <Card>
-                    <CardHeader>
-                        <CardTitle className="font-headline text-xl flex items-center gap-2">
-                            <ClipboardList/> Key Topics Identified
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                    {result.keyTopics.map((item, index) => (
-                        <div key={index} className="p-3 rounded-md border bg-secondary/50">
-                        <div className="flex justify-between items-center mb-1">
-                            <p className="font-semibold">{item.topic}</p>
-                             <SentimentDisplay sentiment={item.sentiment as CustomerFeedbackOutput['sentiment']} />
-                        </div>
-                        <p className="text-sm text-muted-foreground italic">"{item.details}"</p>
-                        </div>
-                    ))}
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="font-headline text-xl flex items-center gap-2">
-                           <Lightbulb/> Actionable Suggestions
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-3">
-                    {result.suggestedActions.map((rec, index) => (
-                        <div key={index} className="p-3 rounded-md bg-accent">
-                        <p className="font-semibold">{rec.action}</p>
-                        <p className="text-sm text-muted-foreground">{rec.reasoning}</p>
-                        </div>
-                    ))}
-                    </CardContent>
-                </Card>
+                <div className="legacy-card-content">
+                    <div className="legacy-input-group">
+                        <label>Customer Feedback Text</label>
+                        <textarea rows={4} defaultValue="The service was incredibly slow, but the steak was the best I've ever had. The music was a bit too loud." />
+                    </div>
+                    <div className="legacy-input-group">
+                        <label>Attach a Photo (optional)</label>
+                        <input type="file" style={{ padding: '0.5rem', cursor: 'pointer', color: 'hsl(var(--muted-foreground))' }} />
+                    </div>
+                    <button className="legacy-btn-primary" style={{ justifyContent: 'center', width: '100%', marginTop: '0.5rem' }} onClick={handleSimulate}>
+                        <Sparkles style={{ width: '18px', height: '18px' }} /> Get AI Analysis
+                    </button>
+                </div>
             </div>
-          )}
+            
+            {/* Right Side: AI Results */}
+            <div className="ai-resultsbox" id="feedback-ai-box" style={ isSimulating !== "idle" ? { alignItems: isSimulating === "loading" ? 'center' : 'flex-start', textAlign: isSimulating === "loading" ? 'center' : 'left', justifyContent: 'flex-start'} : { alignItems: 'center', minHeight: '50vh'} }>
+                {isSimulating === "idle" && (
+                     <>
+                        <div style={{ background: 'hsl(var(--card))', padding: '1.5rem', borderRadius: '50%', border: '1px solid hsl(var(--border))', boxShadow: '0 4px 10px rgba(0,0,0,0.1)', marginBottom: '1.5rem' }}>
+                            <MessageSquarePlus style={{ width: '48px', height: '48px', color: 'hsl(var(--accent))' }} />
+                        </div>
+                        <h3 style={{ fontSize: '1.5rem', margin: '0 0 0.5rem 0' }}>Feedback Analysis Will Appear Here</h3>
+                        <p style={{ color: 'hsl(var(--muted-foreground))', maxWidth: '400px', margin: '0 auto', lineHeight: 1.5 }}>Paste a customer review into the form and let Gastronomic AI turn complaints and compliments into opportunities.</p>
+                     </>
+                )}
+
+                {isSimulating === "loading" && (
+                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', marginTop: '5rem' }}>
+                        <Loader2 className="animate-spin" style={{ width: '48px', height: '48px', color: 'hsl(var(--accent))', marginBottom: '1rem' }} />
+                        <h3 style={{ fontSize: '1.25rem' }}>AI is analyzing the feedback...</h3>
+                        <p style={{ color: 'hsl(var(--muted-foreground))', fontSize: '0.9rem', maxWidth: '300px', margin: '0 auto' }}>Extracting sentiment, identifying key issues, and drafting response suggestions.</p>
+                     </div>
+                )}
+
+                {isSimulating === "done" && (
+                    <div style={{ width: '100%' }}>
+                        <div className="legacy-card" style={{ marginBottom: '1.5rem', width: '100%' }}>
+                            <div className="legacy-card-header" style={{ paddingBottom: '1rem', borderBottom: '1px solid hsl(var(--border))' }}>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                    <div>
+                                        <h3 className="legacy-card-title" style={{ fontSize: '1.4rem' }}>Analysis Results</h3>
+                                        <p className="legacy-card-description">Automated sentiment and action item breakdown.</p>
+                                    </div>
+                                    <span className="badge warning" style={{ fontSize: '0.9rem', padding: '0.4rem 1rem', background: 'rgba(245, 158, 11, 0.1)', color: 'hsl(var(--warning, 37.7 92.1% 50.2%))', border: '1px solid rgba(245, 158, 11, 0.2)', borderRadius: '999px' }}>Mixed Sentiment</span>
+                                </div>
+                            </div>
+                            <div className="legacy-card-content">
+                                <h4 style={{ margin: '0 0 0.5rem 0', color: 'hsl(var(--destructive))', display: 'flex', alignItems: 'center', gap: '8px' }}><AlertTriangle style={{ width: '18px', height: '18px' }} /> Identified Complaints</h4>
+                                <ul style={{ margin: '0 0 1.5rem 0', paddingLeft: '1.5rem', color: 'hsl(var(--muted-foreground))' }}>
+                                    <li>Service speed marked as "incredibly slow".</li>
+                                    <li>Ambiance issue: "music was a bit too loud".</li>
+                                </ul>
+
+                                <h4 style={{ margin: '0 0 0.5rem 0', color: 'hsl(var(--success, 142.1 76.2% 36.3%))', display: 'flex', alignItems: 'center', gap: '8px' }}><ThumbsUp style={{ width: '18px', height: '18px' }} /> Identified Compliments</h4>
+                                <ul style={{ margin: '0 0 1.5rem 0', paddingLeft: '1.5rem', color: 'hsl(var(--muted-foreground))' }}>
+                                    <li>Food quality highly praised: "steak was the best I've ever had".</li>
+                                </ul>
+
+                                <h4 style={{ margin: '0 0 0.5rem 0', color: 'hsl(var(--accent))', display: 'flex', alignItems: 'center', gap: '8px' }}><Lightbulb style={{ width: '18px', height: '18px' }} /> Actionable Recommendations</h4>
+                                <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid hsl(var(--border))', padding: '1rem', borderRadius: '8px', fontSize: '0.9rem', color: 'hsl(var(--foreground))', lineHeight: 1.5 }}>
+                                    <strong style={{ color: 'hsl(var(--accent))' }}>Immediate:</strong> Reduce master volume setting by 15% during peak hours.<br /><br />
+                                    <strong style={{ color: 'hsl(var(--accent))' }}>Management:</strong> Review table turnaround times and kitchen-to-floor flow on the specific date of this review to address "slow service" bottleneck.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
+            </div>
         </div>
-      </div>
     </div>
   );
 }

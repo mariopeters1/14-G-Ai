@@ -17,6 +17,21 @@ import { Loader2, Sparkles, Lightbulb, TrendingUp, TrendingDown, BarChart, FileT
 import { Separator } from '@/components/ui/separator';
 import { BarChart as RechartsBarChart, CartesianGrid, XAxis, YAxis, Tooltip, Bar } from 'recharts';
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+const VENUES = [
+    { id: 'terra-bleu', name: 'Terra Bleu', baseSales: 18565.09, topItems: '45x Waygu Burgers, 30x Truffle Fries' },
+    { id: 'gator-flamingo', name: 'Gator & Flamingo', baseSales: 13908.63, topItems: '50x Gator Bites, 40x Flamingo Cocktails' },
+    { id: 'kann-rum', name: "Kan'n Rum Bar & Grill", baseSales: 9577.66, topItems: '35x Jerk Chicken, 60x Rum Punch' },
+    { id: 'downtown', name: 'Chez Lui Café - Downtown', baseSales: 7776.96, topItems: '55x Artisan Latte, 40x Avocado Toast' },
+    { id: 'hq', name: 'Gastronomic AI Test Kitchen', baseSales: 5193.22, topItems: '25x Tasting Menu A, 10x Experimental Entrees' },
+];
 
 const aiFormSchema = z.object({
   salesData: z.string().min(10, { message: 'Please provide more detailed sales data.' }),
@@ -28,6 +43,7 @@ export default function SalesPage() {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<SalesAnalysisOutput | null>(null);
+  const [selectedVenueId, setSelectedVenueId] = useState<string>("terra-bleu");
 
   const [grossSales, setGrossSales] = useState('5500.00');
   const [discounts, setDiscounts] = useState('250.00');
@@ -95,16 +111,67 @@ export default function SalesPage() {
     <div className="container mx-auto py-10">
       <div className="grid lg:grid-cols-5 gap-8 items-start">
         <div className="lg:col-span-2 space-y-8">
-            <Card>
-                <CardHeader>
-                    <CardTitle className="font-headline text-2xl flex items-center gap-2">
-                        <Sparkles className="text-primary" /> AI Sales Data Analysis
-                    </CardTitle>
-                    <CardDescription>
-                        Paste your raw sales data to get AI-driven insights and trends.
-                    </CardDescription>
+            <Card className="border-t-4 border-t-primary shadow-lg overflow-hidden relative">
+                <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
+                    <Sparkles className="w-32 h-32" />
+                </div>
+                <CardHeader className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <CardTitle className="font-headline text-2xl flex items-center gap-2">
+                            <Sparkles className="text-primary" /> Sales Data Sync
+                        </CardTitle>
+                        <CardDescription>
+                            Connect your POS to import today's telemetry for instant AI analysis.
+                        </CardDescription>
+                    </div>
+                    <Select value={selectedVenueId} onValueChange={setSelectedVenueId}>
+                        <SelectTrigger className="w-[240px]">
+                            <SelectValue placeholder="Select Venue" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {VENUES.map(v => (
+                                <SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="space-y-6 relative z-10">
+                    <div className="grid grid-cols-2 gap-4">
+                        <Button 
+                            variant="outline" 
+                            className="h-20 flex flex-col gap-2 hover:border-primary hover:bg-primary/5 transition-all"
+                            onClick={() => {
+                                const venue = VENUES.find(v => v.id === selectedVenueId)!;
+                                aiForm.setValue('salesData', `Toast POS Sync [2026-04-10] | ${venue.name}: Gross: $${venue.baseSales}. Top items: ${venue.topItems}. Slow lunch, heavy dinner rush. Labor ran at 22% during peak.`);
+                                toast({ title: "Toast POS Synced", description: `Imported transactions securely for ${venue.name}.` });
+                            }}
+                        >
+                            <span className="font-bold tracking-tight text-lg">TOAST</span>
+                            <span className="text-xs text-muted-foreground">Sync Today's Data</span>
+                        </Button>
+                        <Button 
+                            variant="outline" 
+                            className="h-20 flex flex-col gap-2 hover:border-primary hover:bg-primary/5 transition-all"
+                            onClick={() => {
+                                const venue = VENUES.find(v => v.id === selectedVenueId)!;
+                                aiForm.setValue('salesData', `Square POS Sync [2026-04-10] | ${venue.name}: Gross: $${venue.baseSales}. Top items: ${venue.topItems}. High volume in morning, died off after 2PM. Waste higher than normal on pastries.`);
+                                toast({ title: "Square Synced", description: `Imported transactions securely for ${venue.name}.` });
+                            }}
+                        >
+                            <span className="font-bold tracking-tight text-lg">Square</span>
+                            <span className="text-xs text-muted-foreground">Sync Today's Data</span>
+                        </Button>
+                    </div>
+
+                    <div className="relative">
+                        <div className="absolute inset-0 flex items-center">
+                            <span className="w-full border-t" />
+                        </div>
+                        <div className="relative flex justify-center text-xs uppercase">
+                            <span className="bg-card px-2 text-muted-foreground">Or View Raw Payload</span>
+                        </div>
+                    </div>
+
                     <Form {...aiForm}>
                         <form onSubmit={aiForm.handleSubmit(onAiSubmit)} className="space-y-4">
                         <FormField
@@ -112,22 +179,29 @@ export default function SalesPage() {
                             name="salesData"
                             render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Sales Data (from POS or manual summary)</FormLabel>
                                 <FormControl>
-                                <Textarea
-                                    placeholder="e.g., 'Total Sales: $5000...'"
-                                    className="min-h-[150px] font-mono text-xs"
-                                    {...field}
-                                />
+                                <div className="relative">
+                                    <Textarea
+                                        placeholder="Sync from POS to view raw telemetry..."
+                                        className="min-h-[100px] font-mono text-xs bg-muted/50 border-dashed resize-none"
+                                        readOnly
+                                        {...field}
+                                    />
+                                    {!field.value && (
+                                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                            <span className="text-sm text-muted-foreground bg-background px-2 py-1 rounded border shadow-sm">Awaiting POS Connection</span>
+                                        </div>
+                                    )}
+                                </div>
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
                             )}
                         />
-                        <Button type="submit" disabled={loading} className="w-full">
+                        <Button type="submit" disabled={loading || !aiForm.watch('salesData')} className="w-full h-12 text-md font-semibold mt-4">
                             {loading ? (
-                                <><Loader2 className="mr-2 animate-spin" /> Analyzing...</>
-                            ) : 'Get AI-Powered Analysis' }
+                                <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Analyzing 10,000+ data points...</>
+                            ) : 'Generate AI Operating Insights' }
                         </Button>
                         </form>
                     </Form>

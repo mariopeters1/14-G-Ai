@@ -1,378 +1,177 @@
+"use client";
 
-'use client';
-
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import {
-  generateSchedule,
-  type StaffSchedulingOutput,
-} from '@/ai/flows/staff-scheduling-flow';
-import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import { Textarea } from '@/components/ui/textarea';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useToast } from '@/hooks/use-toast';
-import {
-  Loader2,
-  Sparkles,
-  UserPlus,
-  CalendarDays,
-  Clock,
-  DollarSign,
-  BrainCircuit,
-  Settings,
-  Trash2,
-} from 'lucide-react';
-
-const schedulerFormSchema = z.object({
-  demandForecast: z.string().min(1, 'Demand forecast is required.'),
-  specialEvents: z.string().min(1, 'Please enter any special events or note if there are none.'),
-  employeeData: z.string().min(1, 'Employee data is required.'),
-});
-
-type SchedulerFormData = z.infer<typeof schedulerFormSchema>;
-
-const daysOfWeek = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'] as const;
+import { CalendarClock, BrainCircuit, UserPlus, Settings, Sparkles, Trash2, CalendarDays, Loader2, DollarSign, Clock } from "lucide-react";
+import { useState } from "react";
 
 export default function StaffPage() {
-  const { toast } = useToast();
-  const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<StaffSchedulingOutput | null>(null);
-  const [roles, setRoles] = useState([
-    'General Manager', 'Assistant Manager', 'Floor Supervisor', 'Host / Hostess', 'Maître D’', 'Lead Server', 'Server / Waiter / Waitress', 'Food Runner', 'Busser', 'Bartender', 'Barback', 'Sommelier / Wine Steward', 'Beverage Director', 'Cocktail Server', 'VIP/Concierge Host', 'Lounge Attendant', 'Reservation Specialist', 'Coat Check Attendant', 'Guest Relations Specialist', 'Executive Chef', 'Chef de Cuisine', 'Sous Chef', 'Pastry Chef', 'Line Cook', 'Prep Cook', 'Garde Manger (Cold Station)', 'Saucier (Sauce Cook)', 'Grill Cook', 'Fry Cook', 'Pantry Cook', 'Butcher', 'Sushi Chef', 'Baker', 'Dishwasher / Steward', 'Kitchen Porter', 'Chef de Partie (Station Chef)', 'Banquet Chef', 'Catering Manager', 'Private Event Chef', 'Chef’s Table Host', 'R&D Chef (Research & Development)', 'Menu Development Specialist', 'Food Stylist', 'Tasting Room Host', 'Head Bartender / Mixologist', 'DJ', 'VJ (Video Jockey)', 'Audio/Visual Technician', 'Event Host / MC', 'Bar Manager', 'Security / Door Host', 'Cigar Lounge Attendant', 'Office Administrator', 'HR Coordinator', 'Payroll Specialist', 'Inventory Manager', 'Purchasing Manager', 'Maintenance Supervisor', 'Cleaning Crew / Janitorial', 'POS/IT Specialist', 'AI Systems Coordinator', 'Digital Menu Content Manager', 'Social Media Manager', 'Marketing & Promotions Coordinator', 'Smartbrew Operator', 'Merchandise Manager', 'Brand Ambassador', 'Guest Experience Innovator', 'Community Outreach Coordinator'
-  ].sort());
-  const [newRoleInput, setNewRoleInput] = useState('');
-  const [newHire, setNewHire] = useState({ name: '', role: '', rate: '', availability: '' });
+  const [isSimulating, setIsSimulating] = useState("idle");
 
-  const form = useForm<SchedulerFormData>({
-    resolver: zodResolver(schedulerFormSchema),
-    defaultValues: {
-      demandForecast: 'High traffic expected Friday and Saturday from 7-9 PM. Lunch rush is 12-2 PM daily.',
-      specialEvents: 'Private party for 30 on Saturday requires 2 extra servers and 1 bartender from 6 PM.',
-      employeeData: 'Alice (Chef, $25.00/hr): Mon-Fri 9am-5pm; Bob (Server, $15.50/hr): available weekends; Charlie (Bartender, $18.00/hr): not available Tuesdays; David (Server, $15.50/hr): any day after 5pm.',
-    },
-  });
-
-  const onSubmit = async (data: SchedulerFormData) => {
-    setLoading(true);
-    setResult(null);
-    try {
-      const aiResult = await generateSchedule(data);
-      setResult(aiResult);
-      toast({
-        title: 'Schedule Generated!',
-        description: 'The AI has created an optimized weekly schedule.',
-      });
-    } catch (error) {
-      console.error('Error calling AI flow:', error);
-      toast({
-        variant: 'destructive',
-        title: 'AI Error',
-        description: 'Failed to generate schedule. Please try again.',
-      });
-    } finally {
-      setLoading(false);
-    }
+  const handleSimulate = () => {
+    setIsSimulating("loading");
+    setTimeout(() => {
+        setIsSimulating("done");
+    }, 1800);
   };
-
-  const handleAddRole = () => {
-    if (newRoleInput.trim() && !roles.map(r => r.toLowerCase()).includes(newRoleInput.trim().toLowerCase())) {
-        const newRole = newRoleInput.trim().charAt(0).toUpperCase() + newRoleInput.trim().slice(1);
-        setRoles([...roles, newRole].sort());
-        setNewRoleInput('');
-        toast({
-            title: "Role Added",
-            description: `"${newRole}" has been added to the roles list.`,
-        });
-    } else if (!newRoleInput.trim()) {
-        toast({
-            variant: "destructive",
-            title: "Failed to Add Role",
-            description: "Role name cannot be empty.",
-        });
-    } else {
-         toast({
-            variant: "destructive",
-            title: "Failed to Add Role",
-            description: "This role already exists.",
-        });
-    }
-  };
-
-  const handleDeleteRole = (roleToDelete: string) => {
-    setRoles(roles.filter(role => role !== roleToDelete));
-    toast({
-        title: "Role Removed",
-        description: `"${roleToDelete}" has been removed from the roles list.`,
-    });
-  };
-
-  const handleAddEmployee = () => {
-    const { name, role, rate, availability } = newHire;
-    if (!name || !role || !rate) {
-        toast({
-            variant: 'destructive',
-            title: 'Missing Information',
-            description: 'Please fill out the name, role, and pay rate.',
-        });
-        return;
-    }
-
-    const newEmployeeString = `${name} (${role}, $${parseFloat(rate).toFixed(2)}/hr): ${availability || 'No availability notes'}`;
-    
-    const currentEmployeeData = form.getValues('employeeData');
-    const updatedEmployeeData = currentEmployeeData ? `${currentEmployeeData}; ${newEmployeeString}` : newEmployeeString;
-
-    form.setValue('employeeData', updatedEmployeeData, { shouldValidate: true });
-
-    toast({
-        title: 'Employee Added!',
-        description: `${name} has been added to the employee data for scheduling.`,
-    });
-
-    setNewHire({ name: '', role: '', rate: '', availability: '' });
-  };
-
 
   return (
-    <div className="container mx-auto py-10">
-      <div className="grid lg:grid-cols-5 gap-8 items-start">
-        {/* Left Column: Forms */}
-        <div className="lg:col-span-2 space-y-8">
-            <Card>
-                <CardHeader>
-                    <div className="flex items-center gap-3">
-                        <div className="flex-shrink-0 bg-primary/10 text-primary p-3 rounded-full">
-                        <BrainCircuit className="h-6 w-6" />
+    <div className="legacy-dashboard-scope container mx-auto py-10">
+        <div style={{ marginBottom: '2rem' }}>
+            <h2 className="section-title" style={{ marginBottom: '0.5rem' }}><CalendarClock style={{ color: 'hsl(var(--accent))', width: '28px', height: '28px', marginRight: '8px' }} /> Staff & Scheduling</h2>
+            <p style={{ color: 'hsl(var(--muted-foreground))', margin: 0 }}>AI-optimized rostering and team management.</p>
+        </div>
+
+        <div className="inventory-grid">
+            {/* Left Side: Forms */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+                {/* AI Scheduler Form */}
+                <div className="legacy-card">
+                    <div className="legacy-card-header" style={{ display: 'flex', gap: '15px', alignItems: 'flex-start' }}>
+                        <div style={{ background: 'rgba(212, 163, 115, 0.1)', color: 'hsl(var(--accent))', padding: '12px', borderRadius: '50%' }}>
+                            <BrainCircuit style={{ width: '24px', height: '24px' }} />
                         </div>
                         <div>
-                        <CardTitle className="font-headline text-2xl">AI Staff Scheduler</CardTitle>
-                        <CardDescription>
-                            Provide data to generate an optimized weekly schedule.
-                        </CardDescription>
+                            <h3 className="legacy-card-title">Staff Scheduler</h3>
+                            <p className="legacy-card-description">Provide data to generate an optimized weekly schedule.</p>
                         </div>
                     </div>
-                </CardHeader>
-                <CardContent>
-                    <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                        <FormField control={form.control} name="demandForecast" render={({ field }) => (
-                            <FormItem>
-                            <FormLabel>Demand Forecast & Peak Hours</FormLabel>
-                            <FormControl>
-                                <Textarea rows={3} placeholder="e.g., High traffic expected Friday..." {...field} />
-                            </FormControl>
-                            <FormMessage />
-                            </FormItem>
-                        )} />
-                        <FormField control={form.control} name="specialEvents" render={({ field }) => (
-                            <FormItem>
-                            <FormLabel>Special Events or Requests</FormLabel>
-                            <FormControl>
-                                <Textarea rows={3} placeholder="e.g., Private party for 30..." {...field} />
-                            </FormControl>
-                            <FormMessage />
-                            </FormItem>
-                        )} />
-                        <FormField control={form.control} name="employeeData" render={({ field }) => (
-                            <FormItem>
-                            <FormLabel>Employee Availability, Roles, & Pay Rates</FormLabel>
-                            <FormControl>
-                                <Textarea rows={5} className="font-mono text-xs" placeholder="e.g., Alice (Chef, $25/hr): Mon-Fri 9am-5pm..." {...field} />
-                            </FormControl>
-                            <FormMessage />
-                            </FormItem>
-                        )} />
-                        <Button type="submit" disabled={loading} size="lg" className="w-full">
-                            {loading ? (
-                            <>
-                                <Loader2 className="mr-2 animate-spin" />
-                                Generating...
-                            </>
-                            ) : (
-                            <>
-                                <Sparkles className="mr-2" />
-                                Get AI-Powered Schedule
-                            </>
-                            )}
-                        </Button>
-                        </form>
-                    </Form>
-                </CardContent>
-            </Card>
-
-            <Card>
-                <CardHeader>
-                    <CardTitle className="font-headline flex items-center gap-2">
-                        <UserPlus /> Add New Hire
-                    </CardTitle>
-                    <CardDescription>
-                        Add an employee to use in the AI Scheduler.
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <div className="space-y-4">
-                        <div className="space-y-2">
-                            <Label htmlFor="new-hire-name">Full Name</Label>
-                            <Input id="new-hire-name" placeholder="e.g., Jane Doe" value={newHire.name} onChange={(e) => setNewHire({...newHire, name: e.target.value})} />
+                    <div className="legacy-card-content">
+                        <div className="legacy-input-group">
+                            <label>Demand Forecast & Peak Hours</label>
+                            <textarea rows={3} defaultValue="High traffic expected Friday and Saturday from 7-9 PM. Lunch rush is 12-2 PM daily." />
                         </div>
-                        <div className="space-y-2">
-                             <Label htmlFor="new-hire-role">Role</Label>
-                             <Select value={newHire.role} onValueChange={(value) => setNewHire({...newHire, role: value})}>
-                                 <SelectTrigger id="new-hire-role">
-                                     <SelectValue placeholder="Select a role" />
-                                 </SelectTrigger>
-                                 <SelectContent>
-                                     {roles.map((role) => (
-                                        <SelectItem key={role} value={role}>{role}</SelectItem>
-                                     ))}
-                                 </SelectContent>
-                             </Select>
+                        <div className="legacy-input-group">
+                            <label>Special Events or Requests</label>
+                            <textarea rows={2} defaultValue="Private party for 30 on Saturday requires 2 extra servers and 1 bartender from 6 PM." />
                         </div>
-                         <div className="space-y-2">
-                            <Label htmlFor="new-hire-rate">Hourly Pay Rate ($)</Label>
-                            <Input id="new-hire-rate" type="number" placeholder="e.g., 25.50" value={newHire.rate} onChange={(e) => setNewHire({...newHire, rate: e.target.value})} />
+                        <div className="legacy-input-group">
+                            <label>Employee Availability, Roles, & Pay Rates</label>
+                            <textarea rows={4} style={{ fontFamily: 'monospace', fontSize: '0.8rem', lineHeight: 1.5, opacity: 0.9 }} defaultValue="Alice (Chef, $25.00/hr): Mon-Fri 9am-5pm; Bob (Server, $15.50/hr): available weekends; Charlie (Bartender, $18.00/hr): not available Tuesdays; David (Server, $15.50/hr): any day after 5pm." />
                         </div>
-                         <div className="space-y-2">
-                            <Label htmlFor="new-hire-availability">Availability / Notes</Label>
-                            <Textarea id="new-hire-availability" rows={3} placeholder="e.g., Available evenings and weekends. Not available Tuesdays." value={newHire.availability} onChange={(e) => setNewHire({...newHire, availability: e.target.value})} />
-                        </div>
-                        <Button type="button" variant="secondary" className="w-full" onClick={handleAddEmployee}>Add Employee to Roster</Button>
+                        <button className="legacy-btn-primary" style={{ justifyContent: 'center', width: '100%', marginTop: '0.5rem' }} onClick={handleSimulate}>
+                            <Sparkles style={{ width: '18px', height: '18px' }} /> Get AI-Powered Schedule
+                        </button>
                     </div>
-                </CardContent>
-            </Card>
+                </div>
 
-            <Card>
-                <CardHeader>
-                    <CardTitle className="font-headline flex items-center gap-2">
-                        <Settings className="h-5 w-5"/> Manage Roles
-                    </CardTitle>
-                    <CardDescription>
-                        Add or remove roles available for scheduling.
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <div className="space-y-4">
-                        <div className="flex items-center gap-2">
-                            <Input 
-                                placeholder="New role name..."
-                                value={newRoleInput}
-                                onChange={(e) => setNewRoleInput(e.target.value)}
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter') {
-                                        e.preventDefault();
-                                        handleAddRole();
-                                    }
-                                }}
-                            />
-                            <Button onClick={handleAddRole}>Add</Button>
+                {/* Add New Hire Form */}
+                <div className="legacy-card">
+                    <div className="legacy-card-header">
+                        <h3 className="legacy-card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><UserPlus style={{ width: '20px', height: '20px' }} /> Add New Hire</h3>
+                        <p className="legacy-card-description">Add an employee to use in the AI Scheduler.</p>
+                    </div>
+                    <div className="legacy-card-content">
+                        <div className="legacy-input-group">
+                            <label>Full Name</label>
+                            <input type="text" placeholder="e.g., Jane Doe" />
                         </div>
-                        <div className="space-y-2">
-                            {roles.length > 0 && <Label>Existing Roles</Label>}
-                            <div className="space-y-2 max-h-48 overflow-y-auto pr-2">
-                                {roles.map(role => (
-                                    <div key={role} className="flex items-center justify-between rounded-md border p-2 bg-accent/50">
-                                        <span className="text-sm font-medium">{role}</span>
-                                        <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleDeleteRole(role)}>
-                                            <Trash2 className="h-4 w-4 text-destructive" />
-                                        </Button>
+                        <div className="legacy-input-group">
+                            <label>Role</label>
+                            <select style={{ width: '100%', padding: '0.75rem', background: 'hsl(var(--secondary))', border: '1px solid hsl(var(--border))', color: '#fff', borderRadius: '8px', outline: 'none', appearance: 'none', cursor: 'pointer' }}>
+                                <option>Select a role</option>
+                                <option>Server</option>
+                                <option>Bartender</option>
+                                <option>Chef</option>
+                            </select>
+                        </div>
+                        <div className="legacy-input-group">
+                            <label>Hourly Pay Rate ($)</label>
+                            <input type="number" placeholder="e.g., 25.50" />
+                        </div>
+                        <div className="legacy-input-group">
+                            <label>Availability / Notes</label>
+                            <textarea rows={2} placeholder="e.g., Available evenings and weekends."></textarea>
+                        </div>
+                        <button className="legacy-btn-outline" style={{ justifyContent: 'center', width: '100%' }}>Add Employee to Roster</button>
+                    </div>
+                </div>
+
+                {/* Manage Roles Form */}
+                <div className="legacy-card">
+                    <div className="legacy-card-header">
+                        <h3 className="legacy-card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><Settings style={{ width: '20px', height: '20px' }} /> Manage Roles</h3>
+                        <p className="legacy-card-description">Add or remove roles available for scheduling.</p>
+                    </div>
+                    <div className="legacy-card-content">
+                        <div style={{ display: 'flex', gap: '8px', marginBottom: '1.5rem' }}>
+                            <input type="text" placeholder="New role name..." style={{ flex: 1, padding: '0.75rem', background: 'hsl(var(--secondary))', border: '1px solid hsl(var(--border))', color: '#fff', borderRadius: '8px', outline: 'none' }} />
+                            <button className="legacy-btn-outline">Add</button>
+                        </div>
+                        <label style={{ fontSize: '0.9rem', fontWeight: 500, color: 'hsl(var(--muted-foreground))', display: 'block', marginBottom: '0.5rem' }}>Existing Roles</label>
+                        <div style={{ maxHeight: '200px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                            {["AI Systems Coordinator", "Assistant Manager", "Audio/Visual Technician", "Baker", "Banquet Chef"].map((role, idx) => (
+                                <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.5rem 0.75rem', background: 'rgba(255,255,255,0.03)', border: '1px solid hsl(var(--border))', borderRadius: '6px' }}>
+                                    <span style={{ fontSize: '0.9rem' }}>{role}</span>
+                                    <button className="legacy-btn-action" style={{ color: 'hsl(var(--destructive))' }}><Trash2 style={{ width: '16px', height: '16px' }} /></button>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            {/* Right Side: AI Results */}
+            <div className="ai-resultsbox" id="staff-ai-box" style={ isSimulating !== "idle" ? { alignItems: isSimulating === "loading" ? 'center' : 'flex-start', textAlign: isSimulating === "loading" ? 'center' : 'left', justifyContent: 'flex-start'} : { alignItems: 'center', minHeight: '50vh'} }>
+                {isSimulating === "idle" && (
+                    <>
+                        <div style={{ background: 'hsl(var(--card))', padding: '1.5rem', borderRadius: '50%', border: '1px solid hsl(var(--border))', boxShadow: '0 4px 10px rgba(0,0,0,0.1)', marginBottom: '1.5rem' }}>
+                            <CalendarDays style={{ width: '48px', height: '48px', color: 'hsl(var(--accent))' }} />
+                        </div>
+                        <h3 style={{ fontSize: '1.5rem', margin: '0 0 0.5rem 0' }}>Your Optimized Schedule Will Appear Here</h3>
+                        <p style={{ color: 'hsl(var(--muted-foreground))', maxWidth: '400px', margin: '0 auto', lineHeight: 1.5 }}>Fill in your staffing data and let Gastronomic AI create a balanced and cost-effective weekly schedule.</p>
+                    </>
+                )}
+
+                {isSimulating === "loading" && (
+                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '100%', marginTop: '5rem' }}>
+                        <Loader2 className="animate-spin" style={{ width: '48px', height: '48px', color: 'hsl(var(--accent))', marginBottom: '1rem' }} />
+                        <h3 style={{ fontSize: '1.25rem' }}>AI is building your schedule...</h3>
+                        <p style={{ color: 'hsl(var(--muted-foreground))', fontSize: '0.9rem', maxWidth: '300px', margin: '0 auto' }}>Optimizing shifts based on your forecasts, staff availability, and special events.</p>
+                     </div>
+                )}
+
+                {isSimulating === "done" && (
+                    <div style={{ width: '100%' }}>
+                        <div className="legacy-card" style={{ marginBottom: '1.5rem', width: '100%' }}>
+                            <div className="legacy-card-header" style={{ paddingBottom: '1rem' }}>
+                                <h3 className="legacy-card-title" style={{ fontSize: '1.4rem' }}>AI-Generated Weekly Schedule</h3>
+                                <p className="legacy-card-description">Schedule generated successfully, optimizing for peak hours and reducing overlap.</p>
+                            </div>
+                            <div className="legacy-card-content" style={{ background: 'rgba(255,255,255,0.03)', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid hsl(var(--border))' }}>
+                                <span style={{ fontWeight: 600, fontSize: '1.1rem' }}>Total Weekly Labor Cost:</span>
+                                <span style={{ fontWeight: 700, fontSize: '1.5rem', color: 'hsl(var(--accent))' }}>$1,452.50</span>
+                            </div>
+                        </div>
+
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '1rem', width: '100%' }}>
+                            <div className="legacy-card">
+                                <div className="legacy-card-header" style={{ display: 'flex', justifyContent: 'space-between', padding: '1rem 1.5rem', borderBottom: '1px solid hsl(var(--border))' }}>
+                                    <h3 style={{ margin: 0, fontSize: '1.1rem' }}>Friday</h3>
+                                    <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'hsl(var(--muted-foreground))' }}><DollarSign style={{ width: '14px', height: '14px', marginBottom: '-2px', display: 'inline-block' }}/>703.50</div>
+                                </div>
+                                <div className="legacy-card-content" style={{ padding: '1rem 1.5rem' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', background: 'hsl(var(--secondary))', padding: '0.75rem', borderRadius: '6px', marginBottom: '0.5rem', alignItems: 'center' }}>
+                                        <div><p style={{ margin: 0, fontWeight: 600, fontSize: '0.95rem' }}>Alice</p><p style={{ margin: 0, fontSize: '0.8rem', color: 'hsl(var(--muted-foreground))' }}>Chef</p></div>
+                                        <div style={{ fontFamily: 'monospace', fontSize: '0.85rem' }}><Clock style={{ width: '12px', height: '12px', marginRight: '4px', opacity: 0.6, display: 'inline-block' }} />9:00 AM - 5:00 PM <strong style={{ fontFamily: 'sans-serif', marginLeft: '4px' }}>(8 hrs)</strong></div>
                                     </div>
-                                ))}
-                                {roles.length === 0 && (
-                                    <p className="text-sm text-muted-foreground text-center py-4">No roles defined. Add one above.</p>
-                                )}
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', background: 'hsl(var(--secondary))', padding: '0.75rem', borderRadius: '6px', marginBottom: '0.5rem', alignItems: 'center' }}>
+                                        <div><p style={{ margin: 0, fontWeight: 600, fontSize: '0.95rem' }}>Bob</p><p style={{ margin: 0, fontSize: '0.8rem', color: 'hsl(var(--muted-foreground))' }}>Server</p></div>
+                                        <div style={{ fontFamily: 'monospace', fontSize: '0.85rem' }}><Clock style={{ width: '12px', height: '12px', marginRight: '4px', opacity: 0.6, display: 'inline-block' }} />11:00 AM - 7:00 PM <strong style={{ fontFamily: 'sans-serif', marginLeft: '4px' }}>(8 hrs)</strong></div>
+                                    </div>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', background: 'hsl(var(--secondary))', padding: '0.75rem', borderRadius: '6px', marginBottom: '0.5rem', alignItems: 'center' }}>
+                                        <div><p style={{ margin: 0, fontWeight: 600, fontSize: '0.95rem' }}>Charlie</p><p style={{ margin: 0, fontSize: '0.8rem', color: 'hsl(var(--muted-foreground))' }}>Bartender</p></div>
+                                        <div style={{ fontFamily: 'monospace', fontSize: '0.85rem' }}><Clock style={{ width: '12px', height: '12px', marginRight: '4px', opacity: 0.6, display: 'inline-block' }} />5:00 PM - 12:00 AM <strong style={{ fontFamily: 'sans-serif', marginLeft: '4px' }}>(7 hrs)</strong></div>
+                                    </div>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', background: 'hsl(var(--secondary))', padding: '0.75rem', borderRadius: '6px', alignItems: 'center' }}>
+                                        <div><p style={{ margin: 0, fontWeight: 600, fontSize: '0.95rem' }}>David</p><p style={{ margin: 0, fontSize: '0.8rem', color: 'hsl(var(--muted-foreground))' }}>Server</p></div>
+                                        <div style={{ fontFamily: 'monospace', fontSize: '0.85rem' }}><Clock style={{ width: '12px', height: '12px', marginRight: '4px', opacity: 0.6, display: 'inline-block' }} />5:00 PM - 11:00 PM <strong style={{ fontFamily: 'sans-serif', marginLeft: '4px' }}>(6 hrs)</strong></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </CardContent>
-            </Card>
-        </div>
-
-        {/* Right Column: Results */}
-        <div className="lg:col-span-3">
-          {loading && (
-            <div className="flex flex-col items-center justify-center h-full min-h-[50vh] p-8 text-center bg-card rounded-lg border">
-                <Loader2 className="h-12 w-12 animate-spin text-primary" />
-                <h3 className="text-2xl font-headline font-bold mt-4">AI is building your schedule...</h3>
-                <p className="text-muted-foreground mt-2 max-w-sm">Optimizing shifts based on your forecasts, staff availability, and special events.</p>
+                )}
             </div>
-          )}
-
-          {!loading && !result && (
-             <Card className="min-h-[50vh] flex flex-col items-center justify-center text-center p-8 bg-accent/50 border-dashed">
-                <div className="bg-background p-4 rounded-full border shadow-sm mb-4">
-                  <CalendarDays className="h-12 w-12 text-primary" />
-                </div>
-                <h3 className="text-2xl font-headline font-bold">Your Optimized Schedule Will Appear Here</h3>
-                <p className="text-muted-foreground mt-2 max-w-sm">Fill in your staffing data and let Gastronomic AI create a balanced and cost-effective weekly schedule.</p>
-            </Card>
-          )}
-
-          {!loading && result && (
-            <div className="space-y-6">
-              <Card>
-                  <CardHeader>
-                    <CardTitle className="font-headline text-2xl">AI-Generated Weekly Schedule</CardTitle>
-                    <p className="text-muted-foreground">{result.summary}</p>
-                  </CardHeader>
-                  <CardContent className="flex items-center justify-between p-4 bg-secondary rounded-lg">
-                      <div className="font-bold text-lg">Total Weekly Labor Cost:</div>
-                      <div className="text-2xl font-bold text-primary">${result.totalWeeklyCost.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-                  </CardContent>
-              </Card>
-              
-              <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
-                {daysOfWeek.map(day => {
-                  const daySchedule = result.schedule[day];
-                  return (
-                    <Card key={day}>
-                      <CardHeader className="flex flex-row items-center justify-between pb-2">
-                        <CardTitle className="font-headline capitalize text-lg">{day}</CardTitle>
-                        <div className="text-sm font-bold flex items-center gap-1 text-muted-foreground">
-                          <DollarSign className="h-4 w-4"/>
-                          {daySchedule.dailyCost.toFixed(2)}
-                        </div>
-                      </CardHeader>
-                      <CardContent>
-                        {daySchedule.shifts.length > 0 ? (
-                           <div className="space-y-3">
-                             {daySchedule.shifts.map((shift, index) => (
-                               <div key={index} className="flex items-center justify-between text-sm p-2 rounded-md bg-accent">
-                                 <div>
-                                   <p className="font-semibold">{shift.employeeName}</p>
-                                   <p className="text-xs text-muted-foreground">{shift.role}</p>
-                                 </div>
-                                 <div className="flex items-center gap-2 text-xs font-mono">
-                                   <Clock className="h-3 w-3" />
-                                   <span>{shift.startTime} - {shift.endTime}</span>
-                                   <span className="font-sans font-bold">({shift.hours} hrs)</span>
-                                 </div>
-                               </div>
-                             ))}
-                           </div>
-                        ) : (
-                          <p className="text-sm text-muted-foreground text-center py-4">No shifts scheduled.</p>
-                        )}
-                      </CardContent>
-                    </Card>
-                  )
-                })}
-              </div>
-            </div>
-          )}
         </div>
-      </div>
     </div>
   );
 }

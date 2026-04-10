@@ -30,7 +30,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useFirestore, useStorage } from '@/firebase';
 import { ref as storageRef, uploadBytesResumable, getDownloadURL } from 'firebase/storage';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 
 
@@ -132,10 +132,13 @@ function AiCareerChat() {
 
   return (
     <Card className="max-w-3xl mx-auto flex flex-col h-[70vh]">
-        <CardHeader>
+        <CardHeader className="bg-primary/5 border-b mb-4">
           <CardTitle className="font-headline text-xl flex items-center gap-3">
-            <Bot className="text-primary" />
-            AI Career Advisor
+            <Avatar className="h-10 w-10 border-2 border-primary">
+              <AvatarImage src="https://firebasestorage.googleapis.com/v0/b/gastronomic-ai-landing.firebasestorage.app/o/Chez%20Lui%20Cafe%2FGastronomic%20Ai%2FImages%2FMario%20Peters%20(1).png?alt=media&token=20d65f5e-ab91-4522-b619-3b471ca7f842" className="object-cover" />
+              <AvatarFallback><Bot className="text-primary" /></AvatarFallback>
+            </Avatar>
+            <span>Chef Mario Peters Career Advisor</span>
           </CardTitle>
           <CardDescription>
             Ask about roles, responsibilities, or company culture.
@@ -148,6 +151,7 @@ function AiCareerChat() {
                 <div key={msg.id} className={cn("flex items-start gap-3", msg.sender === 'user' && 'justify-end')}>
                   {msg.sender === 'ai' && (
                     <Avatar className="h-8 w-8 border-2 border-primary/50">
+                      <AvatarImage src="https://firebasestorage.googleapis.com/v0/b/gastronomic-ai-landing.firebasestorage.app/o/Chez%20Lui%20Cafe%2FGastronomic%20Ai%2FImages%2FMario%20Peters%20(1).png?alt=media&token=20d65f5e-ab91-4522-b619-3b471ca7f842" className="object-cover" />
                       <AvatarFallback><Bot className="text-primary" /></AvatarFallback>
                     </Avatar>
                   )}
@@ -165,6 +169,7 @@ function AiCareerChat() {
                {isAiTyping && (
                   <div className="flex items-start gap-3">
                     <Avatar className="h-8 w-8 border-2 border-primary/50">
+                      <AvatarImage src="https://firebasestorage.googleapis.com/v0/b/gastronomic-ai-landing.firebasestorage.app/o/Chez%20Lui%20Cafe%2FGastronomic%20Ai%2FImages%2FMario%20Peters%20(1).png?alt=media&token=20d65f5e-ab91-4522-b619-3b471ca7f842" className="object-cover" />
                       <AvatarFallback><Bot className="text-primary" /></AvatarFallback>
                     </Avatar>
                     <div className="max-w-xs p-3 rounded-lg bg-secondary flex items-center gap-2">
@@ -501,10 +506,10 @@ export default function CareersPage() {
             <section className="py-16 md:py-24 bg-background">
                 <div className="container px-4 md:px-6">
                     <div className="mx-auto max-w-3xl text-center">
-                        <div className="inline-block rounded-lg bg-secondary px-3 py-1 text-sm font-medium">AI Career Advisor</div>
+                        <div className="inline-block rounded-lg bg-secondary px-3 py-1 text-sm font-medium">Chef Mario Peters Career Advisor</div>
                         <h2 className="text-3xl font-bold font-headline tracking-tighter sm:text-4xl mt-4">Have Questions About a Career with Us?</h2>
                         <p className="mt-4 text-muted-foreground md:text-lg">
-                            Ask our AI Chef Assistant about roles, company culture, or our operational structure. Get instant answers.
+                            Ask our Chef Assistant about roles, company culture, or our operational structure. Get instant answers.
                         </p>
                     </div>
                     <div className="mt-8">
