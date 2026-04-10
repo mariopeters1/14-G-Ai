@@ -19,9 +19,11 @@ import {
   Trash2,
   Mic,
   BadgePercent,
+  RefreshCw
 } from "lucide-react";
 import Logo from "@/components/logo";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
@@ -112,6 +114,7 @@ const VENUE_BASE_METRICS: Record<string, { revenue: number, laborPct: number, fo
 
 export default function DashboardPrototypePage() {
   const [selectedVenue, setSelectedVenue] = useState<string>("terra-bleu");
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const [kpiData, setKpiData] = useState(initialKpiData);
 
   // When venue changes, instantly update the base KPI
@@ -227,22 +230,45 @@ export default function DashboardPrototypePage() {
       {/* Main Content */}
       <div className="flex flex-1 flex-col">
         <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b bg-background px-6">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 flex-wrap">
             <h1 className="hidden text-lg font-semibold md:block">
               F-86 Command Center
             </h1>
-            <Select value={selectedVenue} onValueChange={setSelectedVenue}>
-              <SelectTrigger className="w-[220px] md:w-auto">
-                <SelectValue placeholder="Select a venue" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="fmc">Gastronomic AI Test Kitchen</SelectItem>
-                <SelectItem value="terra-bleu">Terra Bleu</SelectItem>
-                <SelectItem value="kann">Kan'n Rum Bar & Grill</SelectItem>
-                <SelectItem value="gator-flamingo">Gator & Flamingo</SelectItem>
-                <SelectItem value="chez-lui">Chez Lui Cafe - Downtown</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="flex flex-wrap items-center gap-4">
+              <Select value={selectedVenue} onValueChange={(val) => {
+                  setIsRefreshing(true);
+                  setSelectedVenue(val);
+                  setTimeout(() => setIsRefreshing(false), 800);
+              }}>
+                <SelectTrigger className="w-[220px] md:w-auto bg-card border-primary/20">
+                  <SelectValue placeholder="Select a venue" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="fmc">Gastronomic AI Test Kitchen</SelectItem>
+                  <SelectItem value="terra-bleu">Terra Bleu</SelectItem>
+                  <SelectItem value="kann">Kan'n Rum Bar & Grill</SelectItem>
+                  <SelectItem value="gator-flamingo">Gator & Flamingo</SelectItem>
+                  <SelectItem value="chez-lui">Chez Lui Cafe - Downtown</SelectItem>
+                </SelectContent>
+              </Select>
+              
+              <Badge variant="outline" className="bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20 py-1.5 px-3">
+                  <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse mr-2" />
+                  Live POS Sync
+              </Badge>
+              <Button 
+                 onClick={() => {
+                     setIsRefreshing(true);
+                     setTimeout(() => setIsRefreshing(false), 800);
+                 }} 
+                 disabled={isRefreshing} 
+                 variant="secondary" 
+                 size="sm"
+              >
+                  <RefreshCw className={`w-4 h-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
+                  Sync
+              </Button>
+            </div>
           </div>
 
           <div className="ml-auto flex items-center gap-2">
