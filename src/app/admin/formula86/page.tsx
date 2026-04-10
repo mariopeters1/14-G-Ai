@@ -56,17 +56,17 @@ const generateHourlyData = (targetRevenue: number) => {
 };
 
 const VENUES = [
-    { id: 'terra-bleu', name: 'Terra Bleu', baseSales: 18565.09 },
-    { id: 'gator-flamingo', name: 'Gator & Flamingo', baseSales: 13908.63 },
-    { id: 'kann-rum', name: "Kan'n Rum Bar & Grill", baseSales: 9577.66 },
-    { id: 'downtown', name: 'Chez Lui Café - Downtown', baseSales: 7776.96 },
-    { id: 'hq', name: 'Gastronomic AI Test Kitchen', baseSales: 5193.22 },
+    { id: 'fmc-flagship', name: 'Floridian Modern Cuisine - Flagship', baseSales: 38565.09 },
+    { id: 'fmc-miami', name: 'Floridian Modern Cuisine - Miami', baseSales: 29577.66 },
+    { id: 'chez-lui', name: 'Chez Lui Café - Downtown', baseSales: 7776.96 },
+    { id: 'test-kitchen', name: 'Gastronomic AI Test Kitchen', baseSales: 5193.22 },
+    { id: 'market-kiosk', name: 'Market Square Kiosk', baseSales: 3908.63 },
 ];
 
 export default function Formula86Page() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [data, setData] = useState<any>(null);
-  const [selectedVenueId, setSelectedVenueId] = useState<string>("terra-bleu");
+  const [selectedVenueId, setSelectedVenueId] = useState<string>("fmc-flagship");
 
   const formatCurrency = (val: number) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(val);
 

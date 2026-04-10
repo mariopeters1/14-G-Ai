@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -26,11 +26,11 @@ import {
 } from "@/components/ui/select";
 
 const VENUES = [
-    { id: 'terra-bleu', name: 'Terra Bleu', baseSales: 18565.09, topItems: '45x Waygu Burgers, 30x Truffle Fries' },
-    { id: 'gator-flamingo', name: 'Gator & Flamingo', baseSales: 13908.63, topItems: '50x Gator Bites, 40x Flamingo Cocktails' },
-    { id: 'kann-rum', name: "Kan'n Rum Bar & Grill", baseSales: 9577.66, topItems: '35x Jerk Chicken, 60x Rum Punch' },
-    { id: 'downtown', name: 'Chez Lui Café - Downtown', baseSales: 7776.96, topItems: '55x Artisan Latte, 40x Avocado Toast' },
-    { id: 'hq', name: 'Gastronomic AI Test Kitchen', baseSales: 5193.22, topItems: '25x Tasting Menu A, 10x Experimental Entrees' },
+    { id: 'fmc-flagship', name: 'Floridian Modern Cuisine - Flagship', baseSales: 38565.09, topItems: '45x Waygu Burgers, 30x Truffle Fries' },
+    { id: 'fmc-miami', name: 'Floridian Modern Cuisine - Miami', baseSales: 29577.66, topItems: '50x Gator Bites, 40x Flamingo Cocktails' },
+    { id: 'chez-lui', name: "Chez Lui Café - Downtown", baseSales: 7776.96, topItems: '35x Jerk Chicken, 60x Rum Punch' },
+    { id: 'test-kitchen', name: 'Gastronomic AI Test Kitchen', baseSales: 5193.22, topItems: '55x Artisan Latte, 40x Avocado Toast' },
+    { id: 'market-kiosk', name: 'Market Square Kiosk', baseSales: 3908.63, topItems: '25x Tasting Menu A, 10x Experimental Entrees' },
 ];
 
 const aiFormSchema = z.object({
@@ -43,11 +43,18 @@ export default function SalesPage() {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<SalesAnalysisOutput | null>(null);
-  const [selectedVenueId, setSelectedVenueId] = useState<string>("terra-bleu");
+  const [selectedVenueId, setSelectedVenueId] = useState<string>("fmc-flagship");
 
   const [grossSales, setGrossSales] = useState('5500.00');
   const [discounts, setDiscounts] = useState('250.00');
   const [taxes, setTaxes] = useState('420.00');
+
+  useEffect(() => {
+    const venue = VENUES.find(v => v.id === selectedVenueId) || VENUES[0];
+    setGrossSales(venue.baseSales.toString());
+    setDiscounts((venue.baseSales * 0.05).toFixed(2)); // ~5% disc
+    setTaxes((venue.baseSales * 0.08).toFixed(2)); // ~8% tax
+  }, [selectedVenueId]);
 
   const { netSales, totalRevenue } = useMemo(() => {
     const gross = parseFloat(grossSales) || 0;

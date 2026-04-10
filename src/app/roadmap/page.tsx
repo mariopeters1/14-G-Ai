@@ -105,21 +105,21 @@ const initialKpiData = [
 ];
 
 const VENUE_BASE_METRICS: Record<string, { revenue: number, laborPct: number, foodPct: number, wastePct: number }> = {
-  "fmc": { revenue: 5193.22, laborPct: 0.30, foodPct: 0.28, wastePct: 0.04 },
-  "terra-bleu": { revenue: 18565.09, laborPct: 0.28, foodPct: 0.25, wastePct: 0.02 },
-  "kann": { revenue: 9577.66, laborPct: 0.32, foodPct: 0.26, wastePct: 0.05 },
-  "gator-flamingo": { revenue: 13908.63, laborPct: 0.29, foodPct: 0.27, wastePct: 0.03 },
+  "fmc-flagship": { revenue: 38565.09, laborPct: 0.26, foodPct: 0.24, wastePct: 0.02 },
+  "fmc-miami": { revenue: 29577.66, laborPct: 0.28, foodPct: 0.25, wastePct: 0.03 },
   "chez-lui": { revenue: 7776.96, laborPct: 0.25, foodPct: 0.22, wastePct: 0.02 },
+  "test-kitchen": { revenue: 5193.22, laborPct: 0.30, foodPct: 0.28, wastePct: 0.04 },
+  "market-kiosk": { revenue: 3908.63, laborPct: 0.29, foodPct: 0.27, wastePct: 0.03 },
 };
 
 export default function DashboardPrototypePage() {
-  const [selectedVenue, setSelectedVenue] = useState<string>("terra-bleu");
+  const [selectedVenue, setSelectedVenue] = useState<string>("fmc-flagship");
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const [kpiData, setKpiData] = useState(initialKpiData);
 
   // When venue changes, instantly update the base KPI
   useEffect(() => {
-    const base = VENUE_BASE_METRICS[selectedVenue] || VENUE_BASE_METRICS['terra-bleu'];
+    const base = VENUE_BASE_METRICS[selectedVenue] || VENUE_BASE_METRICS['fmc-flagship'];
     const laborBase = base.revenue * base.laborPct;
     const foodBase = base.revenue * base.foodPct;
     const wasteBase = base.revenue * base.wastePct;
@@ -244,11 +244,11 @@ export default function DashboardPrototypePage() {
                   <SelectValue placeholder="Select a venue" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="fmc">Gastronomic AI Test Kitchen</SelectItem>
-                  <SelectItem value="terra-bleu">Terra Bleu</SelectItem>
-                  <SelectItem value="kann">Kan'n Rum Bar & Grill</SelectItem>
-                  <SelectItem value="gator-flamingo">Gator & Flamingo</SelectItem>
-                  <SelectItem value="chez-lui">Chez Lui Cafe - Downtown</SelectItem>
+                  <SelectItem value="fmc-flagship">Floridian Modern Cuisine - Flagship</SelectItem>
+                  <SelectItem value="fmc-miami">Floridian Modern Cuisine - Miami</SelectItem>
+                  <SelectItem value="chez-lui">Chez Lui Café - Downtown</SelectItem>
+                  <SelectItem value="test-kitchen">Gastronomic AI Test Kitchen</SelectItem>
+                  <SelectItem value="market-kiosk">Market Square Kiosk</SelectItem>
                 </SelectContent>
               </Select>
               
