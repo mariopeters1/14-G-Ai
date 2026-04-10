@@ -271,16 +271,46 @@ export default function DashboardPrototypePage() {
 
         <main className="flex-1 p-6">
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {kpiData.map((kpi) => (
-              <Card key={kpi.id}>
+            {kpiData.map((kpi) => {
+              // Determine colorful styling based on KPI type
+              let colorClasses = "border-t-primary";
+              let textColors = "text-primary";
+              let gradient = "bg-gradient-to-b from-card to-card/50";
+              let iconTheme = "text-primary dark:text-primary";
+              
+              if (kpi.id === 'revenue') {
+                  colorClasses = "border-t-green-500 border-t-4 shadow-lg";
+                  textColors = "text-green-600 dark:text-green-400";
+                  gradient = "bg-gradient-to-b from-green-500/5 to-transparent";
+                  iconTheme = "text-green-600 p-2 bg-green-500/10 rounded-full";
+              } else if (kpi.id === 'labor' || kpi.id === 'food' || kpi.id === 'waste') {
+                  colorClasses = "border-t-destructive border-t-[3px]";
+                  textColors = "text-destructive dark:text-red-400";
+                  gradient = "bg-gradient-to-b from-destructive/5 to-transparent";
+                  iconTheme = "text-destructive opacity-70";
+              } else if (kpi.id === 'ebitda_calc') {
+                  colorClasses = "border-primary/50 shadow-[0_0_20px_rgba(202,138,4,0.15)] bg-primary/5";
+                  textColors = "text-primary";
+                  gradient = "bg-gradient-to-br from-primary/10 to-transparent";
+                  iconTheme = "text-primary opacity-80";
+              } else if (kpi.id === 'ebitda_margin') {
+                  colorClasses = "bg-card border-none ring-1 ring-primary/20 bg-gradient-to-br from-card to-primary/5";
+                  textColors = "text-foreground font-extrabold";
+                  iconTheme = "text-primary";
+              }
+
+              return (
+              <Card key={kpi.id} className={`h-full ${colorClasses} ${gradient} transition-all duration-300 hover:scale-[1.02]`}>
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <CardTitle className="text-sm font-medium">
+                  <CardTitle className="text-sm font-medium uppercase tracking-wider opacity-80">
                     {kpi.title}
                   </CardTitle>
-                  <kpi.icon className="h-4 w-4 text-muted-foreground" />
+                  <div className={iconTheme}>
+                      <kpi.icon className="h-5 w-5" />
+                  </div>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-2xl font-bold">
+                  <div className={`text-3xl font-bold font-mono tracking-tight ${textColors}`}>
                     {kpi.isCurrency && "$"}
                     {kpi.value.toLocaleString("en-US", {
                       minimumFractionDigits: kpi.isPercentage ? 1 : 2,
@@ -288,12 +318,12 @@ export default function DashboardPrototypePage() {
                     })}
                     {kpi.isPercentage && "%"}
                   </div>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs text-muted-foreground mt-2 font-medium">
                     {kpi.description}
                   </p>
                 </CardContent>
               </Card>
-            ))}
+            )})}
           </div>
           <div className="mt-8">
             <Card>
