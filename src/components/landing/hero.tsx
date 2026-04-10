@@ -37,7 +37,7 @@ export default function Hero() {
       >
         <div className="inline-flex items-center gap-2 px-3 py-1 mb-6 text-sm font-medium border border-primary/50 text-primary bg-primary/10 rounded-full">
           <Logo className="!w-5 !h-5 drop-shadow-none" />
-          <span>The Next Evolution of Culinary AI</span>
+          <span>The Next Evolution of Culinary</span>
         </div>
 
         <div className="max-w-4xl space-y-6">
