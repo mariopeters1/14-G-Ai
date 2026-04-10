@@ -102,13 +102,44 @@ const initialKpiData = [
   },
 ];
 
+const VENUE_BASE_METRICS: Record<string, { revenue: number, laborPct: number, foodPct: number, wastePct: number }> = {
+  "fmc": { revenue: 5193.22, laborPct: 0.30, foodPct: 0.28, wastePct: 0.04 },
+  "terra-bleu": { revenue: 18565.09, laborPct: 0.28, foodPct: 0.25, wastePct: 0.02 },
+  "kann": { revenue: 9577.66, laborPct: 0.32, foodPct: 0.26, wastePct: 0.05 },
+  "gator-flamingo": { revenue: 13908.63, laborPct: 0.29, foodPct: 0.27, wastePct: 0.03 },
+  "chez-lui": { revenue: 7776.96, laborPct: 0.25, foodPct: 0.22, wastePct: 0.02 },
+};
+
 export default function DashboardPrototypePage() {
+  const [selectedVenue, setSelectedVenue] = useState<string>("terra-bleu");
   const [kpiData, setKpiData] = useState(initialKpiData);
 
+  // When venue changes, instantly update the base KPI
+  useEffect(() => {
+    const base = VENUE_BASE_METRICS[selectedVenue] || VENUE_BASE_METRICS['terra-bleu'];
+    const laborBase = base.revenue * base.laborPct;
+    const foodBase = base.revenue * base.foodPct;
+    const wasteBase = base.revenue * base.wastePct;
+    const ebitdaBase = base.revenue - laborBase - foodBase - wasteBase;
+
+    setKpiData(initialKpiData.map(item => {
+      switch (item.id) {
+        case 'revenue': return { ...item, value: base.revenue };
+        case 'labor': return { ...item, value: laborBase };
+        case 'food': return { ...item, value: foodBase };
+        case 'waste': return { ...item, value: wasteBase };
+        case 'ebitda_calc': return { ...item, value: ebitdaBase };
+        case 'ebitda_margin': return { ...item, value: (ebitdaBase / base.revenue) * 100 };
+        default: return item;
+      }
+    }));
+  }, [selectedVenue]);
+
+  // Handle small fluctuations every 2.5s around whatever the current value is
   useEffect(() => {
     const interval = setInterval(() => {
       setKpiData((prevData) => {
-        const fluctuate = (value: number) => value + (Math.random() - 0.5) * (value * 0.01);
+        const fluctuate = (value: number) => value + (Math.random() - 0.5) * (value * 0.005);
 
         const newRevenue = fluctuate(prevData.find(d => d.id === 'revenue')?.value || 0);
         const newLabor = fluctuate(prevData.find(d => d.id === 'labor')?.value || 0);
@@ -200,19 +231,16 @@ export default function DashboardPrototypePage() {
             <h1 className="hidden text-lg font-semibold md:block">
               F-86 Command Center
             </h1>
-            <Select>
+            <Select value={selectedVenue} onValueChange={setSelectedVenue}>
               <SelectTrigger className="w-[220px] md:w-auto">
                 <SelectValue placeholder="Select a venue" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="fmc">Floridian Modern Cuisine</SelectItem>
-                <SelectItem value="terra-bleu">Terra Bleu Dashboard</SelectItem>
-                <SelectItem value="kann">
-                  Kan'n Rum Bar & Grill Dashboard
-                </SelectItem>
-                <SelectItem value="gator-flamingo">
-                  Gator & Flamingo Dashboard
-                </SelectItem>
+                <SelectItem value="fmc">Gastronomic AI Test Kitchen</SelectItem>
+                <SelectItem value="terra-bleu">Terra Bleu</SelectItem>
+                <SelectItem value="kann">Kan'n Rum Bar & Grill</SelectItem>
+                <SelectItem value="gator-flamingo">Gator & Flamingo</SelectItem>
+                <SelectItem value="chez-lui">Chez Lui Cafe - Downtown</SelectItem>
               </SelectContent>
             </Select>
           </div>
