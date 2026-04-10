@@ -45,6 +45,7 @@ export default function Header() {
           <nav className="hidden md:flex items-center space-x-8 text-sm font-medium tracking-wide">
             <Link href="#how-it-works" className="text-white/70 transition-colors hover:text-primary hover:drop-shadow-[0_0_8px_rgba(255,192,30,0.5)]">How It Works</Link>
             <Link href="#features" className="text-white/70 transition-colors hover:text-primary hover:drop-shadow-[0_0_8px_rgba(255,192,30,0.5)]">Features</Link>
+            <Link href="#contact-us" className="text-white/70 transition-colors hover:text-primary hover:drop-shadow-[0_0_8px_rgba(255,192,30,0.5)]">Invest</Link>
             <Link href="#plans" className="text-white/70 transition-colors hover:text-primary hover:drop-shadow-[0_0_8px_rgba(255,192,30,0.5)]">Plans</Link>
             <Link href="/careers" className="text-white/70 transition-colors hover:text-primary hover:drop-shadow-[0_0_8px_rgba(255,192,30,0.5)]">Careers</Link>
           </nav>

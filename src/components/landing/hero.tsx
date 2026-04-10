@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Download } from "lucide-react";
+import { Download, TrendingUp } from "lucide-react";
 import { motion } from "framer-motion";
 import Logo from "@/components/logo";
 
@@ -73,10 +73,10 @@ export default function Hero() {
           <Button size="lg" variant="outline" className="h-14 px-8 text-lg rounded-full border-primary/30 hover:border-primary hover:bg-primary/5 transition-all duration-300" asChild>
             <Link href="/roadmap">Discover Formula-86</Link>
           </Button>
-          <Button size="lg" variant="ghost" asChild className="h-14 px-6 text-foreground hover:bg-white/5 hover:text-primary rounded-full transition-all duration-300">
-            <Link href="/#download-windows-app">
-              <Download className="mr-2" />
-              Download App
+          <Button size="lg" variant="ghost" asChild className="h-14 px-6 text-foreground hover:bg-primary/10 hover:text-primary rounded-full transition-all duration-300 border border-transparent hover:border-primary/30">
+            <Link href="#contact-us">
+              <TrendingUp className="mr-2 text-primary" />
+              <span className="font-semibold tracking-wide">Invest in Gastronomic AI</span>
             </Link>
           </Button>
         </motion.div>
