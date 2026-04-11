@@ -53,9 +53,6 @@
   }
   body {
     background-color: hsl(var(--background));
-    /* Extremely subtle ambient mesh background glow */
-    background-image: radial-gradient(circle at 50% 0%, rgba(212, 163, 115, 0.05), transparent 50%),
-                      radial-gradient(circle at 100% 100%, rgba(255, 255, 255, 0.02), transparent 40%);
     min-height: 100vh;
     @apply text-foreground;
   }
@@ -69,10 +66,10 @@
 
 @layer utilities {
   .glass-card {
-    /* Highly readable glass styling with bright bottom borders for depth */
-    @apply bg-card/70 backdrop-blur-xl border border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.4)];
+    /* Solid opaque background, absolutely zero fading or blur */
+    @apply bg-card border border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.4)];
   }
   .glass-panel {
-    @apply bg-secondary/50 backdrop-blur-md border border-white/5;
+    @apply bg-secondary border border-white/5;
   }
 }
