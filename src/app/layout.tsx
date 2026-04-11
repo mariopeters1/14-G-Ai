@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Inter, Literata } from 'next/font/google';
+import { Inter, Playfair_Display } from 'next/font/google';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { FirebaseClientProvider } from '@/firebase';
@@ -15,7 +15,7 @@ const fontBody = Inter({
   variable: '--font-body',
 });
 
-const fontHeadline = Literata({
+const fontHeadline = Playfair_Display({
   subsets: ['latin'],
   variable: '--font-headline',
 });
