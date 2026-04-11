@@ -6,11 +6,11 @@
 
 /* Dashboard Page Styles */
 .legacy-dashboard-scope .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 4rem; }
-.legacy-dashboard-scope .kpi-card { background: hsl(var(--card)); border: 1px solid hsl(var(--border)); border-radius: 12px; padding: 1.5rem; position: relative; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+.legacy-dashboard-scope .kpi-card { background: hsl(var(--card) / 0.7); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 12px; padding: 1.5rem; position: relative; overflow: hidden; box-shadow: 0 8px 30px rgba(0,0,0,0.5); }
 .legacy-dashboard-scope .kpi-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: hsl(var(--primary)); }
 .legacy-dashboard-scope .kpi-card.success::before { background: hsl(var(--success, 142.1 76.2% 36.3%)); }
 .legacy-dashboard-scope .kpi-card.danger::before { background: hsl(var(--destructive)); }
-.legacy-dashboard-scope .kpi-card.highlight { border-color: rgba(243, 144, 29, 0.4); background: hsl(var(--card)); }
+.legacy-dashboard-scope .kpi-card.highlight { border-color: rgba(212, 163, 115, 0.3); background: linear-gradient(135deg, hsl(var(--card) / 0.8) 0%, rgba(212, 163, 115, 0.05) 100%); }
 .legacy-dashboard-scope .kpi-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
 .legacy-dashboard-scope .kpi-title { color: hsl(var(--muted-foreground)); font-size: 0.95rem; font-weight: 500; margin: 0; }
 .legacy-dashboard-scope .kpi-icon { color: hsl(var(--primary)); opacity: 0.8; width: 20px; height: 20px; }
@@ -22,7 +22,7 @@
 .legacy-dashboard-scope .text-danger { color: hsl(var(--destructive)) !important; }
 
 /* Shared Components */
-.legacy-dashboard-scope .legacy-card { background: hsl(var(--card)); border: 1px solid hsl(var(--border)); border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+.legacy-dashboard-scope .legacy-card { background: hsl(var(--card) / 0.7); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 12px; overflow: hidden; box-shadow: 0 8px 30px rgba(0,0,0,0.5); }
 .legacy-dashboard-scope .legacy-card-header { padding: 1.5rem; border-bottom: 1px solid hsl(var(--border)); }
 .legacy-dashboard-scope .legacy-card-title { font-size: 1.25rem; font-weight: 600; margin: 0 0 0.5rem 0; }
 .legacy-dashboard-scope .legacy-card-description { color: hsl(var(--muted-foreground)); font-size: 0.9rem; margin: 0; }
@@ -36,10 +36,10 @@
 .legacy-dashboard-scope .legacy-btn-primary:hover { opacity: 0.9; }
 
 .legacy-dashboard-scope .legacy-btn-outline { background: transparent; color: hsl(var(--foreground)); border: 1px solid hsl(var(--border)); padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; height: 100%;}
-.legacy-dashboard-scope .legacy-btn-outline:hover { background: rgba(0,0,0,0.05); }
+.legacy-dashboard-scope .legacy-btn-outline:hover { background: rgba(255, 255, 255, 0.05); }
 
 .legacy-dashboard-scope .legacy-btn-action { background: transparent; border: none; color: hsl(var(--muted-foreground)); cursor: pointer; padding: 0.4rem; border-radius: 4px; transition: all 0.2s; }
-.legacy-dashboard-scope .legacy-btn-action:hover { background: rgba(0,0,0,0.05); color: hsl(var(--primary)); }
+.legacy-dashboard-scope .legacy-btn-action:hover { background: rgba(255, 255, 255, 0.05); color: hsl(var(--primary)); }
 
 /* Inventory Layout */
 .legacy-dashboard-scope .inventory-grid { display: grid; grid-template-columns: 2fr 3fr; gap: 2rem; align-items: start;}

@@ -4,46 +4,46 @@
 
 @layer base {
   :root {
-    /* Culinary Institute of America "Prestige" Light Theme */
-    --background: 0 0% 98%; /* Absolute clean off-white (#FAFAFA) */
-    --foreground: 0 0% 0%; /* Pure Black for maximum readability (#000000) */
+    /* Ultimate Luxury Obsidian Dashboard */
+    --background: 240 6% 6%; /* Super deep refined obsidian (#0f0f11) */
+    --foreground: 0 0% 98%; /* Absolute brilliant white for max contrast */
     
-    --card: 0 0% 100%; /* Pure white cards */
-    --card-foreground: 0 0% 0%;
+    --card: 240 6% 10%; /* Slightly lighter obsidian for glass cards */
+    --card-foreground: 0 0% 98%;
     
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 0%;
+    --popover: 240 6% 10%;
+    --popover-foreground: 0 0% 98%;
     
-    /* Forest Green (CIA Primary) */
-    --primary: 160 100% 20%; /* #006644 */
-    --primary-foreground: 0 0% 100%; /* White text on Green */
+    /* Michelin Gold Accent - Looks insanely expensive and extremely readable */
+    --primary: 38 48% 64%; /* Muted luxury gold (#D4A373) */
+    --primary-foreground: 240 6% 6%; /* Deep dark text inside gold buttons */
     
-    /* Soft grays for backgrounds and secondary boxes */
-    --secondary: 0 0% 94%; 
-    --secondary-foreground: 0 0% 0%;
+    /* Secondary elements */
+    --secondary: 240 6% 14%; 
+    --secondary-foreground: 0 0% 98%;
     
-    --muted: 0 0% 96%;
-    --muted-foreground: 0 0% 0%; /* Pure Black instead of gray */
+    --muted: 240 6% 14%;
+    --muted-foreground: 0 0% 75%; /* Bright silver/gray for flawless readability */
     
-    /* Vibrant Carrot Orange (CIA Call-to-Action) */
-    --accent: 32 90% 53%; /* #F3901D */
-    --accent-foreground: 0 0% 100%; /* White text on Orange CTA */
+    /* Beautiful Emerald for Positive actions */
+    --accent: 142 70% 45%; 
+    --accent-foreground: 0 0% 100%;
     
-    --destructive: 0 84% 45%; 
+    --destructive: 0 70% 50%; /* Pure sharp red */
     --destructive-foreground: 0 0% 100%;
     
-    --border: 0 0% 88%; /* Subtle light gray borders */
-    --input: 0 0% 88%;
-    --ring: 160 100% 20%; /* Green focus rings */
+    --border: 240 6% 18%; /* Noticeable but soft borders */
+    --input: 240 6% 18%;
+    --ring: 38 48% 64%; /* Gold rings */
     
-    --radius: 0.75rem; /* Softer, slightly rounded card edges */
+    --radius: 0.75rem;
     
-    /* Data Viz / Chart Colors */
-    --chart-1: 160 100% 20%; /* Forest */
-    --chart-2: 32 90% 53%;  /* Orange */
-    --chart-3: 0 0% 30%;    /* Dark Gray */
-    --chart-4: 160 50% 40%; /* Light Green */
-    --chart-5: 45 90% 50%;  /* Mustard / Gold */
+    /* Elegant Chart Colors */
+    --chart-1: 38 48% 64%; /* Gold */
+    --chart-2: 0 0% 80%; /* Silver */
+    --chart-3: 142 70% 45%; /* Emerald */
+    --chart-4: 240 60% 65%; /* Sapphire */
+    --chart-5: 0 70% 50%; /* Ruby */
   }
 }
 
@@ -53,13 +53,15 @@
   }
   body {
     background-color: hsl(var(--background));
+    /* Extremely subtle ambient mesh background glow */
+    background-image: radial-gradient(circle at 50% 0%, rgba(212, 163, 115, 0.05), transparent 50%),
+                      radial-gradient(circle at 100% 100%, rgba(255, 255, 255, 0.02), transparent 40%);
     min-height: 100vh;
     @apply text-foreground;
   }
   section {
     @apply w-full py-16 md:py-24 lg:py-28;
   }
-  /* Apply elegant font to all headers */
   h1, h2, h3, h4, h5, h6 {
     @apply font-headline tracking-tight;
   }
@@ -67,9 +69,10 @@
 
 @layer utilities {
   .glass-card {
-    @apply bg-card border border-border/50 shadow-[0_8px_30px_rgb(0,0,0,0.06)];
+    /* Highly readable glass styling with bright bottom borders for depth */
+    @apply bg-card/70 backdrop-blur-xl border border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.4)];
   }
   .glass-panel {
-    @apply bg-secondary border border-border;
+    @apply bg-secondary/50 backdrop-blur-md border border-white/5;
   }
 }
