@@ -23,7 +23,7 @@
     --secondary-foreground: 0 0% 98%;
     
     --muted: 240 6% 14%;
-    --muted-foreground: 0 0% 75%; /* Bright silver/gray for flawless readability */
+    --muted-foreground: 0 0% 90%; /* Exceptionally bright silver to completely eliminate readability issues */
     
     /* Beautiful Emerald for Positive actions */
     --accent: 142 70% 45%; 
