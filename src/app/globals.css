@@ -4,46 +4,45 @@
 
 @layer base {
   :root {
-    /* Glassmorphic Vibrant Theme */
-    --background: 230 40% 8%; /* Deep vibrant twilight blue */
-    --foreground: 0 0% 100%; /* Pure white */
+    /* Professional Refined Dark Theme */
+    --background: 222.2 84% 4.9%; /* Slate Black */
+    --foreground: 210 40% 98%; /* Absolute White */
     
-    --card: 232 30% 12%; 
-    --card-foreground: 0 0% 100%;
+    --card: 222.2 84% 4.9%; /* Slight contrast to background */
+    --card-foreground: 210 40% 98%;
     
-    --popover: 232 30% 12%;
-    --popover-foreground: 0 0% 100%;
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
     
-    /* Neon Accents */
-    --primary: 310 100% 60%; /* Neon Magenta */
-    --primary-foreground: 0 0% 100%;
+    /* Subtle Gold for primary actions (highly legible with dark text) */
+    --primary: 43 96% 58%; 
+    --primary-foreground: 222.2 47.4% 11.2%; 
     
-    --secondary: 230 40% 18%; 
-    --secondary-foreground: 0 0% 100%;
+    /* Secondary and accents should be dark, used for hovers and subtle backgrounds */
+    --secondary: 217.2 32.6% 17.5%; 
+    --secondary-foreground: 210 40% 98%;
     
-    /* HIGH CONTRAST MUTED TEXT */
-    --muted: 230 40% 18%;
-    --muted-foreground: 220 20% 80%; /* BRIGHT gray, highly legible */
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 75.1%; /* Brightened gray for legibility */
     
-    --accent: 180 100% 50%; /* Cyan accent */
-    --accent-foreground: 0 0% 100%;
+    --accent: 217.2 32.6% 17.5%; 
+    --accent-foreground: 210 40% 98%;
     
-    --destructive: 350 100% 65%; /* Vibrant Red */
-    --destructive-foreground: 0 0% 100%;
+    --destructive: 0 62.8% 40%; 
+    --destructive-foreground: 210 40% 98%;
     
-    /* Lighter borders for distinct edges */
-    --border: 230 40% 25%; 
-    --input: 230 40% 25%;
-    --ring: 180 100% 50%; /* Cyan rings */
+    --border: 217.2 32.6% 17.5%; 
+    --input: 217.2 32.6% 17.5%;
+    --ring: 43 96% 58%; 
     
-    --radius: 0.75rem;
+    --radius: 0.5rem;
     
-    /* Vibrant Chart Colors */
-    --chart-1: 310 100% 60%;
-    --chart-2: 180 100% 50%;
-    --chart-3: 140 100% 60%;
-    --chart-4: 45 100% 50%;
-    --chart-5: 280 100% 65%;
+    /* Standardized Chart Colors */
+    --chart-1: 43 96% 58%;
+    --chart-2: 217.2 91.2% 59.8%;
+    --chart-3: 142.1 70.6% 45.3%;
+    --chart-4: 0 100% 65%;
+    --chart-5: 280 65% 60%;
   }
 }
 
@@ -52,9 +51,7 @@
     @apply border-border;
   }
   body {
-    /* Gorgeous Deep Twilight Gradient Background */
-    background: linear-gradient(135deg, hsl(230, 60%, 15%), hsl(230, 40%, 8%) 50%, hsl(240, 50%, 6%));
-    background-attachment: fixed;
+    background-color: hsl(var(--background));
     min-height: 100vh;
     @apply text-foreground;
   }
@@ -65,9 +62,9 @@
 
 @layer utilities {
   .glass-card {
-    @apply bg-card/60 backdrop-blur-xl border border-white/10 shadow-2xl;
+    @apply bg-card border border-border shadow-md;
   }
   .glass-panel {
-    @apply bg-secondary/40 backdrop-blur-md border border-white/5;
+    @apply bg-secondary border border-border;
   }
 }

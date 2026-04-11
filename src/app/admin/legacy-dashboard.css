@@ -7,13 +7,13 @@
 /* Dashboard Page Styles */
 .legacy-dashboard-scope .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem; margin-bottom: 4rem; }
 .legacy-dashboard-scope .kpi-card { background: hsl(var(--card) / 0.5); backdrop-filter: blur(12px); border: 1px solid hsl(var(--border) / 0.5); border-radius: 12px; padding: 1.5rem; position: relative; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
-.legacy-dashboard-scope .kpi-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: hsl(var(--accent)); }
+.legacy-dashboard-scope .kpi-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: hsl(var(--primary)); }
 .legacy-dashboard-scope .kpi-card.success::before { background: hsl(var(--success, 142.1 76.2% 36.3%)); }
 .legacy-dashboard-scope .kpi-card.danger::before { background: hsl(var(--destructive)); }
 .legacy-dashboard-scope .kpi-card.highlight { border-color: rgba(212, 163, 115, 0.4); background: linear-gradient(135deg, hsl(var(--card)) 0%, rgba(212,163,115,0.05) 100%); }
 .legacy-dashboard-scope .kpi-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
 .legacy-dashboard-scope .kpi-title { color: hsl(var(--muted-foreground)); font-size: 0.95rem; font-weight: 500; margin: 0; }
-.legacy-dashboard-scope .kpi-icon { color: hsl(var(--accent)); opacity: 0.8; width: 20px; height: 20px; }
+.legacy-dashboard-scope .kpi-icon { color: hsl(var(--primary)); opacity: 0.8; width: 20px; height: 20px; }
 .legacy-dashboard-scope .kpi-card.success .kpi-icon { color: hsl(var(--success, 142.1 76.2% 36.3%)); opacity: 1;}
 .legacy-dashboard-scope .kpi-card.danger .kpi-icon { color: hsl(var(--destructive)); opacity: 1;}
 .legacy-dashboard-scope .kpi-value { font-size: 2.75rem; font-weight: 700; margin: 0 0 0.5rem 0; color: #fff; letter-spacing: -1px; }
@@ -32,14 +32,14 @@
 .legacy-dashboard-scope .data-table th, .legacy-dashboard-scope .data-table td { padding: 1rem 1.5rem; text-align: left; border-bottom: 1px solid hsl(var(--border)); font-size: 0.95rem;}
 .legacy-dashboard-scope .data-table th { font-weight: 500; color: hsl(var(--muted-foreground)); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.5px;}
 
-.legacy-dashboard-scope .legacy-btn-primary { background: hsl(var(--accent)); color: #ffffff; font-weight: 600; padding: 0.75rem 1.5rem; border: none; border-radius: 8px; cursor: pointer; transition: opacity 0.2s; display: flex; align-items: center; gap: 8px; font-size: 0.9rem;}
+.legacy-dashboard-scope .legacy-btn-primary { background: hsl(var(--primary)); color: hsl(var(--primary-foreground)); font-weight: 600; padding: 0.75rem 1.5rem; border: none; border-radius: 8px; cursor: pointer; transition: opacity 0.2s; display: flex; align-items: center; gap: 8px; font-size: 0.9rem;}
 .legacy-dashboard-scope .legacy-btn-primary:hover { opacity: 0.9; }
 
 .legacy-dashboard-scope .legacy-btn-outline { background: transparent; color: hsl(var(--foreground)); border: 1px solid hsl(var(--border)); padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; height: 100%;}
 .legacy-dashboard-scope .legacy-btn-outline:hover { background: rgba(255,255,255,0.05); }
 
 .legacy-dashboard-scope .legacy-btn-action { background: transparent; border: none; color: hsl(var(--muted-foreground)); cursor: pointer; padding: 0.4rem; border-radius: 4px; transition: all 0.2s; }
-.legacy-dashboard-scope .legacy-btn-action:hover { background: rgba(255,255,255,0.05); color: hsl(var(--accent)); }
+.legacy-dashboard-scope .legacy-btn-action:hover { background: rgba(255,255,255,0.05); color: hsl(var(--primary)); }
 
 /* Inventory Layout */
 .legacy-dashboard-scope .inventory-grid { display: grid; grid-template-columns: 2fr 3fr; gap: 2rem; align-items: start;}
@@ -47,5 +47,5 @@
 .legacy-dashboard-scope .legacy-input-group { margin-bottom: 1rem; }
 .legacy-dashboard-scope .legacy-input-group label { display: block; margin-bottom: 0.5rem; font-size: 0.9rem; font-weight: 500; color: hsl(var(--muted-foreground)); }
 .legacy-dashboard-scope .legacy-input-group textarea, .legacy-dashboard-scope .legacy-input-group input { width: 100%; box-sizing: border-box; padding: 0.75rem; background: hsl(var(--secondary)); border: 1px solid hsl(var(--border)); color: #fff; border-radius: 8px; font-family: inherit; font-size: 0.9rem; outline: none; transition: border-color 0.2s;}
-.legacy-dashboard-scope .legacy-input-group textarea:focus { border-color: hsl(var(--accent)); }
+.legacy-dashboard-scope .legacy-input-group textarea:focus { border-color: hsl(var(--primary)); }
 .legacy-dashboard-scope .ai-resultsbox { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 400px; text-align: center; background: rgba(212,163,115,0.02); border: 1px dashed hsl(var(--border)); border-radius: 12px; padding: 2rem; }
