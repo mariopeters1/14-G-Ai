@@ -6,13 +6,13 @@
   :root {
     /* Culinary Institute of America "Prestige" Light Theme */
     --background: 0 0% 98%; /* Absolute clean off-white (#FAFAFA) */
-    --foreground: 0 0% 10%; /* Rich dark graphite for high-legibility (#1A1A1A) */
+    --foreground: 0 0% 0%; /* Pure Black for maximum readability (#000000) */
     
     --card: 0 0% 100%; /* Pure white cards */
-    --card-foreground: 0 0% 10%;
+    --card-foreground: 0 0% 0%;
     
     --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 10%;
+    --popover-foreground: 0 0% 0%;
     
     /* Forest Green (CIA Primary) */
     --primary: 160 100% 20%; /* #006644 */
@@ -20,10 +20,10 @@
     
     /* Soft grays for backgrounds and secondary boxes */
     --secondary: 0 0% 94%; 
-    --secondary-foreground: 0 0% 15%;
+    --secondary-foreground: 0 0% 0%;
     
     --muted: 0 0% 96%;
-    --muted-foreground: 0 0% 40%; /* Very readable slate gray */
+    --muted-foreground: 0 0% 0%; /* Pure Black instead of gray */
     
     /* Vibrant Carrot Orange (CIA Call-to-Action) */
     --accent: 32 90% 53%; /* #F3901D */
