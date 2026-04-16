@@ -105,21 +105,21 @@ const initialKpiData = [
 ];
 
 const VENUE_BASE_METRICS: Record<string, { revenue: number, laborPct: number, foodPct: number, wastePct: number }> = {
-  "fmc-flagship": { revenue: 38565.09, laborPct: 0.26, foodPct: 0.24, wastePct: 0.02 },
-  "fmc-miami": { revenue: 29577.66, laborPct: 0.28, foodPct: 0.25, wastePct: 0.03 },
-  "chez-lui": { revenue: 7776.96, laborPct: 0.25, foodPct: 0.22, wastePct: 0.02 },
+  "terra-bleu": { revenue: 38565.09, laborPct: 0.26, foodPct: 0.24, wastePct: 0.02 },
+  "gator-flamingo": { revenue: 29577.66, laborPct: 0.28, foodPct: 0.25, wastePct: 0.03 },
+  "kann-rum-bar": { revenue: 7776.96, laborPct: 0.25, foodPct: 0.22, wastePct: 0.02 },
   "test-kitchen": { revenue: 5193.22, laborPct: 0.30, foodPct: 0.28, wastePct: 0.04 },
   "market-kiosk": { revenue: 3908.63, laborPct: 0.29, foodPct: 0.27, wastePct: 0.03 },
 };
 
 export default function DashboardPrototypePage() {
-  const [selectedVenue, setSelectedVenue] = useState<string>("fmc-flagship");
+  const [selectedVenue, setSelectedVenue] = useState<string>("terra-bleu");
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const [kpiData, setKpiData] = useState(initialKpiData);
 
   // When venue changes, instantly update the base KPI
   useEffect(() => {
-    const base = VENUE_BASE_METRICS[selectedVenue] || VENUE_BASE_METRICS['fmc-flagship'];
+    const base = VENUE_BASE_METRICS[selectedVenue] || VENUE_BASE_METRICS['terra-bleu'];
     const laborBase = base.revenue * base.laborPct;
     const foodBase = base.revenue * base.foodPct;
     const wasteBase = base.revenue * base.wastePct;
@@ -211,7 +211,7 @@ export default function DashboardPrototypePage() {
                 className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
               >
                 <Settings className="h-4 w-4" />
-                Settings & AI Config
+                Settings & Config
               </Link>
             </li>
             <li>
@@ -244,9 +244,9 @@ export default function DashboardPrototypePage() {
                   <SelectValue placeholder="Select a venue" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="fmc-flagship">Floridian Modern Cuisine - Flagship</SelectItem>
-                  <SelectItem value="fmc-miami">Floridian Modern Cuisine - Miami</SelectItem>
-                  <SelectItem value="chez-lui">Chez Lui Café - Downtown</SelectItem>
+                  <SelectItem value="terra-bleu">Terra Bleu</SelectItem>
+                  <SelectItem value="gator-flamingo">Gator & Flamingo</SelectItem>
+                  <SelectItem value="kann-rum-bar">Kan'n Rum Bar & Grill</SelectItem>
                   <SelectItem value="test-kitchen">Gastronomic AI Test Kitchen</SelectItem>
                   <SelectItem value="market-kiosk">Market Square Kiosk</SelectItem>
                 </SelectContent>
@@ -375,11 +375,11 @@ export default function DashboardPrototypePage() {
                     </li>
                     <li>
                       <strong>Inventory Automation:</strong> Monitor inventory,
-                      log waste, get AI-driven restock suggestions.
+                      log waste, get smart restock suggestions.
                     </li>
                     <li>
-                      <strong>Staff Scheduling Optimization:</strong> AI-predicted
-                      peak hours, efficient shift assignments, labor cost
+                      <strong>Staff Scheduling Optimization:</strong> Automated
+                      predictions for peak hours, efficient shift assignments, labor cost
                       tracking.
                     </li>
                     <li>
@@ -391,7 +391,7 @@ export default function DashboardPrototypePage() {
                       menu, modifiers, and streamlined online ordering.
                     </li>
                     <li>
-                      <strong>AI-Driven Customer Feedback:</strong> Automatic
+                      <strong>Automated Customer Feedback:</strong> Intelligent
                       sentiment analysis, suggestions for improvement.
                     </li>
                     <li>
@@ -399,7 +399,7 @@ export default function DashboardPrototypePage() {
                       reports for all KPIs.
                     </li>
                     <li>
-                      <strong>Predictive Insights:</strong> AI forecasts demand
+                      <strong>Predictive Insights:</strong> Smart forecasting predicts demand
                       spikes and recommends inventory/staffing adjustments.
                     </li>
                     <li>

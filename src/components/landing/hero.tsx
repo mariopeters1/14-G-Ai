@@ -1,8 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Download, TrendingUp } from "lucide-react";
+import { TrendingUp } from "lucide-react";
 import { motion } from "framer-motion";
 import Logo from "@/components/logo";
 
@@ -67,18 +66,40 @@ export default function Hero() {
           transition={{ duration: 1, delay: 0.6 }}
           className="mt-10 flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:justify-center items-center"
         >
-          <Button size="lg" className="h-14 px-8 text-lg rounded-full shadow-[0_0_20px_rgba(255,192,30,0.3)] hover:shadow-[0_0_30px_rgba(255,192,30,0.5)] transition-all duration-300" asChild>
-            <Link href="#contact-us">Request a Demo</Link>
-          </Button>
-          <Button size="lg" variant="outline" className="h-14 px-8 text-lg rounded-full border-primary/30 hover:border-primary hover:bg-primary/5 transition-all duration-300" asChild>
-            <Link href="/roadmap">Discover Formula-86</Link>
-          </Button>
-          <Button size="lg" variant="ghost" asChild className="h-14 px-6 text-foreground hover:bg-primary/10 hover:text-primary rounded-full transition-all duration-300 border border-transparent hover:border-primary/30">
-            <Link href="#contact-us">
-              <TrendingUp className="mr-2 text-primary" />
-              <span className="font-semibold tracking-wide">Invest in Gastronomic AI</span>
-            </Link>
-          </Button>
+          <Link
+            href="#contact-us"
+            className="h-14 px-8 text-lg rounded-full font-medium inline-flex items-center justify-center transition-all duration-300"
+            style={{
+              backgroundColor: "#D4A373",
+              color: "#0A0A0F",
+              boxShadow: "0 0 20px rgba(212,163,115,0.3)",
+            }}
+          >
+            Request a Demo
+          </Link>
+          <Link
+            href="/roadmap"
+            className="h-14 px-8 text-lg rounded-full font-medium inline-flex items-center justify-center transition-all duration-300 border"
+            style={{
+              backgroundColor: "transparent",
+              borderColor: "rgba(212,163,115,0.3)",
+              color: "#fff",
+            }}
+          >
+            Discover Formula-86
+          </Link>
+          <Link
+            href="#contact-us"
+            className="h-14 px-6 rounded-full font-semibold tracking-wide inline-flex items-center justify-center transition-all duration-300 border"
+            style={{
+              backgroundColor: "transparent",
+              borderColor: "transparent",
+              color: "#fff",
+            }}
+          >
+            <TrendingUp className="mr-2 text-primary" />
+            Invest in Gastronomic AI
+          </Link>
         </motion.div>
       </motion.div>
     </section>

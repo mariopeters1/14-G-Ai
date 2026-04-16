@@ -1,372 +1,403 @@
+"use client";
 
-'use client';
-
-import { useState, useMemo, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { analyzeSalesData, type SalesAnalysisOutput } from '@/ai/flows/sales-analysis-flow';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Textarea } from '@/components/ui/textarea';
-import { Input } from '@/components/ui/input';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { Label } from '@/components/ui/label';
-import { useToast } from '@/hooks/use-toast';
-import { Loader2, Sparkles, Lightbulb, TrendingUp, TrendingDown, BarChart, FileText } from 'lucide-react';
-import { Separator } from '@/components/ui/separator';
-import { BarChart as RechartsBarChart, CartesianGrid, XAxis, YAxis, Tooltip, Bar } from 'recharts';
-import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { useState, useMemo, useEffect } from "react";
+import { analyzeSalesData, type SalesAnalysisOutput } from "@/ai/flows/sales-analysis-flow";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+  ChefHat,
+  Lightbulb,
+  TrendingUp,
+  TrendingDown,
+  BarChart3,
+  FileText,
+  DollarSign,
+  RefreshCw,
+  Sparkles,
+  ChevronDown,
+  CheckCircle2,
+  AlertCircle,
+  Clipboard,
+  Check,
+  Download,
+  Zap,
+  Minus,
+  ArrowUpRight,
+  ArrowDownRight,
+} from "lucide-react";
+
+// ─── Data ───────────────────────────────────────────────────────
 
 const VENUES = [
-    { id: 'fmc-flagship', name: 'Floridian Modern Cuisine - Flagship', baseSales: 38565.09, topItems: '45x Waygu Burgers, 30x Truffle Fries' },
-    { id: 'fmc-miami', name: 'Floridian Modern Cuisine - Miami', baseSales: 29577.66, topItems: '50x Gator Bites, 40x Flamingo Cocktails' },
-    { id: 'chez-lui', name: "Chez Lui Café - Downtown", baseSales: 7776.96, topItems: '35x Jerk Chicken, 60x Rum Punch' },
-    { id: 'test-kitchen', name: 'Gastronomic AI Test Kitchen', baseSales: 5193.22, topItems: '55x Artisan Latte, 40x Avocado Toast' },
-    { id: 'market-kiosk', name: 'Market Square Kiosk', baseSales: 3908.63, topItems: '25x Tasting Menu A, 10x Experimental Entrees' },
+  { id: "terra-bleu", name: "Terra Bleu", baseSales: 38565.09, topItems: "45x Waygu Burgers, 30x Truffle Fries" },
+  { id: "gator-flamingo", name: "Gator & Flamingo", baseSales: 29577.66, topItems: "50x Gator Bites, 40x Flamingo Cocktails" },
+  { id: "kann-rum-bar", name: "Kan'n Rum Bar & Grill", baseSales: 7776.96, topItems: "35x Jerk Chicken, 60x Rum Punch" },
+  { id: "test-kitchen", name: "Gastronomic AI Test Kitchen", baseSales: 5193.22, topItems: "55x Artisan Latte, 40x Avocado Toast" },
+  { id: "market-kiosk", name: "Market Square Kiosk", baseSales: 3908.63, topItems: "25x Tasting Menu A, 10x Experimental Entrees" },
 ];
 
-const aiFormSchema = z.object({
-  salesData: z.string().min(10, { message: 'Please provide more detailed sales data.' }),
-});
-
-type AiFormData = z.infer<typeof aiFormSchema>;
+// ─── Component ──────────────────────────────────────────────────
 
 export default function SalesPage() {
-  const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<SalesAnalysisOutput | null>(null);
-  const [selectedVenueId, setSelectedVenueId] = useState<string>("fmc-flagship");
+  const [selectedVenueId, setSelectedVenueId] = useState("terra-bleu");
+  const [salesData, setSalesData] = useState("");
+  const [copiedIdx, setCopiedIdx] = useState<number | null>(null);
 
-  const [grossSales, setGrossSales] = useState('5500.00');
-  const [discounts, setDiscounts] = useState('250.00');
-  const [taxes, setTaxes] = useState('420.00');
+  // Calculator
+  const [grossSales, setGrossSales] = useState("38565.09");
+  const [discounts, setDiscounts] = useState("1928.25");
+  const [taxes, setTaxes] = useState("3085.21");
+
+  const [toastMsg, setToastMsg] = useState<string | null>(null);
+  const [toastType, setToastType] = useState<"success" | "info" | "warning">("success");
 
   useEffect(() => {
-    const venue = VENUES.find(v => v.id === selectedVenueId) || VENUES[0];
-    setGrossSales(venue.baseSales.toString());
-    setDiscounts((venue.baseSales * 0.05).toFixed(2)); // ~5% disc
-    setTaxes((venue.baseSales * 0.08).toFixed(2)); // ~8% tax
+    if (toastMsg) {
+      const t = setTimeout(() => setToastMsg(null), 3500);
+      return () => clearTimeout(t);
+    }
+  }, [toastMsg]);
+
+  const showToast = (msg: string, type: "success" | "info" | "warning" = "success") => {
+    setToastMsg(msg);
+    setToastType(type);
+  };
+
+  useEffect(() => {
+    const venue = VENUES.find((v) => v.id === selectedVenueId) || VENUES[0];
+    setGrossSales(venue.baseSales.toFixed(2));
+    setDiscounts((venue.baseSales * 0.05).toFixed(2));
+    setTaxes((venue.baseSales * 0.08).toFixed(2));
   }, [selectedVenueId]);
 
   const { netSales, totalRevenue } = useMemo(() => {
     const gross = parseFloat(grossSales) || 0;
     const disc = parseFloat(discounts) || 0;
     const tax = parseFloat(taxes) || 0;
-    const net = gross - disc;
-    const total = net + tax;
-    return { netSales: net, totalRevenue: total };
+    return { netSales: gross - disc, totalRevenue: gross - disc + tax };
   }, [grossSales, discounts, taxes]);
-  
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-    }).format(value);
-  }
 
-  const aiForm = useForm<AiFormData>({
-    resolver: zodResolver(aiFormSchema),
-    defaultValues: {
-      salesData:
-        "Total Sales: $5000. Top selling items: Steak Frites (30 orders), Salmon (25 orders). Lunch was slow, dinner was busy. High number of wine pairings sold.",
-    },
-  });
+  const fmt = (v: number) => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(v);
 
-  const onAiSubmit = async (data: AiFormData) => {
+  // POS sync
+  const handleSync = (pos: string) => {
+    const venue = VENUES.find((v) => v.id === selectedVenueId)!;
+    const payload = pos === "toast"
+      ? `Toast POS Sync [2026-04-10] | ${venue.name}: Gross: $${venue.baseSales}. Top items: ${venue.topItems}. Slow lunch, heavy dinner rush. Labor ran at 22% during peak.`
+      : `Square POS Sync [2026-04-10] | ${venue.name}: Gross: $${venue.baseSales}. Top items: ${venue.topItems}. High volume in morning, died off after 2PM. Waste higher than normal on pastries.`;
+    setSalesData(payload);
+    showToast(`${pos === "toast" ? "Toast" : "Square"} POS synced for ${venue.name}.`);
+  };
+
+  const handleAnalyze = async () => {
+    if (!salesData.trim()) {
+      showToast("Sync from a POS or enter data first.", "warning");
+      return;
+    }
     setLoading(true);
     setResult(null);
     try {
-      const aiResult = await analyzeSalesData(data);
+      const aiResult = await analyzeSalesData({ salesData });
       setResult(aiResult);
+      showToast("Analysis complete — insights generated.");
     } catch (error) {
-      console.error('Error calling AI flow:', error);
-      toast({
-        variant: 'destructive',
-        title: 'AI Error',
-        description: 'Failed to get analysis. Please try again.',
-      });
+      console.error("Error:", error);
+      showToast("Analysis failed. Please try again.", "warning");
     } finally {
       setLoading(false);
     }
   };
 
-  const chartConfig = {
-    unitsSold: {
-      label: "Units Sold",
-      color: "hsl(var(--primary))",
-    },
-  } satisfies ChartConfig;
+  const handleCopy = (text: string, idx: number) => {
+    navigator.clipboard.writeText(text);
+    setCopiedIdx(idx);
+    setTimeout(() => setCopiedIdx(null), 2000);
+  };
 
-  const chartData = useMemo(() => {
-    if (!result?.topItems) return [];
-    return result.topItems.map(item => ({
-      name: item.itemName,
-      unitsSold: parseInt(item.unitsSold.match(/\d+/)?.[0] || '0', 10),
-      fill: "var(--color-unitsSold)"
-    }));
-  }, [result]);
+  // ─── Render ───────────────────────────────────────────────
 
   return (
-    <div className="container mx-auto py-10">
-      <div className="grid lg:grid-cols-5 gap-8 items-start">
-        <div className="lg:col-span-2 space-y-8">
-            <Card className="border-t-4 border-t-primary shadow-lg overflow-hidden relative">
-                <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
-                    <Sparkles className="w-32 h-32" />
-                </div>
-                <CardHeader className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                    <div>
-                        <CardTitle className="font-headline text-2xl flex items-center gap-2">
-                            <Sparkles className="text-primary" /> Sales Data Sync
-                        </CardTitle>
-                        <CardDescription>
-                            Connect your POS to import today's telemetry for instant AI analysis.
-                        </CardDescription>
-                    </div>
-                    <Select value={selectedVenueId} onValueChange={setSelectedVenueId}>
-                        <SelectTrigger className="w-[240px]">
-                            <SelectValue placeholder="Select Venue" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {VENUES.map(v => (
-                                <SelectItem key={v.id} value={v.id}>{v.name}</SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-                </CardHeader>
-                <CardContent className="space-y-6 relative z-10">
-                    <div className="grid grid-cols-2 gap-4">
-                        <Button 
-                            variant="outline" 
-                            className="h-20 flex flex-col gap-2 hover:border-primary hover:bg-primary/5 transition-all"
-                            onClick={() => {
-                                const venue = VENUES.find(v => v.id === selectedVenueId)!;
-                                aiForm.setValue('salesData', `Toast POS Sync [2026-04-10] | ${venue.name}: Gross: $${venue.baseSales}. Top items: ${venue.topItems}. Slow lunch, heavy dinner rush. Labor ran at 22% during peak.`);
-                                toast({ title: "Toast POS Synced", description: `Imported transactions securely for ${venue.name}.` });
-                            }}
-                        >
-                            <span className="font-bold tracking-tight text-lg">TOAST</span>
-                            <span className="text-xs text-muted-foreground">Sync Today's Data</span>
-                        </Button>
-                        <Button 
-                            variant="outline" 
-                            className="h-20 flex flex-col gap-2 hover:border-primary hover:bg-primary/5 transition-all"
-                            onClick={() => {
-                                const venue = VENUES.find(v => v.id === selectedVenueId)!;
-                                aiForm.setValue('salesData', `Square POS Sync [2026-04-10] | ${venue.name}: Gross: $${venue.baseSales}. Top items: ${venue.topItems}. High volume in morning, died off after 2PM. Waste higher than normal on pastries.`);
-                                toast({ title: "Square Synced", description: `Imported transactions securely for ${venue.name}.` });
-                            }}
-                        >
-                            <span className="font-bold tracking-tight text-lg">Square</span>
-                            <span className="text-xs text-muted-foreground">Sync Today's Data</span>
-                        </Button>
-                    </div>
-
-                    <div className="relative">
-                        <div className="absolute inset-0 flex items-center">
-                            <span className="w-full border-t" />
-                        </div>
-                        <div className="relative flex justify-center text-xs uppercase">
-                            <span className="bg-card px-2 text-muted-foreground">Or View Raw Payload</span>
-                        </div>
-                    </div>
-
-                    <Form {...aiForm}>
-                        <form onSubmit={aiForm.handleSubmit(onAiSubmit)} className="space-y-4">
-                        <FormField
-                            control={aiForm.control}
-                            name="salesData"
-                            render={({ field }) => (
-                            <FormItem>
-                                <FormControl>
-                                <div className="relative">
-                                    <Textarea
-                                        placeholder="Sync from POS to view raw telemetry..."
-                                        className="min-h-[100px] font-mono text-xs bg-muted/50 border-dashed resize-none"
-                                        readOnly
-                                        {...field}
-                                    />
-                                    {!field.value && (
-                                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                            <span className="text-sm text-muted-foreground bg-background px-2 py-1 rounded border shadow-sm">Awaiting POS Connection</span>
-                                        </div>
-                                    )}
-                                </div>
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                            )}
-                        />
-                        <Button type="submit" disabled={loading || !aiForm.watch('salesData')} className="w-full h-12 text-md font-semibold mt-4">
-                            {loading ? (
-                                <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Analyzing 10,000+ data points...</>
-                            ) : 'Generate AI Operating Insights' }
-                        </Button>
-                        </form>
-                    </Form>
-                </CardContent>
-            </Card>
-            <Card>
-                <CardHeader>
-                    <CardTitle className="font-headline text-2xl flex items-center gap-2">
-                        <BarChart /> Manual Sales Calculator
-                    </CardTitle>
-                    <CardDescription>
-                        Enter sales figures to quickly calculate net and total revenue.
-                    </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                        <Label>Gross Sales</Label>
-                        <Input value={grossSales} onChange={(e) => setGrossSales(e.target.value)} type="number" placeholder="5500.00" />
-                    </div>
-                    <div className="space-y-2">
-                        <Label>Discounts & Comps</Label>
-                        <Input value={discounts} onChange={(e) => setDiscounts(e.target.value)} type="number" placeholder="250.00" />
-                    </div>
-                    <div className="space-y-2">
-                        <Label>Taxes</Label>
-                        <Input value={taxes} onChange={(e) => setTaxes(e.target.value)} type="number" placeholder="420.00" />
-                    </div>
-                    <Separator />
-                    <div className="space-y-3">
-                        <div className="flex justify-between items-center">
-                            <span className="text-muted-foreground">Net Sales <small>(Gross - Discounts)</small></span>
-                            <span className="font-bold text-lg">{formatCurrency(netSales)}</span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                            <span className="text-muted-foreground">Total Revenue <small>(Net + Taxes)</small></span>
-                            <span className="font-bold text-lg text-primary">{formatCurrency(totalRevenue)}</span>
-                        </div>
-                    </div>
-                </CardContent>
-            </Card>
+    <div className="p-8 pb-20 font-sans max-w-7xl mx-auto relative">
+      {/* Toast */}
+      {toastMsg && (
+        <div className={`fixed top-6 right-6 z-50 px-5 py-3 rounded-xl text-sm font-medium shadow-2xl border transition-all animate-[slideIn_0.3s_ease-out] ${
+          toastType === "success" ? "bg-[#10B981]/15 text-[#10B981] border-[#10B981]/30"
+            : toastType === "warning" ? "bg-[#F59E0B]/15 text-[#F59E0B] border-[#F59E0B]/30"
+            : "bg-white/10 text-white border-white/20"
+        }`}>
+          <div className="flex items-center gap-2">
+            {toastType === "success" && <CheckCircle2 className="w-4 h-4" />}
+            {toastType === "warning" && <AlertCircle className="w-4 h-4" />}
+            {toastMsg}
+          </div>
         </div>
-        
+      )}
+
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="text-3xl font-normal text-white tracking-tight">Sales & POS</h1>
+        <p className="text-neutral-400 mt-2">Sync POS data, calculate revenue, and get AI-powered sales insights.</p>
+      </div>
+
+      <div className="grid lg:grid-cols-5 gap-8 items-start">
+        {/* ─── Left: POS Sync + Calculator ────────────────── */}
+        <div className="lg:col-span-2 space-y-5 lg:sticky lg:top-24 self-start">
+          {/* POS Sync Card */}
+          <div className="bg-[#111116] border border-[#1F1F28] rounded-2xl overflow-hidden">
+            <div className="p-5 border-b border-[#1F1F28] bg-[#0D0D12] flex justify-between items-start">
+              <div>
+                <h2 className="text-lg font-medium text-white flex items-center gap-2">
+                  <Zap className="w-5 h-5 text-[#F59E0B]" /> POS Data Sync
+                </h2>
+                <p className="text-xs text-neutral-500 mt-1">Import today&apos;s telemetry for instant analysis.</p>
+              </div>
+              <div className="relative">
+                <select
+                  value={selectedVenueId}
+                  onChange={(e) => setSelectedVenueId(e.target.value)}
+                  className="bg-[#0D0D12] border border-[#2D2D3A] rounded-lg px-3 py-2 pr-8 text-white text-xs focus:outline-none focus:ring-1 focus:ring-white/20 appearance-none cursor-pointer"
+                >
+                  {VENUES.map((v) => (
+                    <option key={v.id} value={v.id}>{v.name}</option>
+                  ))}
+                </select>
+                <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3 h-3 text-neutral-500 pointer-events-none" />
+              </div>
+            </div>
+            <div className="p-5 space-y-4">
+              {/* POS Buttons */}
+              <div className="grid grid-cols-2 gap-3">
+                <button onClick={() => handleSync("toast")} className="py-4 border border-[#2D2D3A] rounded-xl bg-[#0D0D12] hover:bg-[#1C1C24] hover:border-[#F59E0B]/30 transition-all flex flex-col items-center gap-1.5 group">
+                  <span className="text-white font-bold tracking-tight text-lg group-hover:text-[#F59E0B] transition-colors">TOAST</span>
+                  <span className="text-[10px] text-neutral-500">Sync Today&apos;s Data</span>
+                </button>
+                <button onClick={() => handleSync("square")} className="py-4 border border-[#2D2D3A] rounded-xl bg-[#0D0D12] hover:bg-[#1C1C24] hover:border-[#3B82F6]/30 transition-all flex flex-col items-center gap-1.5 group">
+                  <span className="text-white font-bold tracking-tight text-lg group-hover:text-[#3B82F6] transition-colors">Square</span>
+                  <span className="text-[10px] text-neutral-500">Sync Today&apos;s Data</span>
+                </button>
+              </div>
+
+              {/* Divider */}
+              <div className="flex items-center gap-3">
+                <div className="flex-1 border-t border-[#1F1F28]" />
+                <span className="text-[10px] text-neutral-600 uppercase">Raw Payload</span>
+                <div className="flex-1 border-t border-[#1F1F28]" />
+              </div>
+
+              {/* Data textarea */}
+              <div className="relative">
+                <textarea
+                  value={salesData}
+                  onChange={(e) => setSalesData(e.target.value)}
+                  rows={4}
+                  placeholder="Sync from POS to view telemetry..."
+                  className="w-full bg-[#0D0D12] border border-dashed border-[#2D2D3A] rounded-lg px-4 py-3 text-white text-xs font-mono focus:outline-none focus:ring-1 focus:ring-white/20 resize-none placeholder-neutral-600"
+                />
+                {!salesData && (
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <span className="text-xs text-neutral-500 bg-[#111116] px-3 py-1.5 rounded-lg border border-[#2D2D3A]">Awaiting POS Connection</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Analyze Button */}
+              <button
+                onClick={handleAnalyze}
+                disabled={loading || !salesData}
+                className="w-full py-3.5 bg-white text-black hover:bg-neutral-200 rounded-xl transition-all text-sm font-medium flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                {loading ? (
+                  <><RefreshCw className="w-4 h-4 animate-spin" /> Analyzing...</>
+                ) : (
+                  <><Sparkles className="w-4 h-4" /> Generate Operating Insights</>
+                )}
+              </button>
+            </div>
+          </div>
+
+          {/* Sales Calculator */}
+          <div className="bg-[#111116] border border-[#1F1F28] rounded-2xl overflow-hidden">
+            <div className="p-5 border-b border-[#1F1F28] bg-[#0D0D12]">
+              <h2 className="text-sm font-medium text-neutral-400 flex items-center gap-2">
+                <BarChart3 className="w-4 h-4" /> Sales Calculator
+              </h2>
+            </div>
+            <div className="p-5 space-y-3">
+              {[
+                { label: "Gross Sales", value: grossSales, setter: setGrossSales },
+                { label: "Discounts & Comps", value: discounts, setter: setDiscounts },
+                { label: "Taxes", value: taxes, setter: setTaxes },
+              ].map((field) => (
+                <div key={field.label}>
+                  <label className="block text-xs text-neutral-500 mb-1">{field.label}</label>
+                  <div className="relative">
+                    <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-neutral-500" />
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={field.value}
+                      onChange={(e) => field.setter(e.target.value)}
+                      className="w-full bg-[#0D0D12] border border-[#2D2D3A] rounded-lg pl-8 pr-4 py-2.5 text-white text-sm font-mono focus:outline-none focus:ring-1 focus:ring-white/20 placeholder-neutral-500"
+                    />
+                  </div>
+                </div>
+              ))}
+              <div className="border-t border-[#1F1F28] pt-3 space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-neutral-500">Net Sales</span>
+                  <span className="text-sm font-mono text-white">{fmt(netSales)}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-neutral-500">Total Revenue</span>
+                  <span className="text-lg font-mono text-[#10B981] font-light">{fmt(totalRevenue)}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ─── Right: AI Results ──────────────────────────── */}
         <div className="lg:col-span-3">
-            {loading && (
-                <div className="flex flex-col items-center justify-center h-full min-h-[50vh] p-8 text-center bg-card rounded-lg border">
-                    <Loader2 className="h-12 w-12 animate-spin text-primary" />
-                    <h3 className="text-2xl font-headline font-bold mt-4">AI is analyzing your sales data...</h3>
-                    <p className="text-muted-foreground mt-2 max-w-sm">Identifying trends, top sellers, and creating actionable recommendations for you.</p>
+          {/* Loading */}
+          {loading && (
+            <div className="bg-[#111116] border border-[#1F1F28] rounded-2xl min-h-[50vh] flex flex-col items-center justify-center text-center p-8">
+              <div className="w-16 h-16 rounded-2xl bg-[#1F1F28] flex items-center justify-center mb-6 border border-[#2D2D3A]">
+                <RefreshCw className="w-8 h-8 text-neutral-400 animate-spin" />
+              </div>
+              <h3 className="text-xl font-medium text-white mb-2">Analyzing Sales Data</h3>
+              <p className="text-neutral-400 text-sm max-w-md">Identifying trends, top sellers, and creating actionable recommendations...</p>
+              <div className="w-48 h-1 bg-[#1F1F28] rounded-full mt-6 overflow-hidden">
+                <div className="h-full bg-white/30 rounded-full animate-[progress_2s_ease-in-out_infinite]" />
+              </div>
+            </div>
+          )}
+
+          {/* Empty State */}
+          {!loading && !result && (
+            <div className="bg-[#111116] border border-dashed border-[#2D2D3A] rounded-2xl min-h-[50vh] flex flex-col items-center justify-center text-center p-8">
+              <div className="w-20 h-20 rounded-2xl bg-[#1F1F28] flex items-center justify-center mb-6 border border-[#2D2D3A]">
+                <BarChart3 className="w-9 h-9 text-neutral-500" />
+              </div>
+              <h3 className="text-xl font-medium text-white mb-2">Sales Insights</h3>
+              <p className="text-neutral-400 text-sm max-w-md">Sync your POS data and click &quot;Generate Operating Insights&quot; to reveal hidden opportunities.</p>
+              <div className="flex gap-3 mt-6">
+                {["TOAST", "Square", "Clover", "Aloha"].map((pos) => (
+                  <div key={pos} className="px-3 py-1.5 rounded-lg bg-[#1F1F28] border border-[#2D2D3A] text-[10px] text-neutral-500">{pos}</div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Results */}
+          {!loading && result && (
+            <div className="space-y-5">
+              {/* Executive Summary */}
+              <div className="bg-[#111116] border border-[#1F1F28] rounded-2xl overflow-hidden">
+                <div className="h-1 w-full bg-gradient-to-r from-[#3B82F6] to-transparent" />
+                <div className="p-6">
+                  <h3 className="text-sm font-medium text-white flex items-center gap-2 mb-3">
+                    <FileText className="w-4 h-4 text-[#3B82F6]" /> Executive Summary
+                  </h3>
+                  <p className="text-sm text-neutral-400 leading-relaxed">{result.summary}</p>
                 </div>
-            )}
+              </div>
 
-            {!loading && !result && (
-                <Card className="min-h-[50vh] flex flex-col items-center justify-center text-center p-8 bg-accent/50 border-dashed">
-                    <div className="bg-background p-4 rounded-full border shadow-sm mb-4">
-                    <Sparkles className="h-12 w-12 text-primary" />
-                    </div>
-                    <h3 className="text-2xl font-headline font-bold">Sales Analysis Will Appear Here</h3>
-                    <p className="text-muted-foreground mt-2 max-w-sm">Paste your sales report into the form and let Gastronomic AI reveal hidden opportunities.</p>
-                </Card>
-            )}
-
-            {!loading && result && (
-                <div className="space-y-6">
-                    <Card>
-                        <CardHeader>
-                            <CardTitle className="font-headline text-xl flex items-center gap-2"><FileText /> AI Summary</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <p className="text-muted-foreground">{result.summary}</p>
-                        </CardContent>
-                    </Card>
-
-                    {chartData.length > 0 && (
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="font-headline text-xl flex items-center gap-2"><BarChart /> Top Sellers Performance</CardTitle>
-                                <CardDescription>A visual summary of top-performing items based on units sold.</CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <ChartContainer config={chartConfig} className="h-[250px] w-full">
-                                    <RechartsBarChart data={chartData} layout="vertical" margin={{ left: 10, right: 20, top: 10, bottom: 10 }}>
-                                        <CartesianGrid horizontal={false} />
-                                        <YAxis 
-                                            dataKey="name" 
-                                            type="category" 
-                                            tickLine={false} 
-                                            axisLine={false} 
-                                            tickMargin={8}
-                                            width={120}
-                                            className="text-xs truncate"
-                                        />
-                                        <XAxis dataKey="unitsSold" type="number" hide />
-                                        <Tooltip
-                                            cursor={{ fill: "hsl(var(--accent))" }}
-                                            content={<ChartTooltipContent indicator="dot" />}
-                                        />
-                                        <Bar dataKey="unitsSold" fill="var(--color-unitsSold)" radius={4} />
-                                    </RechartsBarChart>
-                                </ChartContainer>
-                            </CardContent>
-                        </Card>
-                    )}
-                    
-                    {result.topItems.length > 0 && (
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="font-headline text-xl flex items-center gap-2"><TrendingUp /> Top Selling Items</CardTitle>
-                            </CardHeader>
-                            <CardContent className="space-y-3">
-                                {result.topItems.map((item, index) => (
-                                    <div key={index} className="p-3 rounded-md border bg-secondary/50">
-                                        <div className="flex justify-between items-center">
-                                            <p className="font-semibold">{item.itemName}</p>
-                                            <p className="font-mono text-sm text-primary font-bold">{item.unitsSold}</p>
-                                        </div>
-                                        <p className="text-sm text-muted-foreground">{item.insight}</p>
-                                    </div>
-                                ))}
-                            </CardContent>
-                        </Card>
-                    )}
-
-                    {result.underperformingItems.length > 0 && (
-                        <Card>
-                            <CardHeader>
-                                <CardTitle className="font-headline text-xl flex items-center gap-2"><TrendingDown className="text-destructive" /> Underperforming Items</CardTitle>
-                            </CardHeader>
-                            <CardContent className="space-y-3">
-                                {result.underperformingItems.map((item, index) => (
-                                    <div key={index} className="p-3 rounded-md border border-destructive/20 bg-destructive/5">
-                                        <div className="flex justify-between items-center">
-                                            <p className="font-semibold text-foreground/90">{item.itemName}</p>
-                                            <p className="font-mono text-sm text-destructive font-bold">{item.unitsSold}</p>
-                                        </div>
-                                        <p className="text-sm text-muted-foreground">{item.insight}</p>
-                                    </div>
-                                ))}
-                            </CardContent>
-                        </Card>
-                    )}
-
-                     <Card>
-                        <CardHeader>
-                            <CardTitle className="font-headline text-xl flex items-center gap-2"><Lightbulb /> Actionable Recommendations</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-3">
-                            {result.recommendations.map((rec, index) => (
-                                <div key={index} className="p-3 rounded-md bg-accent">
-                                    <p className="font-semibold">{rec.recommendation}</p>
-                                    <p className="text-sm text-muted-foreground">{rec.reasoning}</p>
-                                </div>
-                            ))}
-                        </CardContent>
-                    </Card>
+              {/* Top Sellers + Chart */}
+              {result.topItems.length > 0 && (
+                <div className="bg-[#111116] border border-[#1F1F28] rounded-2xl overflow-hidden">
+                  <div className="h-1 w-full bg-gradient-to-r from-[#10B981] to-transparent" />
+                  <div className="px-6 py-4 border-b border-[#1F1F28]">
+                    <h3 className="text-sm font-medium text-white flex items-center gap-2">
+                      <TrendingUp className="w-4 h-4 text-[#10B981]" /> Top Sellers
+                    </h3>
+                  </div>
+                  {/* Horizontal bar chart */}
+                  <div className="p-6 space-y-3">
+                    {result.topItems.map((item, i) => {
+                      const units = parseInt(item.unitsSold.match(/\d+/)?.[0] || "0", 10);
+                      const maxUnits = Math.max(...result.topItems.map((t) => parseInt(t.unitsSold.match(/\d+/)?.[0] || "0", 10)));
+                      const widthPct = maxUnits > 0 ? (units / maxUnits) * 100 : 0;
+                      return (
+                        <div key={i} className="group">
+                          <div className="flex justify-between items-center mb-1">
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs text-[#10B981] font-mono w-6">#{i + 1}</span>
+                              <span className="text-sm text-white">{item.itemName}</span>
+                            </div>
+                            <span className="text-xs font-mono text-[#10B981]">{item.unitsSold}</span>
+                          </div>
+                          <div className="w-full h-2 bg-[#1F1F28] rounded-full overflow-hidden">
+                            <div className="h-full rounded-full bg-[#10B981]/60 transition-all" style={{ width: `${widthPct}%` }} />
+                          </div>
+                          <p className="text-[11px] text-neutral-500 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">{item.insight}</p>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
-            )}
+              )}
+
+              {/* Underperformers */}
+              {result.underperformingItems.length > 0 && (
+                <div className="bg-[#111116] border border-[#1F1F28] rounded-2xl overflow-hidden">
+                  <div className="h-1 w-full bg-gradient-to-r from-[#EF4444] to-transparent" />
+                  <div className="px-6 py-4 border-b border-[#1F1F28]">
+                    <h3 className="text-sm font-medium text-white flex items-center gap-2">
+                      <TrendingDown className="w-4 h-4 text-[#EF4444]" /> Underperforming Items
+                    </h3>
+                  </div>
+                  <div className="p-6 space-y-3">
+                    {result.underperformingItems.map((item, i) => (
+                      <div key={i} className="px-4 py-3 bg-[#EF4444]/5 border border-[#EF4444]/10 rounded-xl">
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm text-white">{item.itemName}</span>
+                          <span className="text-xs font-mono text-[#EF4444]">{item.unitsSold}</span>
+                        </div>
+                        <p className="text-[11px] text-neutral-500 mt-1">{item.insight}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Recommendations */}
+              {result.recommendations.length > 0 && (
+                <div className="bg-[#111116] border border-[#1F1F28] rounded-2xl overflow-hidden">
+                  <div className="h-1 w-full bg-gradient-to-r from-[#F59E0B] to-transparent" />
+                  <div className="px-6 py-4 border-b border-[#1F1F28]">
+                    <h3 className="text-sm font-medium text-white flex items-center gap-2">
+                      <Lightbulb className="w-4 h-4 text-[#F59E0B]" /> Actionable Recommendations
+                    </h3>
+                  </div>
+                  <div className="p-6 space-y-3">
+                    {result.recommendations.map((rec, i) => (
+                      <div key={i} className="bg-[#0D0D12] border border-[#1F1F28] rounded-xl p-4 group hover:border-[#2D2D3A] transition-all">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="flex-1">
+                            <p className="text-sm text-white font-medium mb-1">{rec.recommendation}</p>
+                            <p className="text-xs text-neutral-500 leading-relaxed">{rec.reasoning}</p>
+                          </div>
+                          <button
+                            onClick={() => handleCopy(`${rec.recommendation}: ${rec.reasoning}`, i)}
+                            className="p-1.5 hover:bg-white/5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0"
+                          >
+                            {copiedIdx === i ? <Check className="w-3.5 h-3.5 text-[#10B981]" /> : <Clipboard className="w-3.5 h-3.5 text-neutral-500" />}
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
+
+      <style jsx>{`
+        @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+        @keyframes progress { 0% { width: 0%; margin-left: 0%; } 50% { width: 60%; margin-left: 20%; } 100% { width: 0%; margin-left: 100%; } }
+      `}</style>
     </div>
   );
 }

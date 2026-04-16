@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 export default function HowItWorks() {
   const steps = [
     { icon: Database, title: "1. Collect Data", desc: "Integrate wearables, POS systems, and real-time inventory." },
-    { icon: CloudCog, title: "2. Predict & Process", desc: "Cloud functions and AI models analyze data to find patterns." },
+    { icon: CloudCog, title: "2. Predict & Process", desc: "Cloud functions and smart algorithms analyze data to find patterns." },
     { icon: HeartPulse, title: "3. Delight Guests", desc: "Deliver smart menus and personalized recommendations instantly." },
     { icon: ChefHat, title: "4. Optimize Ops", desc: "Use live dashboards and inventory alerts to stay ahead of the rush." },
   ];

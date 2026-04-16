@@ -10,7 +10,7 @@ export default function Footer() {
         <div className="flex flex-col items-center gap-4 md:flex-row md:gap-4">
           <Logo className="h-8 w-8 drop-shadow-[0_0_8px_rgba(255,192,30,0.8)]" />
           <p className="text-center text-sm leading-loose text-white/50 tracking-wide md:text-left">
-            Built by Gastronomic AI. © {new Date().getFullYear()} All rights reserved.
+            Built by Mario Peters. © {new Date().getFullYear()} All rights reserved.
           </p>
         </div>
         <div className="flex flex-wrap justify-center items-center gap-6">

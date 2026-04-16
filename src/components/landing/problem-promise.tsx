@@ -1,6 +1,6 @@
 "use client";
 
-import { DollarSign, Zap, Scale, ChefHat, Sparkles, BrainCircuit } from "lucide-react";
+import { DollarSign, Zap, Scale, ChefHat, BrainCircuit } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
@@ -90,12 +90,12 @@ export default function ProblemPromise() {
                <FeatureCard 
                 icon={ChefHat}
                 title="Automated Prep Workflows"
-                description="Optimize your entire kitchen workflow with AI-driven task management, reducing waste and saving valuable floor hours."
+                description="Optimize your entire kitchen workflow with smart task management, reducing waste and saving valuable floor hours."
                 delay={0.4}
               />
               <FeatureCard 
-                icon={Sparkles}
-                title="AI-Assisted Curation"
+                icon={ChefHat}
+                title="Automated Curation"
                 description="Instantly generate personalized menus that astonish guests and dynamically utilize your active inventory."
                 delay={0.5}
               />

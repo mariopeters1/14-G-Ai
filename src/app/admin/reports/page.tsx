@@ -1,147 +1,409 @@
 "use client";
 
-import { BarChart3, DollarSign, TrendingUp, Apple, Receipt, Users, Trophy } from "lucide-react";
+import { useState } from "react";
+import {
+  BarChart3,
+  DollarSign,
+  TrendingUp,
+  TrendingDown,
+  Apple,
+  Receipt,
+  Users,
+  Trophy,
+  ChevronDown,
+  Download,
+  Percent,
+  Clock,
+  ArrowUpRight,
+  ArrowDownRight,
+  Sparkles,
+  UtensilsCrossed,
+  Wine,
+  Coffee,
+  Cookie,
+  CalendarDays,
+} from "lucide-react";
+
+// ─── Data ───────────────────────────────────────────────────────
+
+interface KPI {
+  label: string;
+  value: string;
+  change: string;
+  trend: "up" | "down" | "neutral";
+  icon: React.ReactNode;
+  color: string;
+}
+
+const kpis: KPI[] = [
+  { label: "Total Revenue", value: "$29,606", change: "+15.2%", trend: "up", icon: <DollarSign className="w-5 h-5" />, color: "#10B981" },
+  { label: "Food Cost", value: "$8,142", change: "+3.1%", trend: "up", icon: <Apple className="w-5 h-5" />, color: "#EF4444" },
+  { label: "Labor Cost", value: "$6,440", change: "-2.4%", trend: "down", icon: <Users className="w-5 h-5" />, color: "#3B82F6" },
+  { label: "Total Orders", value: "852", change: "+18.5%", trend: "up", icon: <Receipt className="w-5 h-5" />, color: "#F59E0B" },
+  { label: "Avg. Check", value: "$34.75", change: "+4.8%", trend: "up", icon: <Sparkles className="w-5 h-5" />, color: "#8B5CF6" },
+  { label: "Guests / Day", value: "122", change: "+8.0%", trend: "up", icon: <Users className="w-5 h-5" />, color: "#06B6D4" },
+];
+
+const dailyRevenue = [
+  { day: "Mon", value: 3210, pct: 34 },
+  { day: "Tue", value: 3580, pct: 38 },
+  { day: "Wed", value: 2890, pct: 30 },
+  { day: "Thu", value: 4820, pct: 51 },
+  { day: "Fri", value: 6340, pct: 67 },
+  { day: "Sat", value: 7010, pct: 74 },
+  { day: "Sun", value: 5180, pct: 55 },
+];
+
+const laborRevenue = [
+  { day: "Mon", rev: 3210, labor: 980 },
+  { day: "Tue", rev: 3580, labor: 920 },
+  { day: "Wed", rev: 2890, labor: 870 },
+  { day: "Thu", rev: 4820, labor: 1050 },
+  { day: "Fri", rev: 6340, labor: 1280 },
+  { day: "Sat", rev: 7010, labor: 1420 },
+  { day: "Sun", rev: 5180, labor: 1100 },
+];
+
+const categories = [
+  { name: "Main Courses", pct: 45, rev: "$13,323", color: "#10B981", icon: <UtensilsCrossed className="w-3.5 h-3.5" /> },
+  { name: "Beverages", pct: 25, rev: "$7,402", color: "#8B5CF6", icon: <Wine className="w-3.5 h-3.5" /> },
+  { name: "Appetizers", pct: 20, rev: "$5,921", color: "#F59E0B", icon: <Coffee className="w-3.5 h-3.5" /> },
+  { name: "Desserts", pct: 10, rev: "$2,960", color: "#F472B6", icon: <Cookie className="w-3.5 h-3.5" /> },
+];
+
+const topItems = [
+  { rank: 1, name: "Pan-Seared Gulf Snapper", units: 120, revenue: "$4,560", margin: "72%", trend: "up" },
+  { rank: 2, name: "Floridian Skirt Steak", units: 98, revenue: "$4,116", margin: "68%", trend: "up" },
+  { rank: 3, name: "Gator Bites", units: 85, revenue: "$1,530", margin: "78%", trend: "up" },
+  { rank: 4, name: "Key Lime Pie", units: 72, revenue: "$864", margin: "82%", trend: "neutral" },
+  { rank: 5, name: "Conch Fritters", units: 64, revenue: "$1,024", margin: "75%", trend: "down" },
+];
+
+const hourlyTraffic = [
+  { hour: "11a", guests: 18 }, { hour: "12p", guests: 42 }, { hour: "1p", guests: 38 },
+  { hour: "2p", guests: 22 }, { hour: "3p", guests: 12 }, { hour: "4p", guests: 15 },
+  { hour: "5p", guests: 28 }, { hour: "6p", guests: 52 }, { hour: "7p", guests: 68 },
+  { hour: "8p", guests: 74 }, { hour: "9p", guests: 56 }, { hour: "10p", guests: 30 },
+];
+
+const peakGuests = Math.max(...hourlyTraffic.map(h => h.guests));
+
+const weeklyMetrics = [
+  { metric: "Revenue / Labor Hour", value: "$41.20", change: "+6.3%", good: true },
+  { metric: "Food Cost %", value: "27.5%", change: "+1.2%", good: false },
+  { metric: "Labor Cost %", value: "21.8%", change: "-2.4%", good: true },
+  { metric: "Prime Cost %", value: "49.3%", change: "-1.1%", good: true },
+  { metric: "Avg Ticket Time", value: "18 min", change: "-3.2%", good: true },
+  { metric: "Table Turnover", value: "2.4x", change: "+0.3x", good: true },
+];
+
+// ─── Component ──────────────────────────────────────────────────
 
 export default function ReportsPage() {
+  const [period, setPeriod] = useState("7d");
+
+  const maxRev = Math.max(...dailyRevenue.map(d => d.value));
+
   return (
-    <div className="legacy-dashboard-scope container mx-auto py-10">
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '2rem' }}>
-            <div>
-                <h2 className="section-title" style={{ marginBottom: '0.5rem' }}><BarChart3 style={{ color: 'hsl(var(--accent))', width: '28px', height: '28px', marginRight: '8px' }} /> Reports & Analytics</h2>
-                <p style={{ color: 'hsl(var(--muted-foreground))', margin: 0 }}>Key performance indicators and data visualizations for your restaurant.</p>
-            </div>
-            <select style={{ padding: '0.5rem 1rem', background: 'hsl(var(--secondary))', border: '1px solid hsl(var(--border))', color: '#fff', borderRadius: '8px', outline: 'none', appearance: 'none', cursor: 'pointer', paddingRight: '2rem', backgroundImage: "url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2216%22 height=%2216%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22white%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><polyline points=%226 9 12 15 18 9%22/></svg>')", backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.7rem center' }}>
-                <option>Last 7 Days</option>
-                <option>Last 30 Days</option>
-                <option>This Quarter</option>
+    <div className="p-8 pb-20 font-sans max-w-7xl mx-auto">
+      {/* Header */}
+      <div className="flex justify-between items-end mb-8">
+        <div>
+          <h1 className="text-3xl font-normal text-white tracking-tight">Reports & Analytics</h1>
+          <p className="text-neutral-400 mt-2">Key performance indicators and data visualizations.</p>
+        </div>
+        <div className="flex gap-3">
+          <div className="relative">
+            <select
+              value={period}
+              onChange={(e) => setPeriod(e.target.value)}
+              className="bg-[#111116] border border-[#1F1F28] rounded-lg px-4 py-2.5 pr-9 text-white text-sm focus:outline-none focus:ring-1 focus:ring-white/20 appearance-none cursor-pointer"
+            >
+              <option value="7d">Last 7 Days</option>
+              <option value="30d">Last 30 Days</option>
+              <option value="q">This Quarter</option>
+              <option value="y">This Year</option>
             </select>
+            <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500 pointer-events-none" />
+          </div>
+          <button className="px-4 py-2.5 bg-[#1F1F28] hover:bg-[#2A2A36] text-white rounded-lg text-xs border border-[#2D2D3A] flex items-center gap-2 transition-colors">
+            <Download className="w-3.5 h-3.5" /> Export
+          </button>
+        </div>
+      </div>
+
+      {/* KPI Grid */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
+        {kpis.map((kpi) => (
+          <div key={kpi.label} className="bg-[#111116] border border-[#1F1F28] rounded-2xl p-4 group hover:border-[#2D2D3A] transition-all">
+            <div
+              className="w-9 h-9 rounded-lg flex items-center justify-center mb-3"
+              style={{ backgroundColor: `${kpi.color}15`, color: kpi.color }}
+            >
+              {kpi.icon}
+            </div>
+            <div className="text-xl font-light text-white font-mono">{kpi.value}</div>
+            <div className="text-[10px] text-neutral-500 uppercase tracking-wider mt-0.5">{kpi.label}</div>
+            <div className={`text-[11px] mt-2 flex items-center gap-1 ${kpi.trend === "up" && kpi.label !== "Food Cost" ? "text-[#10B981]" : kpi.trend === "down" && kpi.label === "Labor Cost" ? "text-[#10B981]" : kpi.trend === "up" && kpi.label === "Food Cost" ? "text-[#EF4444]" : "text-neutral-500"}`}>
+              {kpi.trend === "up" ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
+              {kpi.change}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Charts Row 1: Revenue Bar + Category + Rev vs Labor */}
+      <div className="grid lg:grid-cols-3 gap-5 mb-5">
+        {/* Daily Revenue Bar Chart */}
+        <div className="lg:col-span-2 bg-[#111116] border border-[#1F1F28] rounded-2xl overflow-hidden">
+          <div className="px-6 py-4 border-b border-[#1F1F28] bg-[#0D0D12]">
+            <h3 className="text-sm font-medium text-white">Daily Revenue</h3>
+            <p className="text-xs text-neutral-500 mt-0.5">Revenue breakdown for the last 7 days</p>
+          </div>
+          <div className="p-6">
+            <div className="flex items-end justify-between gap-3" style={{ height: "220px" }}>
+              {dailyRevenue.map((d) => {
+                const heightPct = (d.value / maxRev) * 100;
+                const isWeekend = d.day === "Fri" || d.day === "Sat";
+                return (
+                  <div key={d.day} className="flex-1 flex flex-col items-center gap-2 h-full justify-end group/bar">
+                    <span className="text-[10px] text-neutral-500 font-mono opacity-0 group-hover/bar:opacity-100 transition-opacity">
+                      ${(d.value / 1000).toFixed(1)}k
+                    </span>
+                    <div
+                      className="w-full rounded-t-lg transition-all group-hover/bar:opacity-100"
+                      style={{
+                        height: `${heightPct}%`,
+                        background: isWeekend
+                          ? "linear-gradient(180deg, #10B981, #10B98180)"
+                          : "linear-gradient(180deg, #3B82F6, #3B82F680)",
+                        opacity: 0.85,
+                      }}
+                    />
+                    <span className={`text-xs ${isWeekend ? "text-white font-medium" : "text-neutral-500"}`}>
+                      {d.day}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+            <div className="flex gap-4 mt-4 pt-4 border-t border-[#1F1F28]">
+              <div className="flex items-center gap-2 text-xs text-neutral-500">
+                <div className="w-3 h-3 rounded-sm bg-[#3B82F6]" /> Weekday
+              </div>
+              <div className="flex items-center gap-2 text-xs text-neutral-500">
+                <div className="w-3 h-3 rounded-sm bg-[#10B981]" /> Weekend
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* KPI Grid */}
-        <div className="kpi-grid" style={{ marginBottom: '2rem' }}>
-            <div className="kpi-card kpi-card-success">
-                <div className="kpi-header"><h3 className="kpi-title">Total Revenue</h3><DollarSign className="kpi-icon" /></div>
-                <p className="kpi-value text-success">$<span className="animate-number">29606.00</span></p>
-                <p className="kpi-subtext" style={{ color: 'hsl(var(--success, 142.1 76.2% 36.3%))', opacity: 0.9 }}><TrendingUp style={{ width: '12px', height: '12px', marginRight: '4px', display: 'inline-block' }} />+15.2% from last week</p>
+        {/* Sales by Category */}
+        <div className="bg-[#111116] border border-[#1F1F28] rounded-2xl overflow-hidden">
+          <div className="px-6 py-4 border-b border-[#1F1F28] bg-[#0D0D12]">
+            <h3 className="text-sm font-medium text-white">Sales by Category</h3>
+            <p className="text-xs text-neutral-500 mt-0.5">Revenue distribution</p>
+          </div>
+          <div className="p-6 space-y-4">
+            {/* Donut visual */}
+            <div className="flex justify-center mb-2">
+              <div className="relative w-28 h-28">
+                <svg viewBox="0 0 36 36" className="w-full h-full">
+                  {categories.reduce((acc, cat, i) => {
+                    const offset = categories.slice(0, i).reduce((s, c) => s + c.pct, 0);
+                    acc.push(
+                      <circle
+                        key={cat.name}
+                        cx="18" cy="18" r="15.5"
+                        fill="none"
+                        stroke={cat.color}
+                        strokeWidth="3"
+                        strokeDasharray={`${cat.pct} ${100 - cat.pct}`}
+                        strokeDashoffset={`${-offset}`}
+                        strokeLinecap="round"
+                        className="transition-all"
+                      />
+                    );
+                    return acc;
+                  }, [] as React.ReactNode[])}
+                </svg>
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <span className="text-lg font-mono text-white">$29.6k</span>
+                  <span className="text-[9px] text-neutral-500">TOTAL</span>
+                </div>
+              </div>
             </div>
-            <div className="kpi-card kpi-card-danger">
-                <div className="kpi-header"><h3 className="kpi-title">Food Cost</h3><Apple className="kpi-icon" /></div>
-                <p className="kpi-value text-danger">$<span className="animate-number">8141.65</span></p>
-                <p className="kpi-subtext" style={{ color: 'hsl(var(--destructive))', opacity: 0.9 }}><TrendingUp style={{ width: '12px', height: '12px', marginRight: '4px', display: 'inline-block' }} />+3.1% from last week (27.5% of rev)</p>
+            {categories.map((cat) => (
+              <div key={cat.name}>
+                <div className="flex justify-between items-center text-xs mb-1.5">
+                  <span className="flex items-center gap-2 text-white">
+                    <span style={{ color: cat.color }}>{cat.icon}</span> {cat.name}
+                    <span className="text-neutral-600">({cat.pct}%)</span>
+                  </span>
+                  <span className="font-mono text-neutral-400">{cat.rev}</span>
+                </div>
+                <div className="w-full h-1.5 bg-[#1F1F28] rounded-full overflow-hidden">
+                  <div
+                    className="h-full rounded-full transition-all"
+                    style={{ width: `${cat.pct}%`, backgroundColor: cat.color }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Charts Row 2: Rev vs Labor + Hourly Traffic + Top Items */}
+      <div className="grid lg:grid-cols-3 gap-5 mb-5">
+        {/* Revenue vs Labor */}
+        <div className="bg-[#111116] border border-[#1F1F28] rounded-2xl overflow-hidden">
+          <div className="px-6 py-4 border-b border-[#1F1F28] bg-[#0D0D12]">
+            <h3 className="text-sm font-medium text-white">Revenue vs Labor</h3>
+            <p className="text-xs text-neutral-500 mt-0.5">Weekly comparison</p>
+          </div>
+          <div className="p-6">
+            <svg viewBox="0 0 300 120" className="w-full" style={{ overflow: "visible" }}>
+              {/* Grid lines */}
+              {[0, 40, 80, 120].map((y) => (
+                <line key={y} x1="0" y1={y} x2="300" y2={y} stroke="#1F1F28" strokeWidth="0.5" />
+              ))}
+              {/* Revenue line */}
+              <polyline
+                points={laborRevenue.map((d, i) => `${i * 50},${120 - (d.rev / 7500) * 120}`).join(" ")}
+                fill="none"
+                stroke="#10B981"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              {/* Revenue area */}
+              <polygon
+                points={`0,120 ${laborRevenue.map((d, i) => `${i * 50},${120 - (d.rev / 7500) * 120}`).join(" ")} 300,120`}
+                fill="url(#revGrad)"
+                opacity="0.15"
+              />
+              {/* Labor line */}
+              <polyline
+                points={laborRevenue.map((d, i) => `${i * 50},${120 - (d.labor / 7500) * 120}`).join(" ")}
+                fill="none"
+                stroke="#EF4444"
+                strokeWidth="2"
+                strokeDasharray="6 3"
+                strokeLinecap="round"
+              />
+              {/* Dots */}
+              {laborRevenue.map((d, i) => (
+                <circle key={i} cx={i * 50} cy={120 - (d.rev / 7500) * 120} r="3" fill="#10B981" />
+              ))}
+              <defs>
+                <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#10B981" />
+                  <stop offset="100%" stopColor="#10B981" stopOpacity="0" />
+                </linearGradient>
+              </defs>
+            </svg>
+            <div className="flex justify-between mt-2">
+              {laborRevenue.map((d) => (
+                <span key={d.day} className="text-[10px] text-neutral-600">{d.day}</span>
+              ))}
             </div>
-            <div className="kpi-card highlight">
-                <div className="kpi-header"><h3 className="kpi-title">Total Orders</h3><Receipt className="kpi-icon" /></div>
-                <p className="kpi-value" style={{ color: 'hsl(var(--accent))' }}>+<span className="animate-number">852</span></p>
-                <p className="kpi-subtext" style={{ color: 'hsl(var(--accent))', opacity: 0.9 }}><TrendingUp style={{ width: '12px', height: '12px', marginRight: '4px', display: 'inline-block' }} />+18.5% from last week</p>
+            <div className="flex gap-4 mt-4 pt-3 border-t border-[#1F1F28]">
+              <div className="flex items-center gap-2 text-[10px] text-neutral-500">
+                <div className="w-3 h-0.5 bg-[#10B981] rounded" /> Revenue
+              </div>
+              <div className="flex items-center gap-2 text-[10px] text-neutral-500">
+                <div className="w-3 h-0.5 bg-[#EF4444] rounded border-dashed" style={{ borderTop: "2px dashed #EF4444", height: 0, width: 12 }} /> Labor
+              </div>
             </div>
-            <div className="kpi-card highlight">
-                <div className="kpi-header"><h3 className="kpi-title">Avg. Guests per Day</h3><Users className="kpi-icon" /></div>
-                <p className="kpi-value" style={{ color: 'hsl(var(--accent))' }}><span className="animate-number">122</span></p>
-                <p className="kpi-subtext" style={{ color: 'hsl(var(--accent))', opacity: 0.9 }}><TrendingUp style={{ width: '12px', height: '12px', marginRight: '4px', display: 'inline-block' }} />+8% from last week</p>
-            </div>
-            <div className="kpi-card" style={{ borderColor: 'hsl(var(--accent))', background: 'rgba(212,163,115,0.05)', gridColumn: 'span 2' }}>
-                <div className="kpi-header"><h3 className="kpi-title">Top Selling Item</h3><Trophy className="kpi-icon" style={{ color: 'hsl(var(--accent))' }} /></div>
-                <p className="kpi-value" style={{ fontSize: '1.25rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', paddingTop: '0.5rem', paddingBottom: '0.25rem' }}>Pan-Seared Snapper</p>
-                <p className="kpi-subtext" style={{ color: 'hsl(var(--muted-foreground))' }}>120 units sold this week</p>
-            </div>
+          </div>
         </div>
 
-        {/* Charts Area: CSS Mockups */}
-        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '2rem' }}>
-            
-            {/* Graph 1: Daily Revenue */}
-            <div className="legacy-card" style={{ display: 'flex', flexDirection: 'column' }}>
-                <div className="legacy-card-header" style={{ borderBottom: 'none', paddingBottom: 0 }}>
-                    <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1.2rem' }}>Daily Revenue</h3>
-                    <p style={{ margin: 0, fontSize: '0.9rem', color: 'hsl(var(--muted-foreground))' }}>Revenue for the last 7 days.</p>
-                </div>
-                <div className="legacy-card-content" style={{ flex: 1, display: 'flex', alignItems: 'flex-end', justifyContent: 'space-around', paddingTop: '2rem', position: 'relative' }}>
-                    {/* Y-axis guide lines mock */}
-                    <div style={{ position: 'absolute', left: '1.5rem', right: '1.5rem', top: '1rem', bottom: '3.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', zIndex: 0, opacity: 0.1 }}>
-                        <div style={{ borderBottom: '1px dashed #fff', position: 'relative' }}><span style={{ position: 'absolute', left: '-2rem', top: '-0.5rem', fontSize: '0.7rem' }}>$10k</span></div>
-                        <div style={{ borderBottom: '1px dashed #fff', position: 'relative' }}><span style={{ position: 'absolute', left: '-2rem', top: '-0.5rem', fontSize: '0.7rem' }}>$7.5k</span></div>
-                        <div style={{ borderBottom: '1px dashed #fff', position: 'relative' }}><span style={{ position: 'absolute', left: '-2rem', top: '-0.5rem', fontSize: '0.7rem' }}>$5k</span></div>
-                        <div style={{ borderBottom: '1px dashed #fff', position: 'relative' }}><span style={{ position: 'absolute', left: '-2rem', top: '-0.5rem', fontSize: '0.7rem' }}>$2.5k</span></div>
-                    </div>
-                    
-                    {/* bars */}
-                    <div style={{ zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', height: '100%', justifyContent: 'flex-end' }}>
-                        <div style={{ width: '40px', height: '40%', background: 'hsl(var(--accent))', borderRadius: '4px 4px 0 0', opacity: 0.8 }}></div>
-                        <span style={{ fontSize: '0.8rem', color: 'hsl(var(--muted-foreground))' }}>Mon</span>
-                    </div>
-                    <div style={{ zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', height: '100%', justifyContent: 'flex-end' }}>
-                        <div style={{ width: '40px', height: '45%', background: 'hsl(var(--accent))', borderRadius: '4px 4px 0 0', opacity: 0.8 }}></div>
-                        <span style={{ fontSize: '0.8rem', color: 'hsl(var(--muted-foreground))' }}>Tue</span>
-                    </div>
-                    <div style={{ zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', height: '100%', justifyContent: 'flex-end' }}>
-                        <div style={{ width: '40px', height: '35%', background: 'hsl(var(--accent))', borderRadius: '4px 4px 0 0', opacity: 0.8 }}></div>
-                        <span style={{ fontSize: '0.8rem', color: 'hsl(var(--muted-foreground))' }}>Wed</span>
-                    </div>
-                    <div style={{ zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', height: '100%', justifyContent: 'flex-end' }}>
-                        <div style={{ width: '40px', height: '60%', background: 'hsl(var(--accent))', borderRadius: '4px 4px 0 0', opacity: 0.8 }}></div>
-                        <span style={{ fontSize: '0.8rem', color: 'hsl(var(--muted-foreground))' }}>Thu</span>
-                    </div>
-                    <div style={{ zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', height: '100%', justifyContent: 'flex-end' }}>
-                        <div style={{ width: '40px', height: '85%', background: 'hsl(var(--success, 142.1 76.2% 36.3%))', borderRadius: '4px 4px 0 0' }}></div>
-                        <span style={{ fontSize: '0.8rem', color: '#fff', fontWeight: 600 }}>Fri</span>
-                    </div>
-                    <div style={{ zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', height: '100%', justifyContent: 'flex-end' }}>
-                        <div style={{ width: '40px', height: '95%', background: 'hsl(var(--success, 142.1 76.2% 36.3%))', borderRadius: '4px 4px 0 0' }}></div>
-                        <span style={{ fontSize: '0.8rem', color: '#fff', fontWeight: 600 }}>Sat</span>
-                    </div>
-                    <div style={{ zIndex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem', height: '100%', justifyContent: 'flex-end' }}>
-                        <div style={{ width: '40px', height: '65%', background: 'hsl(var(--accent))', borderRadius: '4px 4px 0 0', opacity: 0.8 }}></div>
-                        <span style={{ fontSize: '0.8rem', color: 'hsl(var(--muted-foreground))' }}>Sun</span>
-                    </div>
-                </div>
+        {/* Hourly Guest Traffic */}
+        <div className="bg-[#111116] border border-[#1F1F28] rounded-2xl overflow-hidden">
+          <div className="px-6 py-4 border-b border-[#1F1F28] bg-[#0D0D12]">
+            <h3 className="text-sm font-medium text-white">Hourly Guest Traffic</h3>
+            <p className="text-xs text-neutral-500 mt-0.5">Average covers per hour</p>
+          </div>
+          <div className="p-6">
+            <div className="flex items-end gap-1.5" style={{ height: "140px" }}>
+              {hourlyTraffic.map((h) => {
+                const heightPct = (h.guests / peakGuests) * 100;
+                const isPeak = h.guests >= 50;
+                return (
+                  <div key={h.hour} className="flex-1 flex flex-col items-center gap-1 h-full justify-end group/h">
+                    <span className="text-[9px] text-neutral-500 font-mono opacity-0 group-hover/h:opacity-100 transition-opacity">{h.guests}</span>
+                    <div
+                      className="w-full rounded-t transition-all group-hover/h:opacity-100"
+                      style={{
+                        height: `${heightPct}%`,
+                        backgroundColor: isPeak ? "#F59E0B" : "#1F1F28",
+                        opacity: isPeak ? 0.9 : 0.6,
+                      }}
+                    />
+                    <span className="text-[8px] text-neutral-600">{h.hour}</span>
+                  </div>
+                );
+              })}
             </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                {/* Graph 2: Sales by Category */}
-                <div className="legacy-card">
-                    <div className="legacy-card-header" style={{ borderBottom: 'none', paddingBottom: 0 }}>
-                        <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1.1rem' }}>Sales by Category</h3>
-                        <p style={{ margin: 0, fontSize: '0.85rem', color: 'hsl(var(--muted-foreground))' }}>Click a category to drill down into items.</p>
-                    </div>
-                    <div className="legacy-card-content" style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-                        <div>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '0.3rem' }}><span style={{ color: '#fff' }}>Main Courses (45%)</span><span style={{ fontFamily: 'monospace' }}>$13.3k</span></div>
-                            <div style={{ width: '100%', height: '8px', background: 'hsl(var(--secondary))', borderRadius: '4px', overflow: 'hidden' }}><div style={{ width: '45%', height: '100%', background: 'hsl(var(--accent))' }}></div></div>
-                        </div>
-                        <div>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '0.3rem' }}><span style={{ color: '#fff' }}>Beverages (25%)</span><span style={{ fontFamily: 'monospace' }}>$7.4k</span></div>
-                            <div style={{ width: '100%', height: '8px', background: 'hsl(var(--secondary))', borderRadius: '4px', overflow: 'hidden' }}><div style={{ width: '25%', height: '100%', background: 'hsl(var(--success, 142.1 76.2% 36.3%))' }}></div></div>
-                        </div>
-                        <div>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '0.3rem' }}><span style={{ color: '#fff' }}>Appetizers (20%)</span><span style={{ fontFamily: 'monospace' }}>$5.9k</span></div>
-                            <div style={{ width: '100%', height: '8px', background: 'hsl(var(--secondary))', borderRadius: '4px', overflow: 'hidden' }}><div style={{ width: '20%', height: '100%', background: '#fbbf24' }}></div></div>
-                        </div>
-                        <div>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', marginBottom: '0.3rem' }}><span style={{ color: '#fff' }}>Desserts (10%)</span><span style={{ fontFamily: 'monospace' }}>$3.0k</span></div>
-                            <div style={{ width: '100%', height: '8px', background: 'hsl(var(--secondary))', borderRadius: '4px', overflow: 'hidden' }}><div style={{ width: '10%', height: '100%', background: 'rgba(255,255,255,0.5)' }}></div></div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Graph 3: Revenue vs Labor Cost */}
-                <div className="legacy-card">
-                    <div className="legacy-card-header" style={{ borderBottom: 'none', paddingBottom: 0 }}>
-                        <h3 style={{ margin: '0 0 0.5rem 0', fontSize: '1.1rem' }}>Rev vs Labor Cost</h3>
-                        <p style={{ margin: 0, fontSize: '0.85rem', color: 'hsl(var(--muted-foreground))' }}>Comparison over last 7 days.</p>
-                    </div>
-                    <div className="legacy-card-content" style={{ position: 'relative', height: '120px', display: 'flex', alignItems: 'flex-end', paddingTop: '0.5rem' }}>
-                        <svg width="100%" height="90" viewBox="0 0 300 90" preserveAspectRatio="none" style={{ overflow: 'visible' }}>
-                            <path d="M0,70 L50,60 L100,75 L150,40 L200,10 L250,5 L300,30" fill="none" stroke="hsl(var(--success, 142.1 76.2% 36.3%))" strokeWidth="3" />
-                            <path d="M0,80 L50,75 L100,82 L150,60 L200,50 L250,45 L300,55" fill="none" stroke="hsl(var(--destructive))" strokeWidth="2" strokeDasharray="4" />
-                        </svg>
-                        <div style={{ position: 'absolute', bottom: '0.5rem', left: '1.5rem', right: '1.5rem', display: 'flex', justifyContent: 'space-between', fontSize: '0.7rem', color: 'hsl(var(--muted-foreground))' }}>
-                            <span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span><span>S</span>
-                        </div>
-                    </div>
-                </div>
-
+            <div className="mt-4 pt-3 border-t border-[#1F1F28] flex justify-between">
+              <div className="text-xs text-neutral-500">Peak: <span className="text-[#F59E0B] font-medium">7–8 PM</span></div>
+              <div className="text-xs text-neutral-500">Avg: <span className="text-white font-mono">38</span> guests/hr</div>
             </div>
+          </div>
         </div>
+
+        {/* Top Selling Items */}
+        <div className="bg-[#111116] border border-[#1F1F28] rounded-2xl overflow-hidden">
+          <div className="px-6 py-4 border-b border-[#1F1F28] bg-[#0D0D12] flex items-center justify-between">
+            <div>
+              <h3 className="text-sm font-medium text-white">Top Sellers</h3>
+              <p className="text-xs text-neutral-500 mt-0.5">By units sold</p>
+            </div>
+            <Trophy className="w-4 h-4 text-[#F59E0B]" />
+          </div>
+          <div className="divide-y divide-[#1F1F28]">
+            {topItems.map((item) => (
+              <div key={item.rank} className="px-6 py-3 flex items-center hover:bg-white/[0.02] transition-colors">
+                <span className={`w-6 text-xs font-mono ${item.rank <= 3 ? "text-[#F59E0B]" : "text-neutral-600"}`}>
+                  #{item.rank}
+                </span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm text-white truncate">{item.name}</p>
+                  <p className="text-[10px] text-neutral-500">{item.units} sold</p>
+                </div>
+                <div className="text-right ml-3">
+                  <p className="text-xs font-mono text-[#10B981]">{item.revenue}</p>
+                  <p className="text-[10px] text-neutral-500">{item.margin} margin</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom Row: Weekly Key Metrics */}
+      <div className="bg-[#111116] border border-[#1F1F28] rounded-2xl overflow-hidden">
+        <div className="px-6 py-4 border-b border-[#1F1F28] bg-[#0D0D12] flex items-center justify-between">
+          <div>
+            <h3 className="text-sm font-medium text-white">Key Operating Metrics</h3>
+            <p className="text-xs text-neutral-500 mt-0.5">Critical ratios and benchmarks</p>
+          </div>
+          <CalendarDays className="w-4 h-4 text-neutral-500" />
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 divide-x divide-[#1F1F28]">
+          {weeklyMetrics.map((m) => (
+            <div key={m.metric} className="px-5 py-5 text-center">
+              <div className="text-xl font-mono text-white">{m.value}</div>
+              <div className="text-[10px] text-neutral-500 uppercase tracking-wider mt-1 mb-2">{m.metric}</div>
+              <div className={`text-[11px] flex items-center justify-center gap-1 ${m.good ? "text-[#10B981]" : "text-[#EF4444]"}`}>
+                {m.good ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
+                {m.change}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

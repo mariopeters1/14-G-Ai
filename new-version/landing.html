@@ -444,8 +444,8 @@
                         </p>
                         <div class="grid grid-cols-2 gap-6 pt-4">
                             <div class="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-md">
-                                <p class="text-sm font-light text-white/50 tracking-wide uppercase">Labor Hours</p>
-                                <p id="calc-labor" class="text-3xl font-bold text-white mt-2">250</p>
+                                <p class="text-sm font-light text-white/50 tracking-wide uppercase">Waste Savings</p>
+                                <p id="calc-waste" class="text-3xl font-bold text-white mt-2">$2,500</p>
                             </div>
                             <div class="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-md">
                                 <p class="text-sm font-light text-white/50 tracking-wide uppercase">Extra Revenue</p>
@@ -464,16 +464,16 @@
                         <form id="roi-form" class="space-y-6" onsubmit="event.preventDefault(); alert('Report successfully sent to the cloud!');">
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                 <div>
-                                    <label class="text-white/70 block mb-2 text-sm">Seats</label>
-                                    <input type="number" id="input-seats" value="50" class="w-full bg-white/5 border border-white/10 text-white p-3 rounded-md focus:border-primary focus:outline-none" required>
+                                    <label class="text-white/70 block mb-2 text-sm">Weekly Seats</label>
+                                    <input type="number" id="input-weekly-seats" value="500" class="w-full bg-white/5 border border-white/10 text-white p-3 rounded-md focus:border-primary focus:outline-none" required>
                                 </div>
                                 <div>
-                                    <label class="text-white/70 block mb-2 text-sm">Daily Covers</label>
-                                    <input type="number" id="input-covers" value="100" class="w-full bg-white/5 border border-white/10 text-white p-3 rounded-md focus:border-primary focus:outline-none" required>
+                                    <label class="text-white/70 block mb-2 text-sm">Table Turns</label>
+                                    <input type="number" step="0.1" id="input-table-turns" value="3.0" class="w-full bg-white/5 border border-white/10 text-white p-3 rounded-md focus:border-primary focus:outline-none" required>
                                 </div>
                                 <div>
-                                    <label class="text-white/70 block mb-2 text-sm">Menu Items</label>
-                                    <input type="number" id="input-items" value="25" class="w-full bg-white/5 border border-white/10 text-white p-3 rounded-md focus:border-primary focus:outline-none" required>
+                                    <label class="text-white/70 block mb-2 text-sm">Avg. Ticket ($)</label>
+                                    <input type="number" id="input-average-ticket" value="45" class="w-full bg-white/5 border border-white/10 text-white p-3 rounded-md focus:border-primary focus:outline-none" required>
                                 </div>
                             </div>
                             <hr class="border-white/10 my-6">
@@ -679,31 +679,34 @@
             });
 
             // ROI Calculator Logic
-            const seatsInput = document.getElementById('input-seats');
-            const coversInput = document.getElementById('input-covers');
-            const itemsInput = document.getElementById('input-items');
+            const weeklySeatsInput = document.getElementById('input-weekly-seats');
+            const tableTurnsInput = document.getElementById('input-table-turns');
+            const averageTicketInput = document.getElementById('input-average-ticket');
             
             const uiAnnual = document.getElementById('calc-annual');
-            const uiLabor = document.getElementById('calc-labor');
+            const uiWaste = document.getElementById('calc-waste');
             const uiRevenue = document.getElementById('calc-revenue');
 
             function calculateROI() {
-                if (!seatsInput) return;
-                const menuItems = Math.max(0, parseInt(itemsInput.value) || 0);
-                const dailyCovers = Math.max(0, parseInt(coversInput.value) || 0);
+                if (!weeklySeatsInput) return;
+                const weeklySeats = Math.max(0, parseInt(weeklySeatsInput.value) || 0);
+                const tableTurns = Math.max(0, parseFloat(tableTurnsInput.value) || 0);
+                const averageTicket = Math.max(0, parseFloat(averageTicketInput.value) || 0);
                 
-                const laborHours = menuItems * 10;
-                const extraRevenue = dailyCovers * 50;
-                const laborCostSavings = laborHours * 20;
-                const newAnnualSavings = laborCostSavings + extraRevenue;
+                const weeklyRev = weeklySeats * tableTurns * averageTicket;
+                const annualRev = weeklyRev * 52;
+                
+                const newAnnualSavings = annualRev * 0.10;
+                const wasteSavings = newAnnualSavings * 0.5;
+                const extraRevenue = newAnnualSavings * 0.5;
 
-                uiAnnual.innerText = "$" + newAnnualSavings.toLocaleString();
-                uiLabor.innerText = laborHours.toLocaleString();
-                uiRevenue.innerText = "$" + extraRevenue.toLocaleString();
+                uiAnnual.innerText = "$" + Math.round(newAnnualSavings).toLocaleString();
+                uiWaste.innerText = "$" + Math.round(wasteSavings).toLocaleString();
+                uiRevenue.innerText = "$" + Math.round(extraRevenue).toLocaleString();
             }
 
-            if (seatsInput) {
-                [seatsInput, coversInput, itemsInput].forEach(inp => inp.addEventListener('input', calculateROI));
+            if (weeklySeatsInput) {
+                [weeklySeatsInput, tableTurnsInput, averageTicketInput].forEach(inp => inp.addEventListener('input', calculateROI));
                 calculateROI(); // init
             }
         });

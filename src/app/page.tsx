@@ -1,5 +1,6 @@
 import Header from "@/components/landing/header";
 import Hero from "@/components/landing/hero";
+import KPIStrip from "@/components/landing/kpi-strip";
 import ProblemPromise from "@/components/landing/problem-promise";
 import HowItWorks from "@/components/landing/how-it-works";
 import Credibility from "@/components/landing/credibility";
@@ -15,6 +16,7 @@ export default function Home() {
       <Header />
       <main className="flex-1">
         <Hero />
+        <KPIStrip />
         <ProblemPromise />
         <HowItWorks />
         <Credibility />

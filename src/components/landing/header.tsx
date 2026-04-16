@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import Logo from "@/components/logo";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
@@ -49,9 +48,17 @@ export default function Header() {
             <Link href="#plans" className="text-white/70 transition-colors hover:text-primary hover:drop-shadow-[0_0_8px_rgba(255,192,30,0.5)]">Plans</Link>
             <Link href="/careers" className="text-white/70 transition-colors hover:text-primary hover:drop-shadow-[0_0_8px_rgba(255,192,30,0.5)]">Careers</Link>
           </nav>
-          <Button asChild className="rounded-full px-6 bg-white border border-white/20 text-background hover:bg-primary hover:text-background hover:border-primary transition-all duration-300">
-            <Link href="/login">Sign In</Link>
-          </Button>
+          <Link
+            href="/login"
+            className="rounded-full px-6 py-2.5 text-sm font-medium transition-all duration-300 border"
+            style={{
+              backgroundColor: "#fff",
+              borderColor: "rgba(255,255,255,0.2)",
+              color: "#0A0A0F",
+            }}
+          >
+            Sign In
+          </Link>
         </div>
       </div>
     </motion.header>
