@@ -19,10 +19,10 @@ const nextConfig = {
     ],
   },
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false,
   },
   eslint: {
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: false,
   },
   experimental: {
     serverComponentsExternalPackages: ['genkit', '@genkit-ai/google-genai', '@genkit-ai/core'],

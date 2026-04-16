@@ -246,7 +246,7 @@ export default function DashboardPrototypePage() {
                 <SelectContent>
                   <SelectItem value="terra-bleu">Terra Bleu</SelectItem>
                   <SelectItem value="gator-flamingo">Gator & Flamingo</SelectItem>
-                  <SelectItem value="kann-rum-bar">Kan'n Rum Bar & Grill</SelectItem>
+                  <SelectItem value="kann-rum-bar">Kan&apos;n Rum Bar & Grill</SelectItem>
                   <SelectItem value="test-kitchen">Gastronomic AI Test Kitchen</SelectItem>
                   <SelectItem value="market-kiosk">Market Square Kiosk</SelectItem>
                 </SelectContent>

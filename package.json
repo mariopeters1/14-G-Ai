@@ -61,6 +61,8 @@
     "@types/node": "^20",
     "@types/react": "18.3.28",
     "@types/react-dom": "18.3.7",
+    "eslint": "^8.57.1",
+    "eslint-config-next": "^14.2.35",
     "genkit-cli": "^1.31.0",
     "patch-package": "^8.0.1",
     "postcss": "^8",

@@ -19,7 +19,7 @@ export default function Credibility() {
             className="space-y-10"
           >
             <div className="relative">
-              <span className="absolute -top-10 -left-6 text-[100px] text-white/5 font-serif leading-none">"</span>
+              <span className="absolute -top-10 -left-6 text-[100px] text-white/5 font-serif leading-none">&ldquo;</span>
               <blockquote className="text-3xl font-semibold font-headline leading-tight lg:text-4xl lg:leading-snug text-white relative z-10">
                 I wanted a sous-chef that never sleeps and a concierge who knows every guest’s needs. <span className="text-primary">We built both in one app.</span>
               </blockquote>

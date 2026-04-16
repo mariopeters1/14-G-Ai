@@ -146,7 +146,7 @@ export function EmployeeModal({ isOpen, onClose, onSaved, employee }: EmployeeMo
                     <option value="">Select a Restaurant</option>
                     <option value="Terra Bleu">Terra Bleu</option>
                     <option value="Gator & Flamingo">Gator & Flamingo</option>
-                    <option value="Kan'n Rum Bar & Grill">Kan'n Rum Bar & Grill</option>
+                    <option value="Kan'n Rum Bar & Grill">Kan&apos;n Rum Bar & Grill</option>
                     <option value="Gastronomic AI Test Kitchen">Gastronomic AI Test Kitchen</option>
                   </select>
                </div>
